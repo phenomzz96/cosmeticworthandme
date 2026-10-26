@@ -1,0 +1,69 @@
+/* 1) FONT CHỮ THƯƠNG HIỆU — đổi font: thay link dưới và biến --font-body */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+/*
+ * 2) DESIGN TOKENS — nơi DUY NHẤT định nghĩa nhận diện thị giác:
+ * font chữ, màu sắc, bo góc, bóng đổ cho cả 2 chế độ sáng/tối.
+ * Muốn đổi màu thương hiệu: chỉ sửa các giá trị ở đây.
+ * Component KHÔNG dùng mã màu trực tiếp, chỉ dùng class như bg-surface, text-primary...
+ *
+ * Bảng màu: Mulberry (dâu tằm) làm màu chính, Champagne làm điểm nhấn "glow".
+ */
+
+:root,
+[data-theme='light'] {
+  /* Font: Be Vietnam Pro được thiết kế cho tiếng Việt, dấu rõ ở mọi cỡ chữ */
+  --font-body: 'Be Vietnam Pro', ui-sans-serif, system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+  --card-radius: 16px;
+  --control-radius: 999px;
+
+  --bg: #fbf8f9;
+  --surface: #ffffff;
+  --surface-2: #f5edf1;
+  --border: #ead9e2;
+  --text: #241521;
+  --text-muted: #6e5a68;
+
+  --primary: #9b2d5f;
+  --primary-hover: #7e2049;
+  --primary-soft: #f8e6ee;
+  --on-primary: #ffffff;
+
+  --accent: #f4c76b;
+  --accent-soft: #fdf3dc;
+  --on-accent: #3a2600;
+
+  --sale: #b42318;
+  --success: #17804b;
+  --danger: #c62828;
+  --star: #d99a00;
+
+  --ring: #9b2d5f;
+  --shadow-color: 320 30% 20%;
+}
+
+[data-theme='dark'] {
+  --bg: #170f16;
+  --surface: #21161f;
+  --surface-2: #2c1e29;
+  --border: #3e2b3a;
+  --text: #f3e9f0;
+  --text-muted: #c2afbd;
+
+  --primary: #f08bb8;
+  --primary-hover: #f6a9cb;
+  --primary-soft: #4a2238;
+  --on-primary: #2a0e1c;
+
+  --accent: #f4c76b;
+  --accent-soft: #3d3020;
+  --on-accent: #2a1c00;
+
+  --sale: #ff8a7a;
+  --success: #4ade80;
+  --danger: #ff7a7a;
+  --star: #f4c76b;
+
+  --ring: #f6a9cb;
+  --shadow-color: 320 50% 3%;
+}

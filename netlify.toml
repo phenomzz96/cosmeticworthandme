@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Mọi đường dẫn đều trả về index.html để React Router xử lý (tải lại trang /products không bị 404)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

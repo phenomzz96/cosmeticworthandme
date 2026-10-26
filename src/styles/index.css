@@ -1,0 +1,85 @@
+/* tokens.css phải đứng đầu để link font hợp lệ */
+@import './tokens.css';
+@import 'tailwindcss';
+
+/* dark: trong Tailwind dựa theo data-theme trên <html>, không theo media query */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Ánh xạ token -> class Tailwind: bg-surface, text-muted, border-border, bg-primary... */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-sale: var(--sale);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-star: var(--star);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-body);
+  --radius-card: var(--card-radius);
+  --radius-control: var(--control-radius);
+
+  --shadow-card: 0 1px 2px hsl(var(--shadow-color) / 0.06), 0 4px 14px -6px hsl(var(--shadow-color) / 0.12);
+  --shadow-pop: 0 12px 32px -12px hsl(var(--shadow-color) / 0.35);
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--text);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--primary-soft);
+  }
+}
+
+/* Chuyển theme mượt, nhưng tắt khi người dùng chọn giảm chuyển động */
+@media (prefers-reduced-motion: no-preference) {
+  .theme-transition,
+  .theme-transition * {
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease;
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (width >= 48rem) {
+    padding-inline: 24px;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

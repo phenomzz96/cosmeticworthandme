@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>%BRAND_NAME% – %BRAND_DESCRIPTION%</title>
+    <meta name="description" content="%BRAND_DESCRIPTION%" />
+    <link rel="icon" type="image/svg+xml" href="%BRAND_FAVICON%" />
+    <meta name="theme-color" content="#FBF8F9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#170F16" media="(prefers-color-scheme: dark)" />
+
+    <!--
+      Chạy TRƯỚC khi trang hiển thị để đặt đúng theme, tránh nháy sáng/tối.
+      Khóa lưu trữ phải trùng với THEME_STORAGE_KEY trong src/features/theme/theme.ts
+    -->
+    <script>
+      ;(function () {
+        try {
+          var pref = localStorage.getItem('glowup-theme')
+          var dark =
+            pref === 'dark' ||
+            ((pref === null || pref === 'system') &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          var root = document.documentElement
+          root.dataset.theme = dark ? 'dark' : 'light'
+          root.style.colorScheme = dark ? 'dark' : 'light'
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light'
+        }
+      })()
+    </script>
+
+    <!-- Font chữ thương hiệu: khai báo ở src/styles/tokens.css -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
