@@ -308,7 +308,7 @@ function ShopOrderCard({ so, events, onCancel }: { so: ShopOrder; events: OrderE
       )}
       <ul className="mt-2 divide-y divide-border">
         {so.order_items.map((i) => (
-          <OrderItemRow key={i.id ?? i.product_name} item={i} />
+          <OrderItemRow key={i.id ?? i.product_name} item={i} reviewLink={so.status === 'delivered'} />
         ))}
       </ul>
       <dl className="mt-2 space-y-1 border-t border-border pt-2 text-sm">

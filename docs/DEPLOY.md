@@ -31,17 +31,21 @@ Nếu `npm run build` báo lỗi TypeScript, gửi nguyên văn lỗi cho ngư�
 | 4 | `supabase/migrations/20261027000001_search_addresses_cart.sql` | Tìm kiếm, sổ địa chỉ, giỏ hàng |
 | 5 | `supabase/migrations/20261028000001_orders_payments.sql` | Đơn hàng, thanh toán COD/QR mô phỏng, quản trị đơn và sản phẩm |
 | 6 | `supabase/migrations/20261029000001_banners.sql` | Banner trang chủ |
+| 7 | `supabase/migrations/20261104000001_reviews_follows_favorites.sql` | Đánh giá sản phẩm, theo dõi shop, yêu thích; số liệu thật; loại "Tạo kiểu tóc" |
 
 Mỗi file chạy **một lần**. Báo "Success. No rows returned" là đúng.
 Nếu một file báo lỗi giữa chừng: chụp màn hình lỗi, **không** chạy tiếp file sau, không sửa file migration; báo người phụ trách database.
 
-Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` để có 5 cửa hàng mẫu và 29 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng.
+Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 7 migration) để có 5 cửa hàng mẫu và 29 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng.
+
+**Project đã chạy 6 migration trước đó** (bản đang chạy trên Netlify): chỉ cần chạy thêm file số 7, một lần. Không chạy lại các file 1–6. File 7 tự đưa điểm/lượt đánh giá/người theo dõi/lượt bán mẫu về số thật và chuyển các sản phẩm sáp, gôm đang xếp nhầm vào "Dầu gội" sang "Tạo kiểu tóc".
 
 Kiểm tra nhanh trong SQL Editor:
 
 ```sql
 select max(total_count) from public.search_products();   -- 29 nếu đã chạy dữ liệu mẫu
 select shipping_fee from public.site_settings;    -- 30000
+select count(*) from public.products where rating > 0;  -- 0 ngay sau migration 7 (chưa có đánh giá thật)
 ```
 
 ## 3. Cấu hình đăng nhập
@@ -105,6 +109,11 @@ Muốn người ngoài nhóm (giảng viên) đăng ký được: cấu hình SM
 | 13 | Tài khoản thường mở `/admin` | Báo không có quyền |
 | 14 | Bật/tắt chế độ tối ở các trang trên | Chữ đọc rõ, không vỡ bố cục |
 | 15 | Mở trên điện thoại | Không bị kéo ngang, nút bấm được |
+| 16 | Khách ở bước 10 mở đơn đã giao → "Đánh giá sản phẩm" → chấm sao, gửi | Điểm hiện trên trang sản phẩm và thẻ sản phẩm (chờ tối đa 1 phút ở trình duyệt khác) |
+| 17 | Chủ shop vào `/seller/reviews` trả lời đánh giá | Trả lời hiện dưới đánh giá trên trang sản phẩm |
+| 18 | Admin ẩn đánh giá ở `/admin/reviews` (nhập lý do) | Đánh giá biến mất, điểm tính lại; người viết thấy lý do |
+| 19 | Khách bấm "Theo dõi" ở trang shop và "Yêu thích" ở trang sản phẩm | Hiện trong `/favorites`; số người theo dõi tăng 1 |
+| 20 | Chủ shop tải ảnh sản phẩm PNG lớn | Ảnh lưu dạng `.webp`, nhẹ hơn nhiều so với ảnh gốc |
 
 Kiểm tra bảo mật nhanh (DevTools → Console, khi đang đăng nhập tài khoản thường, chạy ở `npm run dev`):
 

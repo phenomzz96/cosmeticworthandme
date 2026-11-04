@@ -13,11 +13,12 @@ Mỗi file chỉ chạy một lần. Đã chạy rồi thì không sửa file đ
 | `20261027000001_search_addresses_cart.sql` | Tìm kiếm không dấu + lọc + phân trang (`search_products`); sổ địa chỉ riêng tư; giỏ hàng theo tài khoản (`cart_set_item`, `cart_merge`) |
 | `20261028000001_orders_payments.sql` | Đơn cha/đơn con, `place_order` (giá, phí ship, tồn kho tính ở server), hủy/xử lý đơn, COD và QR mô phỏng (báo chuyển, Admin xác nhận, hoàn tiền), danh sách đơn cho người bán/Admin, số liệu tổng quan, Admin ẩn sản phẩm vi phạm |
 | `20261029000001_banners.sql` | Banner trang chủ (chỉ Admin, chỉ liên kết nội bộ, hẹn giờ, nhật ký); cho phép thư mục `banner/` trong bucket `brand` |
+| `20261104000001_reviews_follows_favorites.sql` | Đánh giá sản phẩm (chỉ khách đã nhận hàng; người bán trả lời; Admin ẩn có lý do + nhật ký), theo dõi shop, yêu thích sản phẩm; điểm, lượt đánh giá, người theo dõi, lượt bán do database tự tính (số liệu mẫu cũ được đưa về số thật); loại sản phẩm "Tạo kiểu tóc" và tự chuyển sáp/gôm đang xếp nhầm vào "Dầu gội" |
 
 ### Dữ liệu mẫu (tùy chọn)
 
 `seed/demo_catalog.sql`: 5 cửa hàng mẫu (không có chủ, đã duyệt) và 29 sản phẩm hư cấu dùng hình minh họa thay ảnh thật.
-Chạy **sau** các migration. Chạy lại không bị trùng. Muốn bỏ dữ liệu mẫu: xóa các shop có `owner_id is null` (sản phẩm và ảnh tự xóa theo).
+Chạy **sau** các migration (cần migration 007 trở lên: dòng cuối file tính lại số liệu từ dữ liệu thật). Chạy lại không bị trùng. Muốn bỏ dữ liệu mẫu: xóa các shop có `owner_id is null` (sản phẩm và ảnh tự xóa theo).
 
 ## Kiểm thử bảo mật (không bắt buộc với cả nhóm)
 
@@ -31,6 +32,7 @@ Chạy **sau** các migration. Chạy lại không bị trùng. Muốn bỏ dữ
 - `04_search_addresses_cart_test.sql`: 47 tình huống: tìm kiếm không lộ hàng nháp/shop chưa duyệt, đọc/sửa/xóa địa chỉ và giỏ của người khác, tài khoản bị khóa, giới hạn số lượng.
 - `05_orders_payments_test.sql`: 75 tình huống: gian lận giá, đặt quá tồn kho, mua hàng của shop mình, dùng địa chỉ người khác, ghi thẳng vào bảng đơn, xem đơn của người khác, người bán xử lý đơn shop khác, nhảy cóc trạng thái, tự xác nhận thanh toán, giao đơn QR chưa trả tiền, hoàn tiền 2 lần, Admin ẩn sản phẩm.
 - `06_banners_test.sql`: 15 tình huống: liên kết ra ngoài website, khách thêm/sửa/xóa banner, tải ảnh banner trái phép, hẹn giờ.
+- `07_reviews_follows_favorites_test.sql`: 69 tình huống: đánh giá khi chưa mua / chưa nhận hàng, chèn thẳng vào bảng đánh giá, đọc user_id/email người đánh giá, sửa điểm hay số người theo dõi, người bán shop khác trả lời, khách ẩn đánh giá, đánh giá bị ẩn vẫn tính điểm, theo dõi shop chưa duyệt, tự theo dõi shop mình, đọc danh sách yêu thích của người khác, tài khoản bị khóa.
 
 Cách chạy (cần PostgreSQL 15+ và `psql`):
 
@@ -39,7 +41,7 @@ Cách chạy (cần PostgreSQL 15+ và `psql`):
 createdb wm_test
 psql -d wm_test -v ON_ERROR_STOP=1 -f supabase/tests/00_local_supabase_stub.sql
 for f in supabase/migrations/*.sql; do psql -d wm_test -v ON_ERROR_STOP=1 -f "$f"; done
-psql -d wm_test -f supabase/tests/01_foundation_test.sql   # hoặc 02_ … 06_
+psql -d wm_test -f supabase/tests/01_foundation_test.sql   # hoặc 02_ … 07_
 ```
 
 Kết quả cuối phải là `truot = 0`.

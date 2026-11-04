@@ -111,6 +111,9 @@ Database kiểm tra toàn bộ: chỉ chủ shop sửa shop/sản phẩm/ảnh/�
   - Chuyển khoản QR **mô phỏng**: hiện mã QR chỉ chứa mã đơn + số tiền, **không gắn tài khoản ngân hàng, không có tiền thật**.
     Khách bấm "Tôi đã chuyển khoản" → Admin xác nhận hoặc từ chối → người bán mới giao. Hủy sau khi đã thanh toán → "chờ hoàn tiền" → Admin đánh dấu đã hoàn (mô phỏng).
 - **Đơn hàng của tôi** (`/orders`): tiến trình từng đơn con, lịch sử, hủy khi còn "Chờ xác nhận".
+- **Đánh giá**: đơn đã giao có nút "Đánh giá sản phẩm"; chỉ khách đã nhận hàng mới đánh giá được, người bán trả lời, Admin ẩn đánh giá vi phạm. Điểm và lượt đánh giá do database tính.
+- **Yêu thích và theo dõi** (`/favorites`): lưu sản phẩm, theo dõi cửa hàng; số người theo dõi là số thật.
+- **Trang thông tin**: `/about`, `/contact`, `/faq`, `/policies`, `/terms` (liên kết ở chân trang).
 
 ## 4. Thương hiệu
 
@@ -137,7 +140,7 @@ src/
 ├── lib/supabase.ts           Kết nối Supabase (chỉ dùng anon key)
 ├── lib/qr.ts                 Tạo mã QR (tự viết, không cần thư viện) cho thanh toán mô phỏng
 ├── services/                 ★ Mọi lệnh gọi dữ liệu: account, siteSettings, catalog, seller, media, cart, addresses,
-│                               orders, banners, adminUsers, adminShops, adminProducts
+│                               orders, banners, reviews, social (theo dõi/yêu thích), adminUsers, adminShops, adminProducts
 ├── features/
 │   ├── auth/                 AuthProvider, RequireAuth (chặn trang theo đăng nhập/quyền)
 │   ├── brand/                BrandProvider: tên, logo, màu lấy từ Supabase
@@ -146,6 +149,8 @@ src/
 │   ├── address/              Form và sổ địa chỉ (dùng ở Tài khoản và Đặt hàng)
 │   ├── orders/               Nhãn trạng thái, tiến trình đơn, mã QR mô phỏng
 │   ├── home/                 Băng chuyền banner trang chủ
+│   ├── reviews/              Mục đánh giá trên trang sản phẩm (tóm tắt, form, danh sách)
+│   ├── social/               Nút Theo dõi shop, Yêu thích sản phẩm
 │   ├── seller/               SellerLayout: tải shop của người đăng nhập, tab, thông báo trạng thái
 │   └── ...                   catalog, shops, routine, compare, theme
 ├── components/               layout (Header, Footer, Logo), ui (Form, nút, icon...)

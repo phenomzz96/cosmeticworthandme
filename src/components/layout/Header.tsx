@@ -91,6 +91,16 @@ export function Header() {
             <Icon name="user" className={signedIn ? 'text-primary' : undefined} />
             <span className="hidden truncate xl:inline">{accountLabel}</span>
           </Link>
+          {signedIn && (
+            <Link
+              to="/favorites"
+              className="hidden h-10 w-10 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-text sm:grid"
+              aria-label="Yêu thích và theo dõi"
+              title="Yêu thích và theo dõi"
+            >
+              <Icon name="heart" />
+            </Link>
+          )}
           <Link
             to="/cart"
             className="relative grid h-10 w-10 place-items-center rounded-full text-text hover:bg-surface-2"
@@ -152,6 +162,11 @@ export function Header() {
             {signedIn && (
               <Link to="/orders" className="rounded-xl px-3 py-3 hover:bg-surface-2">
                 Đơn hàng của tôi
+              </Link>
+            )}
+            {signedIn && (
+              <Link to="/favorites" className="rounded-xl px-3 py-3 hover:bg-surface-2">
+                Yêu thích và theo dõi
               </Link>
             )}
             {signedIn && (

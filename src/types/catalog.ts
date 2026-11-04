@@ -34,6 +34,7 @@ export type ProductType =
   | 'shampoo'
   | 'conditioner'
   | 'hair-oil'
+  | 'hair-styling'
   // body care
   | 'body-wash'
   | 'body-lotion'
@@ -78,6 +79,7 @@ export interface Product {
   /** Giá gốc trước giảm (nếu có) */
   originalPrice?: number
   stock: number
+  /** Điểm trung bình (0 = chưa có đánh giá) và số lượt đánh giá — database tự tính từ đánh giá thật */
   rating: number
   reviewCount: number
   soldCount: number
@@ -97,6 +99,8 @@ export interface Product {
   visual: ProductVisual
 
   featured?: boolean
+  /** Sản phẩm mẫu (dữ liệu demo, dùng hình minh họa) — sản phẩm thật luôn có ảnh do cửa hàng tải lên */
+  isSample?: boolean
   createdAt: string
 }
 

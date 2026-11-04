@@ -5,6 +5,7 @@ import { Breadcrumbs, button, EmptyState, ShopAvatar, Skeleton } from '@/compone
 import { categories } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
 import { ShopCard } from '@/features/shops/ShopCard'
+import { FollowButton } from '@/features/social/SocialButtons'
 import { formatCompact } from '@/lib/format'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import { useAsync } from '@/lib/useAsync'
@@ -36,6 +37,8 @@ export function ShopPage() {
 
 function ShopView({ shop }: { shop: Shop }) {
   const [category, setCategory] = useState<CategoryId | undefined>()
+  // Số người theo dõi: lấy từ database, cộng/trừ ngay khi người xem bấm Theo dõi
+  const [followDelta, setFollowDelta] = useState(0)
   const products = useAsync(() => catalogService.getProducts({ shopId: shop.id, category }), [shop.id, category])
   const allShopProducts = useAsync(() => catalogService.getProducts({ shopId: shop.id }), [shop.id])
   const shopCategories =
@@ -62,6 +65,9 @@ function ShopView({ shop }: { shop: Shop }) {
               <p className="text-sm text-muted">{shop.tagline}</p>
             </div>
           </div>
+          <div className="md:order-last">
+            <FollowButton shopId={shop.id} onChange={(_, delta) => setFollowDelta(delta)} />
+          </div>
           <dl className="flex gap-6 text-sm">
             <div>
               <dt className="text-muted">Đánh giá</dt>
@@ -69,7 +75,7 @@ function ShopView({ shop }: { shop: Shop }) {
             </div>
             <div>
               <dt className="text-muted">Người theo dõi</dt>
-              <dd className="font-semibold">{formatCompact(shop.followerCount)}</dd>
+              <dd className="font-semibold">{formatCompact(Math.max(0, shop.followerCount + followDelta))}</dd>
             </div>
             {shop.location && (
               <div>
