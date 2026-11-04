@@ -289,6 +289,7 @@ export const mockProducts: Product[] = seeds.map((s, i) => ({
   id: `p-${String(i + 1).padStart(3, '0')}`,
   slug: slugify(s.name),
   images: [],
+  isSample: true,
   reviewCount: s.reviewCount ?? Math.round(s.soldCount * 0.18),
   // Ngày tạo giả lập để sắp xếp "Mới nhất"
   createdAt: s.createdAt ?? new Date(Date.UTC(2026, 8, 30 - i)).toISOString(),

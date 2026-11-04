@@ -10,6 +10,7 @@ const tabs = [
   { to: '/admin/users', label: 'Người dùng' },
   { to: '/admin/shops', label: 'Cửa hàng' },
   { to: '/admin/products', label: 'Sản phẩm' },
+  { to: '/admin/reviews', label: 'Đánh giá' },
   { to: '/admin/audit', label: 'Nhật ký' },
   { to: '/admin/banners', label: 'Banner' },
   { to: '/admin/brand', label: 'Thương hiệu' },

@@ -142,6 +142,7 @@ export function productFromRow(r: ProductRow): Product {
     images: [...(r.product_images ?? [])].sort((a, b) => a.sort_order - b.sort_order).map((i) => shopMediaUrl(i.path)!).filter(Boolean),
     visual: r.placeholder_visual ?? DEFAULT_VISUAL,
     featured: r.featured,
+    isSample: !r.product_images?.length,
     createdAt: r.created_at,
   }
 }

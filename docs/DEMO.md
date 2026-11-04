@@ -25,6 +25,7 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 2. **Đơn hàng** → đơn vừa đặt: chỉ thấy phần của shop mình, có địa chỉ giao → Xác nhận → Chuẩn bị → Giao → Đã giao.
 3. **Sản phẩm** → thêm sản phẩm mới: lưu nháp, tải ảnh, đăng bán.
 4. Quay lại cửa sổ khách: đơn COD đã "Đã thanh toán", tồn kho và lượt bán cập nhật.
+5. Khách mở đơn đã giao → **Đánh giá sản phẩm** → chấm sao, viết nhận xét. Người bán vào **Đánh giá** trả lời. Nhấn mạnh: chỉ người đã nhận hàng mới đánh giá được, điểm do database tính.
 
 ## 3. Thanh toán QR mô phỏng (2 phút)
 
@@ -38,7 +39,8 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 2. `/admin/shops`: duyệt / từ chối shop có lý do.
 3. `/admin/products`: ẩn một sản phẩm vi phạm → sản phẩm biến mất khỏi website, người bán thấy lý do.
 4. `/admin/brand`: đổi màu chủ đạo → mọi thiết bị đổi theo.
-5. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
+5. `/admin/reviews`: ẩn một đánh giá vi phạm (nhập lý do) → điểm sản phẩm tính lại.
+6. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
 
 ## 5. Bảo mật (1 phút, nếu được hỏi)
 
@@ -53,5 +55,6 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 |---|---|
 | Thanh toán có thật không? | Không. COD là thu tiền khi giao; QR là mô phỏng, chờ giảng viên đồng ý mới tích hợp cổng thật |
 | Hai người cùng mua món cuối cùng? | Database khóa dòng sản phẩm khi đặt; người thứ hai nhận thông báo hết hàng |
-| Người bán tự sửa lượt bán / điểm đánh giá được không? | Không, database không cấp quyền sửa các cột đó |
+| Người bán tự sửa lượt bán / điểm đánh giá được không? | Không, database không cấp quyền sửa các cột đó; điểm tính từ đánh giá thật, lượt bán tính từ đơn đã giao |
+| Có tự viết đánh giá ảo được không? | Không: database chỉ nhận đánh giá của người có đơn đã giao chứa sản phẩm đó, mỗi người 1 đánh giá / sản phẩm |
 | Dữ liệu lưu ở đâu? | PostgreSQL trên Supabase; ảnh ở Supabase Storage; không dùng localStorage làm cơ sở dữ liệu |

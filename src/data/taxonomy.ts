@@ -28,6 +28,7 @@ export const productTypeLabels: Record<ProductType, string> = {
   shampoo: 'Dầu gội',
   conditioner: 'Dầu xả',
   'hair-oil': 'Dầu dưỡng tóc',
+  'hair-styling': 'Tạo kiểu tóc',
   'body-wash': 'Sữa tắm',
   'body-lotion': 'Dưỡng thể',
   'hand-cream': 'Kem tay',
@@ -40,7 +41,7 @@ export const productTypeLabels: Record<ProductType, string> = {
 export const typesByCategory: Record<CategoryId, ProductType[]> = {
   skincare: ['cleanser', 'toner', 'serum', 'moisturizer', 'sunscreen', 'mask', 'eye-care'],
   makeup: ['foundation', 'cushion', 'lipstick', 'mascara', 'blush'],
-  haircare: ['shampoo', 'conditioner', 'hair-oil'],
+  haircare: ['shampoo', 'conditioner', 'hair-oil', 'hair-styling'],
   'body-care': ['body-wash', 'body-lotion', 'hand-cream'],
   'beauty-tools': ['brush', 'sponge', 'facial-device'],
 }

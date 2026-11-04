@@ -534,7 +534,7 @@ function ImageManager({ product, disabled, onChange }: { product: SellerProduct;
           }} />
         </label>
       )}
-      <p className="mt-2 text-xs text-muted">PNG, JPG hoặc WebP, tối đa 3 MB mỗi ảnh. Nên dùng ảnh vuông, nền sáng.</p>
+      <p className="mt-2 text-xs text-muted">PNG, JPG hoặc WebP, tối đa 12 MB mỗi ảnh. Website tự thu nhỏ và nén ảnh trước khi tải lên. Nên dùng ảnh vuông, nền sáng.</p>
       {error && <p className="mt-2 text-sm font-medium text-danger">{error}</p>}
     </section>
   )

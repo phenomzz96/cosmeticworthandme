@@ -26,7 +26,7 @@ export function AppLayout() {
       <div className="bg-primary text-on-primary">
         <p className="container-page py-1.5 text-center text-xs">
           {settings.name} đang phát triển:{' '}
-          {isSupabaseConfigured ? 'website học tập, chưa có đặt hàng và thanh toán thật.' : 'đang dùng dữ liệu mẫu (chưa kết nối Supabase), chưa có đặt hàng và thanh toán thật.'}
+          {isSupabaseConfigured ? 'website học tập, đơn hàng và thanh toán là mô phỏng, không có giao dịch thật.' : 'đang dùng dữ liệu mẫu (chưa kết nối Supabase), chưa có đặt hàng và thanh toán thật.'}
         </p>
       </div>
       <Header />

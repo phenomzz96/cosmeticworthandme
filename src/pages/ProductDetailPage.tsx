@@ -6,8 +6,11 @@ import { Breadcrumbs, button, DemoBadge, EmptyState, Price, QuantityStepper, Rat
 import { categoryById, productTypeLabels } from '@/data/taxonomy'
 import { useCart } from '@/features/cart/CartProvider'
 import { ProductGrid } from '@/features/catalog/ProductCard'
+import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
 import { compareFields } from '@/features/compare/compareFields'
+import { ReviewsSection } from '@/features/reviews/ReviewsSection'
 import { routineStepOf } from '@/features/routine/routine'
+import { FavoriteButton } from '@/features/social/SocialButtons'
 import { formatCompact } from '@/lib/format'
 import { useAsync } from '@/lib/useAsync'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
@@ -44,7 +47,10 @@ export function ProductDetailPage() {
   return <ProductDetail product={state.data} />
 }
 
-function ProductDetail({ product }: { product: Product }) {
+function ProductDetail({ product: initial }: { product: Product }) {
+  // Dùng bản mới nhất trong danh mục (điểm đánh giá, lượt bán thay đổi sau khi tải lại danh mục)
+  useCatalogVersion()
+  const product = catalogService.getProductByIdSync(initial.id) ?? initial
   const { add, quantityOf } = useCart()
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
@@ -84,18 +90,20 @@ function ProductDetail({ product }: { product: Product }) {
           )}
         </div>
 
-        <div>
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Link to={`/products?category=${category.id}&types=${product.type}`} className="rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
               {productTypeLabels[product.type]}
             </Link>
             {step && <span className="rounded-full border border-border px-3 py-1 text-xs text-muted">Bước {step.order} · {step.label}</span>}
-            <DemoBadge />
+            {product.isSample && <DemoBadge />}
           </div>
           <p className="mt-4 text-sm font-semibold text-primary">{product.brandName}</p>
           <h1 className="mt-1 text-2xl font-bold leading-tight tracking-tight md:text-3xl">{product.name}</h1>
           <div className="mt-3">
-            <Rating value={product.rating} count={product.reviewCount} sold={formatCompact(product.soldCount)} />
+            <a href="#reviews" className="inline-block hover:underline">
+              <Rating value={product.rating} count={product.reviewCount} sold={product.soldCount > 0 ? formatCompact(product.soldCount) : undefined} />
+            </a>
           </div>
 
           <div className="mt-5 rounded-2xl bg-surface-2 p-4">
@@ -122,6 +130,7 @@ function ProductDetail({ product }: { product: Product }) {
             <Link to="/cart" className={button('secondary', 'lg')}>
               Xem giỏ hàng{inCart > 0 && ` (${inCart})`}
             </Link>
+            <FavoriteButton productId={product.id} />
           </div>
           <p className="mt-2 h-5 text-sm font-medium text-success" role="status">
             {added ? 'Đã thêm vào giỏ hàng' : ''}
@@ -133,7 +142,8 @@ function ProductDetail({ product }: { product: Product }) {
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{shop.name}</p>
                 <p className="truncate text-xs text-muted">
-                  {shop.rating.toFixed(1)} ★ · {shop.location}
+                  {shop.rating > 0 ? `${shop.rating.toFixed(1)} ★` : 'Chưa có đánh giá'}
+                  {shop.location && ` · ${shop.location}`}
                 </p>
               </div>
               <Link to={`/shops/${shop.slug}`} className={button('secondary', 'sm')}>
@@ -165,6 +175,8 @@ function ProductDetail({ product }: { product: Product }) {
           </ul>
         </aside>
       </section>
+
+      <ReviewsSection product={product} />
 
       {related.status === 'success' && related.data.length > 0 && (
         <section className="mt-14" aria-labelledby="related-heading">

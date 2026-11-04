@@ -1,0 +1,21 @@
+# Kiểm tra tự động: mỗi Pull Request (và mỗi lần main có code mới) đều chạy build.
+# Build lỗi → GitHub báo dấu X đỏ trên Pull Request, trưởng nhóm không Merge.
+# Không cần khóa Supabase: thiếu biến môi trường thì website build ở chế độ dữ liệu mẫu.
+name: build
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build

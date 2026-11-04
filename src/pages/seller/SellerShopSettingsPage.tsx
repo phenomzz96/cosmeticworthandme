@@ -255,8 +255,8 @@ function MediaCard({ shop, disabled, onChange }: { shop: SellerShop; disabled: b
       <h2 id="media-heading" className="font-semibold">
         Logo và ảnh bìa
       </h2>
-      {row('logo', 'Logo cửa hàng', 'Ảnh vuông, tối đa 3 MB.')}
-      {row('cover', 'Ảnh bìa', 'Ảnh ngang (khoảng 3:1), tối đa 3 MB.')}
+      {row('logo', 'Logo cửa hàng', 'Ảnh vuông, tối đa 12 MB (tự động nén).')}
+      {row('cover', 'Ảnh bìa', 'Ảnh ngang (khoảng 3:1), tối đa 12 MB (tự động nén).')}
       {error && <p className="text-sm font-medium text-danger">{error}</p>}
     </section>
   )

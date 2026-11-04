@@ -39,7 +39,7 @@ export function ProductCard({ product, eager = false }: { product: Product; eage
             {product.name}
           </Link>
         </h3>
-        <Rating value={product.rating} sold={formatCompact(product.soldCount)} />
+        <Rating value={product.rating} count={product.reviewCount} sold={product.soldCount > 0 ? formatCompact(product.soldCount) : undefined} />
         <div className="mt-auto flex items-end justify-between gap-2 pt-1">
           <Price price={product.price} originalPrice={product.originalPrice} />
           <button

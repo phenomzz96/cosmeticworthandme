@@ -11,7 +11,7 @@ export function Footer() {
   const { isAdmin } = useAuth()
   return (
     <footer className="mt-20 border-t border-border bg-surface">
-      <div className="container-page grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
         <div className="space-y-3">
           <Logo height={30} />
           <p className="max-w-xs text-sm text-muted">{brand.description}</p>
@@ -39,6 +39,17 @@ export function Footer() {
             <li><Link to="/products?sort=newest" className="hover:text-primary">Sản phẩm mới</Link></li>
             <li><Link to="/seller" className="hover:text-primary">Mở cửa hàng</Link></li>
             {isAdmin && <li><Link to="/admin" className="hover:text-primary">Trang quản trị</Link></li>}
+          </ul>
+        </div>
+
+        <div>
+          <h2 className="text-sm font-semibold">Hỗ trợ</h2>
+          <ul className="mt-3 space-y-2 text-sm text-muted">
+            <li><Link to="/about" className="hover:text-primary">Giới thiệu</Link></li>
+            <li><Link to="/faq" className="hover:text-primary">Câu hỏi thường gặp</Link></li>
+            <li><Link to="/policies" className="hover:text-primary">Chính sách</Link></li>
+            <li><Link to="/terms" className="hover:text-primary">Điều khoản sử dụng</Link></li>
+            <li><Link to="/contact" className="hover:text-primary">Liên hệ</Link></li>
           </ul>
         </div>
 
