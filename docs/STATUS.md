@@ -31,17 +31,15 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 | 6 | Kiểm thử tổng, tách tải trang quản trị/người bán (trang chủ nhẹ hơn), tài liệu triển khai, kịch bản demo | Toàn bộ: DB 299/299, e2e 230/230 |
 | Đợt A | Đánh giá sản phẩm (chỉ khách đã nhận hàng; sửa/xóa; người bán trả lời ở `/seller/reviews`; Admin ẩn ở `/admin/reviews`); theo dõi shop, yêu thích (`/favorites`); số liệu thật thay số mẫu ("Chưa có đánh giá" thay "0.0"); loại "Tạo kiểu tóc"; trang Giới thiệu, Liên hệ, Câu hỏi thường gặp, Chính sách, Điều khoản; nén ảnh WebP khi tải lên; ẩn shop chưa có sản phẩm khỏi trang chủ; sửa chữ cũ trên trang chủ | DB 69 · e2e 68 · toàn bộ: DB 368/368, e2e 298/298 |
 
-## Chưa kiểm thử trên môi trường thật
+## Môi trường thật
 
-| Việc | Cần gì |
+| Việc | Trạng thái |
 |---|---|
-| Chạy 6 migration trên Supabase project thật | Nhóm tạo project, làm theo [DEPLOY.md](DEPLOY.md) |
-| Gửi email xác minh / đặt lại mật khẩu thật | Như trên + mời thành viên vào team (hoặc SMTP) |
-| `npm run build` với thư viện thật (Vite, TypeScript, supabase-js) | Môi trường của Claude không tải được gói npm; nhóm chạy `npm.cmd run build` và gửi kết quả |
-| Tải ảnh thật lên Storage, đường dẫn ảnh công khai | Supabase project thật |
-| Truy vấn lồng nhau của PostgREST (đơn → đơn con → sản phẩm) | Supabase project thật (đã ghi rõ khóa ngoại để tránh nhầm quan hệ) |
-| Deploy Netlify | Repo GitHub của nhóm + 2 biến môi trường |
-| Gộp vào source code mới nhất của nhóm | Repo GitHub hoặc thư mục dự án |
+| 6 migration đầu, dữ liệu mẫu, Super Admin trên Supabase thật | Nhóm đã chạy, kết quả đúng (10/2026) |
+| Deploy Netlify từ GitHub (worthandme.netlify.app) | Đã chạy |
+| Migration 007 (Đợt A) | **Chưa chạy**: chạy trong SQL Editor trước khi merge Pull Request Đợt A |
+| `npm run build` với thư viện thật | GitHub Actions tự chạy trên mỗi Pull Request (file `.github/workflows/build.yml`) |
+| Vòng mua bán đầy đủ trên bản thật (20 bước trong [DEPLOY.md](DEPLOY.md) mục 7) | Nhóm đang kiểm tra |
 
 ## Giới hạn đã biết (chấp nhận cho đồ án, ghi để nhóm trả lời khi được hỏi)
 
@@ -56,7 +54,5 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 
 ## Đang chờ nhóm cung cấp
 
-- Source code mới nhất (repo GitHub hoặc thư mục) để gộp.
-- Project URL của Supabase (sau khi chạy migration).
-- Kết quả `npm.cmd run build` trên máy nhóm.
-- Logo chính thức, tên nhóm, danh sách thành viên.
+- Logo chính thức, tên nhóm, danh sách thành viên, email hỗ trợ của sàn (`src/config/brand.ts`).
+- Kết quả kiểm tra 20 bước trên bản thật.
