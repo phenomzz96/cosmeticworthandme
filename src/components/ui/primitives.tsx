@@ -35,12 +35,20 @@ export function Price({ price, originalPrice, size = 'md' }: { price: number; or
   )
 }
 
+/** Điểm đánh giá. Chưa có đánh giá (điểm 0 hoặc 0 lượt) thì ghi rõ, không hiện "0.0" như bị chấm 0 điểm. */
 export function Rating({ value, count, sold }: { value: number; count?: number; sold?: string }) {
+  const hasRating = value > 0 && count !== 0
   return (
-    <div className="flex items-center gap-1.5 text-xs text-muted">
-      <Icon name="star" size={14} className="fill-star text-star" />
-      <span className="font-semibold text-text">{value.toFixed(1)}</span>
-      {count != null && <span>({count})</span>}
+    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted">
+      {hasRating ? (
+        <>
+          <Icon name="star" size={14} className="fill-star text-star" />
+          <span className="font-semibold text-text">{value.toFixed(1)}</span>
+          {count != null && <span>({count} đánh giá)</span>}
+        </>
+      ) : (
+        <span>Chưa có đánh giá</span>
+      )}
       {sold && <span className="before:mr-1.5 before:content-['|']">Đã bán {sold}</span>}
     </div>
   )

@@ -1,6 +1,6 @@
 # Trạng thái tính năng
 
-Cập nhật: 26/10/2026, sau Giai đoạn 6. Phân loại theo master prompt.
+Cập nhật: 04/11/2026, sau Đợt A (hoàn thiện sau demo). Phân loại theo master prompt.
 
 ## Quyết định đã chốt
 
@@ -29,18 +29,17 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 | 4 | Đặt hàng nhiều shop (giá, phí ship, tồn kho tính ở server, khóa dòng chống bán vượt); đơn của tôi; khách hủy; người bán xử lý đơn; Admin xem/hủy đơn; tổng quan Admin và người bán; Admin ẩn sản phẩm vi phạm | DB 75 · e2e đơn hàng 40 · thử 2 người mua cùng lúc món cuối |
 | 5 | COD tự "đã thanh toán" khi giao xong; QR mô phỏng (mã QR tự sinh, đã quét thử bằng OpenCV), Admin xác nhận/từ chối, chặn giao khi chưa thanh toán, hoàn tiền mô phỏng; banner trang chủ | DB (trong 75 ở trên) + 15 · e2e banner 12 |
 | 6 | Kiểm thử tổng, tách tải trang quản trị/người bán (trang chủ nhẹ hơn), tài liệu triển khai, kịch bản demo | Toàn bộ: DB 299/299, e2e 230/230 |
+| Đợt A | Đánh giá sản phẩm (chỉ khách đã nhận hàng; sửa/xóa; người bán trả lời ở `/seller/reviews`; Admin ẩn ở `/admin/reviews`); theo dõi shop, yêu thích (`/favorites`); số liệu thật thay số mẫu ("Chưa có đánh giá" thay "0.0"); loại "Tạo kiểu tóc"; trang Giới thiệu, Liên hệ, Câu hỏi thường gặp, Chính sách, Điều khoản; nén ảnh WebP khi tải lên; ẩn shop chưa có sản phẩm khỏi trang chủ; sửa chữ cũ trên trang chủ | DB 69 · e2e 68 · toàn bộ: DB 368/368, e2e 298/298 |
 
-## Chưa kiểm thử trên môi trường thật
+## Môi trường thật
 
-| Việc | Cần gì |
+| Việc | Trạng thái |
 |---|---|
-| Chạy 6 migration trên Supabase project thật | Nhóm tạo project, làm theo [DEPLOY.md](DEPLOY.md) |
-| Gửi email xác minh / đặt lại mật khẩu thật | Như trên + mời thành viên vào team (hoặc SMTP) |
-| `npm run build` với thư viện thật (Vite, TypeScript, supabase-js) | Môi trường của Claude không tải được gói npm; nhóm chạy `npm.cmd run build` và gửi kết quả |
-| Tải ảnh thật lên Storage, đường dẫn ảnh công khai | Supabase project thật |
-| Truy vấn lồng nhau của PostgREST (đơn → đơn con → sản phẩm) | Supabase project thật (đã ghi rõ khóa ngoại để tránh nhầm quan hệ) |
-| Deploy Netlify | Repo GitHub của nhóm + 2 biến môi trường |
-| Gộp vào source code mới nhất của nhóm | Repo GitHub hoặc thư mục dự án |
+| 6 migration đầu, dữ liệu mẫu, Super Admin trên Supabase thật | Nhóm đã chạy, kết quả đúng (10/2026) |
+| Deploy Netlify từ GitHub (worthandme.netlify.app) | Đã chạy |
+| Migration 007 (Đợt A) | **Chưa chạy**: chạy trong SQL Editor trước khi merge Pull Request Đợt A |
+| `npm run build` với thư viện thật | GitHub Actions tự chạy trên mỗi Pull Request (file `.github/workflows/build.yml`) |
+| Vòng mua bán đầy đủ trên bản thật (20 bước trong [DEPLOY.md](DEPLOY.md) mục 7) | Nhóm đang kiểm tra |
 
 ## Giới hạn đã biết (chấp nhận cho đồ án, ghi để nhóm trả lời khi được hỏi)
 
@@ -50,11 +49,10 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 | Đơn QR chưa thanh toán giữ tồn kho cho tới khi bị hủy | Người bán hoặc Admin hủy đơn để trả hàng về kho; chưa có tự hủy theo thời gian |
 | Danh mục cho trang chủ, Beauty Finder, giỏ hàng tải tối đa 1.000 sản phẩm đang bán | Trang danh sách sản phẩm đã tìm/lọc/phân trang trong database nên không bị giới hạn này |
 | Tổng tiền đơn cha giữ nguyên khi một đơn con bị hủy | Trang đơn ghi chú rõ; số tiền từng đơn con vẫn đúng |
-| Chưa có đánh giá sản phẩm, theo dõi shop, mã giảm giá, biến thể | Ngoài phạm vi các giai đoạn đã duyệt |
+| Chưa có mã giảm giá, biến thể, thông báo khi đơn đổi trạng thái | Dự kiến Đợt B |
+| Đánh giá chưa có ảnh đính kèm | Chỉ chấm sao + nhận xét chữ |
 
 ## Đang chờ nhóm cung cấp
 
-- Source code mới nhất (repo GitHub hoặc thư mục) để gộp.
-- Project URL của Supabase (sau khi chạy migration).
-- Kết quả `npm.cmd run build` trên máy nhóm.
-- Logo chính thức, tên nhóm, danh sách thành viên.
+- Logo chính thức, tên nhóm, danh sách thành viên, email hỗ trợ của sàn (`src/config/brand.ts`).
+- Kết quả kiểm tra 20 bước trên bản thật.

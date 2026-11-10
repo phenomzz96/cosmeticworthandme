@@ -76,3 +76,7 @@ insert into public.products (shop_id, slug, name, brand_name, category, product_
   ('50000000-0000-0000-0000-000000000005', 'may-rua-mat-silicone-song-am', 'Máy rửa mặt silicone sóng âm', 'Silk Touch', 'beauty-tools', 'facial-device', 'Đầu silicone mềm, 3 mức rung, chống nước, sạc USB-C. Hỗ trợ bước làm sạch hằng ngày.', 549000, null, 25, 'active', '1 máy',
    '{"normal","oily","combination"}', '{"pores","dullness"}', '{}', null, null, '{"shape":"device","color":"#D9DFF2","cap":"#4E5F9C"}', 4.4, 130, 720, false, '2026-09-02T00:00:00.000Z')
 on conflict (slug) do nothing;
+
+-- Số liệu (điểm, lượt đánh giá, người theo dõi, lượt bán) luôn tính từ dữ liệu thật, không dùng số mẫu ở trên.
+-- Cần migration 007 trở lên.
+select private.recompute_all_stats();

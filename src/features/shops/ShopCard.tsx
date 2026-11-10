@@ -25,7 +25,7 @@ export function ShopCard({ shop }: { shop: Shop }) {
       <dl className="mt-auto grid grid-cols-3 gap-2 border-t border-border pt-3 text-center text-xs">
         <div>
           <dt className="text-muted">Đánh giá</dt>
-          <dd className="font-semibold">{shop.rating.toFixed(1)}</dd>
+          <dd className="font-semibold">{shop.rating > 0 ? `${shop.rating.toFixed(1)} ★` : 'Chưa có'}</dd>
         </div>
         <div>
           <dt className="text-muted">Sản phẩm</dt>

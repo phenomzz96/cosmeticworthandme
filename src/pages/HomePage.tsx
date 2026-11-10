@@ -72,7 +72,7 @@ export function HomePage() {
             <h2 id="featured-heading" className="text-2xl font-bold tracking-tight">
               Sản phẩm nổi bật
             </h2>
-            <p className="mt-1 text-sm text-muted">Được mua nhiều trong tháng từ các cửa hàng trên sàn.</p>
+            <p className="mt-1 text-sm text-muted">Gợi ý từ các cửa hàng đang bán trên sàn.</p>
           </div>
           <Link to="/products?sort=popular" className="hidden text-sm font-medium text-primary hover:underline sm:block">
             Xem thêm
@@ -100,7 +100,8 @@ export function HomePage() {
         </div>
         {shops.status === 'success' && (
           <ul className="scrollbar-none -mx-4 mt-5 flex snap-x gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 lg:grid-cols-5">
-            {shops.data.map((s) => (
+            {/* Chỉ giới thiệu shop đang có hàng; shop chưa có sản phẩm vẫn xem được ở trang Cửa hàng */}
+            {shops.data.filter((s) => catalogService.countProductsByShop(s.id) > 0).slice(0, 10).map((s) => (
               <li key={s.id} className="w-64 shrink-0 snap-start md:w-auto">
                 <ShopCard shop={s} />
               </li>
@@ -116,11 +117,11 @@ export function HomePage() {
           <div>
             <h2 className="text-xl font-bold">Bạn kinh doanh mỹ phẩm?</h2>
             <p className="mt-1 max-w-xl text-sm text-muted">
-              Mở cửa hàng trên {settings.name} để đăng bán sản phẩm và quản lý đơn hàng. Tính năng này sẽ có ở giai đoạn tiếp theo.
+              Mở cửa hàng trên {settings.name} miễn phí: đăng ký shop, chờ quản trị viên duyệt, rồi đăng bán sản phẩm và xử lý đơn hàng ngay trên kênh người bán.
             </p>
           </div>
           <Link to="/seller" className={button('secondary')}>
-            <Icon name="store" size={18} /> Tìm hiểu kênh người bán
+            <Icon name="store" size={18} /> Mở cửa hàng
           </Link>
         </div>
       </section>

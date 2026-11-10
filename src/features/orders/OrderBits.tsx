@@ -2,6 +2,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ProductImage } from '@/components/ui/ProductImage'
+import { Icon } from '@/components/ui/Icon'
 import { formatPrice } from '@/lib/format'
 import { encodeQr, qrSvgPath } from '@/lib/qr'
 import { DEFAULT_VISUAL } from '@/services/catalog'
@@ -43,7 +44,8 @@ export function OrderProgress({ status }: { status: OrderStatus }) {
   )
 }
 
-export function OrderItemRow({ item, linkProduct = true }: { item: OrderItem; linkProduct?: boolean }) {
+/** reviewLink: đơn con đã giao → hiện nút "Đánh giá" dẫn tới mục đánh giá trên trang sản phẩm */
+export function OrderItemRow({ item, linkProduct = true, reviewLink = false }: { item: OrderItem; linkProduct?: boolean; reviewLink?: boolean }) {
   const img = shopMediaUrl(item.image_path)
   const name = linkProduct && item.product_slug ? (
     <Link to={`/products/${item.product_slug}`} className="line-clamp-2 text-sm font-medium hover:text-primary">
@@ -62,6 +64,11 @@ export function OrderItemRow({ item, linkProduct = true }: { item: OrderItem; li
         <p className="text-xs text-muted">
           {formatPrice(item.unit_price)} × {item.quantity}
         </p>
+        {reviewLink && item.product_id && item.product_slug && (
+          <Link to={`/products/${item.product_slug}#reviews`} className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+            <Icon name="star" size={13} /> Đánh giá sản phẩm
+          </Link>
+        )}
       </div>
       <p className="shrink-0 text-sm font-semibold tabular-nums">{formatPrice(item.line_total)}</p>
     </li>
