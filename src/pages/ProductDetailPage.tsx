@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
+import { AskShopButton } from '@/features/messages/AskShopButton'
 import { Breadcrumbs, button, DemoBadge, EmptyState, Price, QuantityStepper, Rating, ShopAvatar, Skeleton } from '@/components/ui/primitives'
 import { categoryById, productTypeLabels, skinTypeLabels } from '@/data/taxonomy'
 import { useBrand } from '@/features/brand/BrandProvider'
@@ -241,18 +242,21 @@ function ProductDetail({ product: initial }: { product: Product }) {
           </ul>
 
           {shop && (
-            <div className="mt-4 flex items-center gap-3 rounded-card border border-border p-4">
-              <ShopAvatar name={shop.name} color={shop.color} logo={shop.logo} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">{shop.name}</p>
-                <p className="truncate text-xs text-muted">
-                  {shop.rating > 0 ? `${shop.rating.toFixed(1)} ★` : 'Chưa có đánh giá'}
-                  {shop.location && ` · ${shop.location}`}
-                </p>
+            <div className="mt-4 rounded-card border border-border p-4">
+              <div className="flex items-center gap-3">
+                <ShopAvatar name={shop.name} color={shop.color} logo={shop.logo} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">{shop.name}</p>
+                  <p className="truncate text-xs text-muted">
+                    {shop.rating > 0 ? `${shop.rating.toFixed(1)} ★` : 'Chưa có đánh giá'}
+                    {shop.location && ` · ${shop.location}`}
+                  </p>
+                </div>
+                <Link to={`/shops/${shop.slug}`} className={button('secondary', 'sm')}>
+                  Xem shop
+                </Link>
               </div>
-              <Link to={`/shops/${shop.slug}`} className={button('secondary', 'sm')}>
-                Xem shop
-              </Link>
+              <AskShopButton shopId={shop.id} shopName={shop.name} productId={product.id} productName={product.name} variant="ghost" className="mt-2" />
             </div>
           )}
         </div>

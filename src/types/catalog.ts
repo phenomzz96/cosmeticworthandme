@@ -4,7 +4,7 @@
  * (ví dụ bảng products -> Product), nên các trang không phải viết lại.
  */
 
-export type CategoryId = 'skincare' | 'makeup' | 'haircare' | 'body-care' | 'beauty-tools'
+export type CategoryId = 'skincare' | 'makeup' | 'haircare' | 'body-care' | 'fragrance' | 'men' | 'beauty-tools'
 
 export interface Category {
   id: CategoryId
@@ -24,21 +24,39 @@ export type ProductType =
   | 'sunscreen'
   | 'mask'
   | 'eye-care'
+  | 'exfoliant'
+  | 'lip-care'
   // makeup
   | 'foundation'
   | 'cushion'
+  | 'concealer'
   | 'lipstick'
   | 'mascara'
+  | 'eyeliner'
+  | 'eyeshadow'
   | 'blush'
   // haircare
   | 'shampoo'
   | 'conditioner'
+  | 'hair-mask'
   | 'hair-oil'
   | 'hair-styling'
   // body care
   | 'body-wash'
+  | 'body-scrub'
   | 'body-lotion'
   | 'hand-cream'
+  | 'deodorant'
+  // fragrance
+  | 'perfume-women'
+  | 'perfume-men'
+  | 'perfume-unisex'
+  | 'body-mist'
+  // men
+  | 'men-cleanser'
+  | 'men-moisturizer'
+  | 'shaving'
+  | 'beard-care'
   // tools
   | 'brush'
   | 'sponge'
@@ -58,7 +76,7 @@ export type SkinConcern =
 
 /** Hình minh họa tạm khi chưa có ảnh thật: kiểu bao bì + màu */
 export interface ProductVisual {
-  shape: 'bottle' | 'pump' | 'tube' | 'jar' | 'dropper' | 'compact' | 'lipstick' | 'brush' | 'device'
+  shape: 'bottle' | 'pump' | 'tube' | 'jar' | 'dropper' | 'compact' | 'lipstick' | 'brush' | 'device' | 'perfume'
   /** Màu bao bì (hex) */
   color: string
   /** Màu nắp / điểm nhấn (hex) */

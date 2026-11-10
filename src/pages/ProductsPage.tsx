@@ -3,8 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { Breadcrumbs, button, EmptyState, ErrorState } from '@/components/ui/primitives'
 import { categories, categoryById, productTypeLabels, skinTypeLabels, typesByCategory } from '@/data/taxonomy'
+import { PriceRange } from '@/features/catalog/PriceRange'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
 import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
+import { formatPrice } from '@/lib/format'
 import { useAsync } from '@/lib/useAsync'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { catalogService, SEARCH_PAGE_SIZE } from '@/services/catalog'
@@ -19,10 +21,20 @@ const sortOptions: { value: ProductSort; label: string }[] = [
 ]
 
 const priceRanges = [
-  { key: '0-200000', label: 'Dưới 200.000đ' },
-  { key: '200000-350000', label: '200.000đ – 350.000đ' },
-  { key: '350000-', label: 'Trên 350.000đ' },
+  { key: '0-200000', label: 'Dưới 200k' },
+  { key: '200000-500000', label: '200k – 500k' },
+  { key: '500000-', label: 'Trên 500k' },
 ]
+
+/** Nhãn khoảng giá cho thẻ bộ lọc */
+function priceLabel(key: string): string {
+  const preset = priceRanges.find((r) => r.key === key)
+  if (preset) return preset.label
+  const [a, b] = key.split('-')
+  const lo = Number(a) || 0
+  if (!b) return `Từ ${formatPrice(lo)}`
+  return lo > 0 ? `${formatPrice(lo)} – ${formatPrice(Number(b))}` : `Dưới ${formatPrice(Number(b))}`
+}
 
 /** Đọc bộ lọc từ URL — URL là nguồn sự thật nên có thể chia sẻ link, bấm quay lại */
 function parseQuery(params: URLSearchParams): ProductQuery {
@@ -97,12 +109,13 @@ export function ProductsPage() {
     (query.types?.length ?? 0) + (params.get('price') ? 1 : 0) + (query.skinType ? 1 : 0) + (query.category ? 1 : 0) +
     (query.brands?.length ?? 0) + (query.minRating ? 1 : 0) + (query.inStock ? 1 : 0)
   const availableTypes = query.category ? typesByCategory[query.category] : []
+  const priceBound = catalogService.getPriceBoundsSync(query.category).max
 
   // Bộ lọc đang bật, hiện dạng thẻ có nút bỏ
   const chips: { key: string; label: string; clear: () => void }[] = [
     ...(query.types ?? []).map((t) => ({ key: 't' + t, label: productTypeLabels[t], clear: () => toggleType(t) })),
     ...(query.brands ?? []).map((b) => ({ key: 'b' + b, label: b, clear: () => toggleBrand(b) })),
-    ...(params.get('price') ? [{ key: 'price', label: priceRanges.find((r) => r.key === params.get('price'))?.label ?? 'Khoảng giá', clear: () => update({ price: null }) }] : []),
+    ...(params.get('price') ? [{ key: 'price', label: priceLabel(params.get('price')!), clear: () => update({ price: null }) }] : []),
     ...(query.skinType ? [{ key: 'skin', label: skinTypeLabels[query.skinType], clear: () => update({ skin: null }) }] : []),
     ...(query.minRating ? [{ key: 'rating', label: `Từ ${query.minRating} sao`, clear: () => update({ rating: null }) }] : []),
     ...(query.inStock ? [{ key: 'stock', label: 'Còn hàng', clear: () => update({ stock: null }) }] : []),
@@ -166,14 +179,25 @@ export function ProductsPage() {
 
       <fieldset>
         <legend className="text-sm font-semibold">Khoảng giá</legend>
-        <div className="mt-3 flex flex-col gap-1">
-          <FilterRadio name={`${idPrefix}-price`} checked={!params.get('price')} onChange={() => update({ price: null })}>
-            Mọi mức giá
-          </FilterRadio>
+        <div className="mt-4">
+          <PriceRange
+            idPrefix={idPrefix}
+            bound={priceBound}
+            value={[query.minPrice ?? 0, query.maxPrice ?? null]}
+            onChange={(lo, hi) => update({ price: lo > 0 || hi != null ? `${lo > 0 ? lo : 0}-${hi ?? ''}` : null })}
+          />
+        </div>
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {priceRanges.map((r) => (
-            <FilterRadio key={r.key} name={`${idPrefix}-price`} checked={params.get('price') === r.key} onChange={() => update({ price: r.key })}>
+            <button
+              key={r.key}
+              type="button"
+              aria-pressed={params.get('price') === r.key}
+              onClick={() => update({ price: params.get('price') === r.key ? null : r.key })}
+              className={`rounded-full border px-3 py-1 text-xs ${params.get('price') === r.key ? 'border-ink bg-ink text-on-ink' : 'border-border hover:border-text'}`}
+            >
               {r.label}
-            </FilterRadio>
+            </button>
           ))}
         </div>
       </fieldset>

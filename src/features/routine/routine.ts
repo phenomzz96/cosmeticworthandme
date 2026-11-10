@@ -14,11 +14,11 @@ export interface RoutineStep {
 }
 
 export const routineSteps: RoutineStep[] = [
-  { order: 1, key: 'cleanse', label: 'Làm sạch', when: 'both', types: ['cleanser', 'facial-device'] },
+  { order: 1, key: 'cleanse', label: 'Làm sạch', when: 'both', types: ['cleanser', 'men-cleanser', 'facial-device'] },
   { order: 2, key: 'tone', label: 'Cân bằng', when: 'both', types: ['toner'] },
   { order: 3, key: 'treat', label: 'Đặc trị', when: 'both', types: ['serum'] },
   { order: 4, key: 'eye', label: 'Dưỡng mắt', when: 'both', types: ['eye-care'] },
-  { order: 5, key: 'moisturize', label: 'Dưỡng ẩm', when: 'both', types: ['moisturizer'] },
+  { order: 5, key: 'moisturize', label: 'Dưỡng ẩm', when: 'both', types: ['moisturizer', 'men-moisturizer'] },
   { order: 6, key: 'protect', label: 'Chống nắng', when: 'am', types: ['sunscreen'] },
   { order: 7, key: 'mask', label: 'Mặt nạ', when: 'weekly', types: ['mask'] },
 ]

@@ -143,6 +143,17 @@ function Shape({ shape, color, cap }: ProductVisual) {
           <circle cx="100" cy="134" r="8" fill="#fff" opacity="0.5" />
         </>
       )
+    case 'perfume':
+      return (
+        <>
+          <rect x="86" y="30" width="28" height="26" rx="6" fill={cap} />
+          <rect x="93" y="54" width="14" height="12" rx="2" fill={cap} opacity="0.85" />
+          <rect x="56" y="64" width="88" height="102" rx="20" fill={color} opacity="0.5" />
+          <rect x="64" y="86" width="72" height="72" rx="14" fill={color} />
+          <rect x="66" y="72" width="6" height="84" rx="3" fill="#fff" opacity="0.6" />
+          <rect x="82" y="104" width="36" height="22" rx="3" fill="#fff" opacity="0.6" />
+        </>
+      )
     default:
       return shine
   }

@@ -5,6 +5,7 @@ import { Breadcrumbs, button, EmptyState, ShopAvatar, Skeleton } from '@/compone
 import { categories } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
 import { ShopCard } from '@/features/shops/ShopCard'
+import { AskShopButton } from '@/features/messages/AskShopButton'
 import { FollowButton } from '@/features/social/SocialButtons'
 import { AvailableVouchers } from '@/features/vouchers/VoucherCard'
 import { formatCompact } from '@/lib/format'
@@ -69,8 +70,9 @@ function ShopView({ shop }: { shop: Shop }) {
               <p className="text-sm text-muted">{shop.tagline}</p>
             </div>
           </div>
-          <div className="md:order-last">
+          <div className="flex flex-wrap items-start gap-2 md:order-last">
             <FollowButton shopId={shop.id} onChange={(_, delta) => setFollowDelta(delta)} />
+            <AskShopButton shopId={shop.id} shopName={shop.name} className="max-w-sm" />
           </div>
           <dl className="flex gap-6 text-sm">
             <div>

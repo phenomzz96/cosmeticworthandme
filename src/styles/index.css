@@ -115,3 +115,78 @@
     display: none;
   }
 }
+
+/* Thanh trượt khoảng giá 2 đầu: 2 input range chồng lên nhau, chỉ nút kéo nhận chuột */
+.range-dual input[type='range'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+.range-dual input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  box-shadow: 0 1px 4px hsl(var(--shadow-color) / 0.3);
+  cursor: grab;
+}
+.range-dual input[type='range']::-moz-range-thumb {
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  cursor: grab;
+}
+.range-dual input[type='range']::-moz-range-track {
+  background: transparent;
+}
+.range-dual input[type='range']:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Chữ chạy ngang (dải danh mục trang chủ); tắt khi người dùng chọn giảm chuyển động */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 38s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* Bướm vỗ cánh nhẹ trong tranh minh họa */
+@keyframes flutter {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.78); }
+}
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(6px, -10px); }
+}
+.art-flutter { transform-box: fill-box; transform-origin: center; animation: flutter 1.8s ease-in-out infinite; }
+.art-drift { animation: drift 7s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .art-flutter, .art-drift { animation: none; }
+}
+
+/* Chuyển trang giới thiệu (hero) mượt */
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.hero-in { animation: hero-in 600ms ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-in { animation: none; }
+}

@@ -14,16 +14,18 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 ## 1. Khách hàng (4 phút)
 
 1. Trang chủ: giới thiệu thương hiệu, banner (nếu đã thêm), danh mục, chế độ sáng/tối.
-2. **Beauty Finder**: trả lời 5 câu → gợi ý sản phẩm. Nhấn mạnh: gợi ý dựa trên thông tin sản phẩm, không chẩn đoán y khoa.
+2. **Beauty Finder**: chọn nam/nữ và nhóm sản phẩm, trả lời 4–7 câu → gợi ý sản phẩm kèm % phù hợp và lý do. Nhấn mạnh: gợi ý dựa trên thông tin sản phẩm, không chẩn đoán y khoa.
 3. Gõ "nia" ở ô tìm kiếm → gợi ý hiện ngay. Tìm "kem chong nang" (không dấu) → lọc theo thương hiệu, giá, "chỉ còn hàng" → bộ lọc hiện thành thẻ, "Xóa tất cả".
 4. Mở chi tiết sản phẩm: nhiều ảnh, tab Thành phần / Cách dùng, **So sánh** 2 sản phẩm (`/compare`), **Chia sẻ**.
 5. Trang shop → **Lưu** mã giảm giá của shop vào Ví voucher.
 6. Thêm 3 sản phẩm của 2 shop vào giỏ → bỏ chọn 1 món → nhập mã shop + mã toàn sàn → giảm giá hiện ngay.
 7. **Đặt hàng** → chọn địa chỉ, COD → có mã đơn, giảm giá ghi trên đơn; món không chọn vẫn trong giỏ. Nhấn mạnh: giảm giá do database tính lại, bấm đặt 2 lần chỉ ra 1 đơn.
+8. Rê chuột menu **Nước hoa** → chọn "Nước hoa nam"; kéo **thanh trượt giá**. Mở **Beauty Finder** → Cho nam → Nước hoa → Gỗ ấm → xem % phù hợp và lý do.
+9. Trang sản phẩm → **Nhắn tin cho shop** → hỏi một câu. Trang **Liên hệ** → gửi câu hỏi cho bộ phận hỗ trợ.
 
 ## 2. Người bán (4 phút)
 
-0. Chuông **Thông báo** có "Đơn mới …" (khách cũng nhận thông báo khi người bán xác nhận).
+0. Chuông **Thông báo** có "Đơn mới …" và "Tin nhắn mới từ khách hàng". Vào **Tin nhắn** trả lời khách (thấy tên khách, không thấy email).
 1. `/seller` → tổng quan: đơn chờ xác nhận, doanh thu, cảnh báo sắp hết hàng.
 2. **Đơn hàng** → đơn vừa đặt: chỉ thấy phần của shop mình, có địa chỉ giao → Xác nhận → Chuẩn bị → Giao → Đã giao.
 3. **Sản phẩm** → thêm sản phẩm mới: lưu nháp, tải ảnh, đăng bán.
@@ -44,7 +46,9 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 4. `/admin/brand`: đổi màu chủ đạo → mọi thiết bị đổi theo.
 5. `/admin/reviews`: lọc "Bị khách báo cáo" → ẩn một đánh giá vi phạm (nhập lý do) → điểm sản phẩm tính lại.
 6. `/admin/vouchers`: tạo mã toàn sàn (giảm %, có mức tối đa và đơn tối thiểu); người bán tạo mã của shop ở `/seller/vouchers`.
-7. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
+7. `/admin/messages`: trả lời câu hỏi khách gửi bộ phận hỗ trợ. Nhấn mạnh: Admin không đọc tin riêng giữa khách và cửa hàng.
+8. `/admin/pages`: sửa thanh thông báo hoặc thêm 1 câu hỏi thường gặp → Lưu → mở trang chủ / `/faq` thấy ngay.
+9. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
 
 ## 5. Bảo mật (1 phút, nếu được hỏi)
 

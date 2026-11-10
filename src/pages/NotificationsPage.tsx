@@ -17,6 +17,7 @@ const kindIcon: Record<AppNotification['kind'], IconName> = {
   shop: 'store',
   product: 'tag',
   system: 'info',
+  message: 'message',
 }
 
 export function NotificationsPage() {
