@@ -8,11 +8,11 @@ import type { Shop } from '@/types/catalog'
 export function ShopCard({ shop }: { shop: Shop }) {
   const productCount = catalogService.countProductsByShop(shop.id)
   return (
-    <article className="relative flex h-full flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-card hover:border-primary">
+    <article className="relative flex h-full flex-col gap-3 rounded-card border border-border bg-surface p-5 transition-colors hover:border-text motion-reduce:transition-none">
       <div className="flex items-center gap-3">
         <ShopAvatar name={shop.name} color={shop.color} logo={shop.logo} />
         <div className="min-w-0">
-          <h3 className="flex items-center gap-1.5 font-semibold">
+          <h3 className="flex items-center gap-1.5 font-display text-xl font-semibold leading-tight">
             <Link to={`/shops/${shop.slug}`} className="truncate after:absolute after:inset-0 after:content-['']">
               {shop.name}
             </Link>

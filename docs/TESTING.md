@@ -5,7 +5,7 @@
 Bộ kiểm thử trong `supabase/tests/` chạy migration thật trên PostgreSQL 15+ với một file giả lập phần có sẵn của Supabase
 (`00_local_supabase_stub.sql`: role `anon`/`authenticated`, `auth.users`, `auth.uid()`, `storage`). Cách chạy: [supabase/README.md](../supabase/README.md).
 
-Kết quả lần chạy gần nhất (04/11/2026, PostgreSQL 16, mỗi file một database mới, đủ 7 migration):
+Kết quả lần chạy gần nhất (11/11/2026, PostgreSQL 16, mỗi file một database mới, đủ 8 migration):
 
 | File | Nội dung chính | Đạt |
 |---|---|---|
@@ -16,7 +16,8 @@ Kết quả lần chạy gần nhất (04/11/2026, PostgreSQL 16, mỗi file m�
 | `05_orders_payments_test.sql` | Đặt hàng, xử lý đơn, thanh toán, hoàn tiền, ẩn sản phẩm | 75/75 |
 | `06_banners_test.sql` | Banner | 15/15 |
 | `07_reviews_follows_favorites_test.sql` | Đánh giá, theo dõi shop, yêu thích, số liệu thật, loại "Tạo kiểu tóc" | 69/69 |
-| **Tổng** | | **368/368** |
+| `08_vouchers_notifications_reports_test.sql` | Mã giảm giá, chống đặt trùng, tự hủy đơn QR quá hạn, thông báo, báo cáo đánh giá, bộ lọc mới | 76/76 |
+| **Tổng** | | **444/444** |
 
 Kiểm thử thêm (chạy tay):
 - Dữ liệu mẫu `supabase/seed/demo_catalog.sql` chạy được sau cả 7 migration; tìm kiếm trả 29 sản phẩm; số liệu mẫu được đưa về 0.
@@ -39,7 +40,8 @@ với một **client Supabase giả lập** mô phỏng các luật quyền chí
 | Banner: thêm, chặn liên kết ngoài, hẹn giờ, bật/tắt, xóa | 12/12 |
 | Beauty Finder (thuật toán chấm điểm) | 16/16 |
 | Đợt A: số liệu thật, trang thông tin, đánh giá (chưa mua → không được; nhận hàng → viết, sửa, xóa), người bán trả lời, Admin ẩn, theo dõi shop, yêu thích, nén ảnh WebP khi tải lên, mobile + tối | 68/68 |
-| **Tổng** | **298/298**, không có lỗi JavaScript |
+| Đợt B: giao diện mới, gợi ý + lịch sử tìm kiếm, lọc thương hiệu/điểm/còn hàng, trang sản phẩm (tab, so sánh, chia sẻ, mua ngay, đã xem gần đây), mã giảm giá (Admin, người bán, ví, giỏ, đặt hàng, lượt dùng), chọn món trong giỏ, thông báo, báo cáo đánh giá, "Cách dùng", mobile + tối | 79/79 |
+| **Tổng** | **377/377**, không có lỗi JavaScript |
 
 Kiểm tra TypeScript bằng trình biên dịch thật với kiểu thư viện rút gọn: không lỗi. **Nhóm vẫn cần chạy `npm.cmd run build`** để kiểm tra với thư viện thật.
 

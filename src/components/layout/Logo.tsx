@@ -67,22 +67,14 @@ function LogoImage({ height }: { height: number }) {
 
 /**
  * LOGO DỰ PHÒNG — dùng khi chưa có logo chính thức.
- * Sinh từ tên thương hiệu; màu theo token nên luôn đủ tương phản ở cả 2 theme.
+ * Chỉ là tên thương hiệu viết bằng font tiêu đề (không tự vẽ biểu tượng). Màu theo token nên đủ tương phản ở cả 2 theme.
  */
 export function FallbackLogo({ height = 32 }: { height?: number }) {
   const { settings } = useBrand()
-  const initial = settings.name.trim().charAt(0).toUpperCase()
-  const fontSize = Math.round(height * 0.56)
+  const fontSize = Math.round(height * 0.84)
   return (
-    <span className="inline-flex items-center gap-2" style={{ height }} data-brand-fallback="">
-      <span
-        aria-hidden="true"
-        className="grid shrink-0 place-items-center rounded-full bg-primary font-extrabold text-on-primary"
-        style={{ width: height, height, fontSize: Math.round(height * 0.5) }}
-      >
-        {initial}
-      </span>
-      <span className="whitespace-nowrap font-extrabold leading-none tracking-tight text-text" style={{ fontSize }}>
+    <span className="inline-flex items-center" style={{ height }} data-brand-fallback="">
+      <span className="whitespace-nowrap font-display font-semibold leading-none tracking-tight text-text" style={{ fontSize }}>
         {settings.name}
       </span>
     </span>

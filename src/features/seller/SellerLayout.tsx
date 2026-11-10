@@ -37,6 +37,7 @@ const tabs = [
   { to: '/seller/products', label: 'Sản phẩm' },
   { to: '/seller/orders', label: 'Đơn hàng' },
   { to: '/seller/reviews', label: 'Đánh giá' },
+  { to: '/seller/vouchers', label: 'Mã giảm giá' },
   { to: '/seller/shop', label: 'Thiết lập cửa hàng' },
 ]
 

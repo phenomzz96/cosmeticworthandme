@@ -23,8 +23,8 @@ export function AppLayout() {
       >
         Bỏ qua, đến nội dung chính
       </a>
-      <div className="bg-primary text-on-primary">
-        <p className="container-page py-1.5 text-center text-xs">
+      <div className="bg-ink text-on-ink">
+        <p className="container-page py-2 text-center text-xs tracking-wide">
           {settings.name} đang phát triển:{' '}
           {isSupabaseConfigured ? 'website học tập, đơn hàng và thanh toán là mô phỏng, không có giao dịch thật.' : 'đang dùng dữ liệu mẫu (chưa kết nối Supabase), chưa có đặt hàng và thanh toán thật.'}
         </p>

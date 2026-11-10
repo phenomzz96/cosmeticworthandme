@@ -32,6 +32,7 @@ interface FormState {
   stock: string
   description: string
   key_ingredients: string
+  how_to_use: string
   texture: string
   fragrance_free: '' | 'yes' | 'no'
   skin_types: SkinType[]
@@ -50,6 +51,7 @@ const emptyForm: FormState = {
   stock: '0',
   description: '',
   key_ingredients: '',
+  how_to_use: '',
   texture: '',
   fragrance_free: '',
   skin_types: [],
@@ -69,6 +71,7 @@ function toForm(p: SellerProduct): FormState {
     stock: String(p.stock),
     description: p.description,
     key_ingredients: p.key_ingredients.join(', '),
+    how_to_use: p.how_to_use ?? '',
     texture: p.texture ?? '',
     fragrance_free: p.fragrance_free == null ? '' : p.fragrance_free ? 'yes' : 'no',
     skin_types: p.skin_types,
@@ -94,6 +97,7 @@ export function validateProduct(f: FormState): Record<string, string> {
   if (f.sku.length > 60) e.sku = 'SKU tối đa 60 ký tự.'
   if (f.size.length > 40) e.size = 'Tối đa 40 ký tự.'
   if (f.description.length > 5000) e.description = 'Mô tả tối đa 5000 ký tự.'
+  if (f.how_to_use.length > 2000) e.how_to_use = 'Cách dùng tối đa 2000 ký tự.'
   if (f.key_ingredients.split(',').filter((x) => x.trim()).length > 10) e.key_ingredients = 'Tối đa 10 thành phần chính.'
   if (f.texture.length > 60) e.texture = 'Tối đa 60 ký tự.'
   return e
@@ -112,6 +116,7 @@ function toInput(f: FormState): ProductInput {
     stock: intOrNaN(f.stock),
     description: f.description.trim(),
     key_ingredients: f.key_ingredients.split(',').map((x) => x.trim()).filter(Boolean),
+    how_to_use: f.how_to_use.trim(),
     texture: f.texture.trim() || null,
     fragrance_free: f.fragrance_free === '' ? null : f.fragrance_free === 'yes',
     skin_types: f.skin_types,
@@ -292,7 +297,17 @@ export function SellerProductFormPage() {
                 maxLength={5000}
                 counter
                 error={errors.description}
-                placeholder="Công dụng, cách dùng, lưu ý. Không ghi cam kết điều trị bệnh."
+                placeholder="Công dụng, đặc điểm, lưu ý. Không ghi cam kết điều trị bệnh."
+              />
+              <TextAreaField
+                label="Cách dùng (không bắt buộc)"
+                value={form.how_to_use}
+                onChange={(v) => set('how_to_use', v)}
+                rows={3}
+                maxLength={2000}
+                counter
+                error={errors.how_to_use}
+                placeholder="Ví dụ: Lấy 2–3 giọt sau bước toner, thoa đều lên mặt. Dùng sáng và tối."
               />
               <TextField
                 label="Thành phần chính"

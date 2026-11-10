@@ -219,6 +219,12 @@ function SellerOrderCard({ row, readOnly, onDone }: { row: SellerShopOrder; read
               <dt className="text-muted">Phí vận chuyển</dt>
               <dd className="tabular-nums">{formatPrice(row.shipping_fee)}</dd>
             </div>
+            {row.items_subtotal + row.shipping_fee - row.total > 0 && (
+              <div className="flex justify-between">
+                <dt className="text-muted">Giảm giá (voucher)</dt>
+                <dd className="tabular-nums">−{formatPrice(row.items_subtotal + row.shipping_fee - row.total)}</dd>
+              </div>
+            )}
             <div className="flex justify-between font-semibold">
               <dt>{row.payment_method === 'cod' ? 'Thu khi giao' : 'Tổng đơn'}</dt>
               <dd className="tabular-nums">{formatPrice(row.total)}</dd>

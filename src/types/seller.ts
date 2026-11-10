@@ -47,6 +47,8 @@ export interface SellerProduct {
   skin_types: SkinType[]
   concerns: SkinConcern[]
   key_ingredients: string[]
+  /** Cách dùng (migration 008) */
+  how_to_use?: string
   texture: string | null
   fragrance_free: boolean | null
   placeholder_visual: ProductVisual | null
@@ -77,6 +79,7 @@ export type ProductInput = Pick<
   | 'skin_types'
   | 'concerns'
   | 'key_ingredients'
+  | 'how_to_use'
   | 'texture'
   | 'fragrance_free'
 >

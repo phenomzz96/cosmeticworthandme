@@ -1,6 +1,6 @@
 # Trạng thái tính năng
 
-Cập nhật: 04/11/2026, sau Đợt A (hoàn thiện sau demo). Phân loại theo master prompt.
+Cập nhật: 11/11/2026, sau Đợt B (giao diện mới + tính năng mua sắm). Phân loại A–E chi tiết: [AUDIT.md](AUDIT.md).
 
 ## Quyết định đã chốt
 
@@ -13,6 +13,9 @@ Cập nhật: 04/11/2026, sau Đợt A (hoàn thiện sau demo). Phân loại th
 | Phí vận chuyển | Cố định mỗi đơn con, mặc định 30.000đ, Admin chỉnh trong `/admin/brand` (0 = miễn phí) |
 | Thanh toán | COD + chuyển khoản QR **mô phỏng** (không cổng thanh toán, không tài khoản ngân hàng, không tiền thật) cho tới khi giảng viên đồng ý phương án khác |
 | Biến thể sản phẩm | Chưa làm (để sau) |
+| Mã giảm giá | Mã toàn sàn (Admin) + mã shop (người bán); mỗi đơn tối đa 1 mã sàn + 1 mã mỗi shop; database tính và chia giảm giá |
+| Giao diện | Bố cục tham khảo ri98.netlify.app (thanh trên, hero vòm, tiêu đề chữ có chân), giữ màu tím lavender của Worth & Me; không lấy ảnh, tên hay nội dung của trang tham khảo |
+| 4 tính năng chuyên biệt (Skin Quiz, Skin Roadmap, Skincare Architect, Beauty Quest) | Nhóm khác phụ trách, Đợt B không đụng tới |
 | Email | Bộ gửi mặc định của Supabase (chỉ thành viên team). Bật SMTP riêng khi cần demo với người ngoài |
 
 ## Đã hoàn thành và đã kiểm thử (trong môi trường của Claude)
@@ -29,6 +32,7 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 | 4 | Đặt hàng nhiều shop (giá, phí ship, tồn kho tính ở server, khóa dòng chống bán vượt); đơn của tôi; khách hủy; người bán xử lý đơn; Admin xem/hủy đơn; tổng quan Admin và người bán; Admin ẩn sản phẩm vi phạm | DB 75 · e2e đơn hàng 40 · thử 2 người mua cùng lúc món cuối |
 | 5 | COD tự "đã thanh toán" khi giao xong; QR mô phỏng (mã QR tự sinh, đã quét thử bằng OpenCV), Admin xác nhận/từ chối, chặn giao khi chưa thanh toán, hoàn tiền mô phỏng; banner trang chủ | DB (trong 75 ở trên) + 15 · e2e banner 12 |
 | 6 | Kiểm thử tổng, tách tải trang quản trị/người bán (trang chủ nhẹ hơn), tài liệu triển khai, kịch bản demo | Toàn bộ: DB 299/299, e2e 230/230 |
+| Đợt B | Giao diện mới (trang chủ, danh sách, chi tiết, giỏ, đặt hàng, shop); gợi ý + lịch sử tìm kiếm; lọc thương hiệu, điểm, còn hàng, thẻ bộ lọc; trang sản phẩm nhiều ảnh, tab Mô tả/Thành phần/Cách dùng/Thông tin, chia sẻ, so sánh (`/compare`), mua ngay, đã xem gần đây; mã giảm giá (`/vouchers`, `/seller/vouchers`, `/admin/vouchers`); chọn món trong giỏ; chống đặt trùng; tự hủy đơn QR quá 24 giờ; thông báo (`/notifications`); nhãn "Đã mua hàng", báo cáo đánh giá | DB 76 · e2e 79 · toàn bộ: DB 444/444, e2e 377/377 |
 | Đợt A | Đánh giá sản phẩm (chỉ khách đã nhận hàng; sửa/xóa; người bán trả lời ở `/seller/reviews`; Admin ẩn ở `/admin/reviews`); theo dõi shop, yêu thích (`/favorites`); số liệu thật thay số mẫu ("Chưa có đánh giá" thay "0.0"); loại "Tạo kiểu tóc"; trang Giới thiệu, Liên hệ, Câu hỏi thường gặp, Chính sách, Điều khoản; nén ảnh WebP khi tải lên; ẩn shop chưa có sản phẩm khỏi trang chủ; sửa chữ cũ trên trang chủ | DB 69 · e2e 68 · toàn bộ: DB 368/368, e2e 298/298 |
 
 ## Môi trường thật
@@ -37,7 +41,8 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 |---|---|
 | 6 migration đầu, dữ liệu mẫu, Super Admin trên Supabase thật | Nhóm đã chạy, kết quả đúng (10/2026) |
 | Deploy Netlify từ GitHub (worthandme.netlify.app) | Đã chạy |
-| Migration 007 (Đợt A) | **Chưa chạy**: chạy trong SQL Editor trước khi merge Pull Request Đợt A |
+| Migration 007 (Đợt A) | Nhóm đã chạy |
+| Migration 008 (Đợt B) | **Chưa chạy**: chạy trong SQL Editor trước khi merge Pull Request Đợt B |
 | `npm run build` với thư viện thật | GitHub Actions tự chạy trên mỗi Pull Request (file `.github/workflows/build.yml`) |
 | Vòng mua bán đầy đủ trên bản thật (20 bước trong [DEPLOY.md](DEPLOY.md) mục 7) | Nhóm đang kiểm tra |
 
@@ -46,10 +51,12 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 | Giới hạn | Ghi chú |
 |---|---|
 | Tài khoản bị khóa vẫn đăng nhập được ở tầng Supabase Auth | Database chặn mọi thao tác, giao diện tự đăng xuất. Chặn tận gốc cần Edge Function giữ `service_role` |
-| Đơn QR chưa thanh toán giữ tồn kho cho tới khi bị hủy | Người bán hoặc Admin hủy đơn để trả hàng về kho; chưa có tự hủy theo thời gian |
+| Đơn QR chưa thanh toán giữ tồn kho tối đa 24 giờ | Tự hủy khi có người đặt hàng hoặc mở trang đơn sau hạn (không có tác vụ chạy nền) |
 | Danh mục cho trang chủ, Beauty Finder, giỏ hàng tải tối đa 1.000 sản phẩm đang bán | Trang danh sách sản phẩm đã tìm/lọc/phân trang trong database nên không bị giới hạn này |
 | Tổng tiền đơn cha giữ nguyên khi một đơn con bị hủy | Trang đơn ghi chú rõ; số tiền từng đơn con vẫn đúng |
-| Chưa có mã giảm giá, biến thể, thông báo khi đơn đổi trạng thái | Dự kiến Đợt B |
+| Chưa có biến thể (dung tích/màu) | Mỗi biến thể tạm đăng thành 1 sản phẩm |
+| Thông báo chỉ trong website | Chưa gửi email/đẩy về điện thoại; chuông tự cập nhật mỗi phút |
+| Lịch sử tìm kiếm, đã xem gần đây, danh sách so sánh lưu trên trình duyệt | Chỉ là tiện ích riêng từng máy, không phải dữ liệu dùng chung |
 | Đánh giá chưa có ảnh đính kèm | Chỉ chấm sao + nhận xét chữ |
 
 ## Đang chờ nhóm cung cấp

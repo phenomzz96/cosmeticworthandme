@@ -25,8 +25,12 @@
   --color-danger: var(--danger);
   --color-star: var(--star);
   --color-ring: var(--ring);
+  --color-ink: var(--ink);
+  --color-ink-hover: var(--ink-hover);
+  --color-on-ink: var(--on-ink);
 
   --font-sans: var(--font-body);
+  --font-display: var(--font-display);
   --radius-card: var(--card-radius);
   --radius-control: var(--control-radius);
 
@@ -46,6 +50,13 @@
     color: var(--text);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+  }
+  /* Tiêu đề trang: chữ có chân. Tiêu đề nhỏ trong thẻ/bảng vẫn dùng chữ nội dung (font-sans) */
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
   }
   :focus-visible {
     outline: 2px solid var(--ring);
@@ -74,6 +85,27 @@
   padding-inline: 16px;
   @media (width >= 48rem) {
     padding-inline: 24px;
+  }
+}
+
+/* Nhãn nhỏ in hoa phía trên tiêu đề mục ("DANH MỤC", "MỚI VỀ"...) */
+@utility eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* Tiêu đề mục trên trang chủ / danh sách */
+@utility section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+  font-size: 2rem;
+  @media (width >= 48rem) {
+    font-size: 2.75rem;
   }
 }
 

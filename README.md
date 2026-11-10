@@ -114,6 +114,12 @@ Database kiểm tra toàn bộ: chỉ chủ shop sửa shop/sản phẩm/ảnh/�
 - **Đánh giá**: đơn đã giao có nút "Đánh giá sản phẩm"; chỉ khách đã nhận hàng mới đánh giá được, người bán trả lời, Admin ẩn đánh giá vi phạm. Điểm và lượt đánh giá do database tính.
 - **Yêu thích và theo dõi** (`/favorites`): lưu sản phẩm, theo dõi cửa hàng; số người theo dõi là số thật.
 - **Trang thông tin**: `/about`, `/contact`, `/faq`, `/policies`, `/terms` (liên kết ở chân trang).
+- **Tìm kiếm nhanh**: ô tìm kiếm gợi ý sản phẩm và thương hiệu khi gõ, nhớ 8 từ tìm gần đây (trên trình duyệt). Trang danh sách lọc thêm thương hiệu, từ 3/4/4,5 sao, chỉ còn hàng.
+- **Trang sản phẩm**: nhiều ảnh, tab Mô tả / Thành phần chính / Cách dùng / Thông tin chi tiết, chia sẻ, **so sánh** tối đa 3 sản phẩm (`/compare`), **Mua ngay**, sản phẩm đã xem gần đây.
+- **Mã giảm giá**: Admin tạo mã toàn sàn (`/admin/vouchers`), người bán tạo mã của shop (`/seller/vouchers`); khách lưu mã vào **Ví voucher** (`/vouchers`) và nhập ở giỏ hàng. Mỗi đơn dùng tối đa 1 mã sàn + 1 mã mỗi shop; database tính giảm giá khi đặt hàng, hủy đơn thì trả lại lượt.
+- **Giỏ hàng**: chọn từng món/từng shop để đặt, món không chọn vẫn ở lại giỏ. Bấm đặt hàng nhiều lần chỉ tạo 1 đơn.
+- **Thông báo** (`/notifications`, chuông ở đầu trang): đơn mới, đổi trạng thái đơn, đánh giá mới, người bán trả lời, shop được duyệt.
+- **Báo cáo đánh giá**: khách báo cáo đánh giá không phù hợp, Admin lọc "Bị khách báo cáo" ở `/admin/reviews`.
 
 ## 4. Thương hiệu
 

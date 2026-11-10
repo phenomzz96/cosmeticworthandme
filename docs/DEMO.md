@@ -15,12 +15,15 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 
 1. Trang chủ: giới thiệu thương hiệu, banner (nếu đã thêm), danh mục, chế độ sáng/tối.
 2. **Beauty Finder**: trả lời 5 câu → gợi ý sản phẩm. Nhấn mạnh: gợi ý dựa trên thông tin sản phẩm, không chẩn đoán y khoa.
-3. Tìm "kem chong nang" (không dấu) → lọc theo giá, loại da → mở chi tiết sản phẩm.
-4. Thêm 2 sản phẩm của 2 shop khác nhau vào giỏ → giỏ nhóm theo cửa hàng, phí ship tính theo từng shop.
-5. **Đặt hàng** → chọn địa chỉ, COD → có mã đơn, 2 đơn con.
+3. Gõ "nia" ở ô tìm kiếm → gợi ý hiện ngay. Tìm "kem chong nang" (không dấu) → lọc theo thương hiệu, giá, "chỉ còn hàng" → bộ lọc hiện thành thẻ, "Xóa tất cả".
+4. Mở chi tiết sản phẩm: nhiều ảnh, tab Thành phần / Cách dùng, **So sánh** 2 sản phẩm (`/compare`), **Chia sẻ**.
+5. Trang shop → **Lưu** mã giảm giá của shop vào Ví voucher.
+6. Thêm 3 sản phẩm của 2 shop vào giỏ → bỏ chọn 1 món → nhập mã shop + mã toàn sàn → giảm giá hiện ngay.
+7. **Đặt hàng** → chọn địa chỉ, COD → có mã đơn, giảm giá ghi trên đơn; món không chọn vẫn trong giỏ. Nhấn mạnh: giảm giá do database tính lại, bấm đặt 2 lần chỉ ra 1 đơn.
 
 ## 2. Người bán (4 phút)
 
+0. Chuông **Thông báo** có "Đơn mới …" (khách cũng nhận thông báo khi người bán xác nhận).
 1. `/seller` → tổng quan: đơn chờ xác nhận, doanh thu, cảnh báo sắp hết hàng.
 2. **Đơn hàng** → đơn vừa đặt: chỉ thấy phần của shop mình, có địa chỉ giao → Xác nhận → Chuẩn bị → Giao → Đã giao.
 3. **Sản phẩm** → thêm sản phẩm mới: lưu nháp, tải ảnh, đăng bán.
@@ -39,8 +42,9 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 2. `/admin/shops`: duyệt / từ chối shop có lý do.
 3. `/admin/products`: ẩn một sản phẩm vi phạm → sản phẩm biến mất khỏi website, người bán thấy lý do.
 4. `/admin/brand`: đổi màu chủ đạo → mọi thiết bị đổi theo.
-5. `/admin/reviews`: ẩn một đánh giá vi phạm (nhập lý do) → điểm sản phẩm tính lại.
-6. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
+5. `/admin/reviews`: lọc "Bị khách báo cáo" → ẩn một đánh giá vi phạm (nhập lý do) → điểm sản phẩm tính lại.
+6. `/admin/vouchers`: tạo mã toàn sàn (giảm %, có mức tối đa và đơn tối thiểu); người bán tạo mã của shop ở `/seller/vouchers`.
+7. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
 
 ## 5. Bảo mật (1 phút, nếu được hỏi)
 
@@ -57,4 +61,6 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 | Hai người cùng mua món cuối cùng? | Database khóa dòng sản phẩm khi đặt; người thứ hai nhận thông báo hết hàng |
 | Người bán tự sửa lượt bán / điểm đánh giá được không? | Không, database không cấp quyền sửa các cột đó; điểm tính từ đánh giá thật, lượt bán tính từ đơn đã giao |
 | Có tự viết đánh giá ảo được không? | Không: database chỉ nhận đánh giá của người có đơn đã giao chứa sản phẩm đó, mỗi người 1 đánh giá / sản phẩm |
+| Mã giảm giá có bị sửa ở trình duyệt được không? | Không: trình duyệt chỉ gửi mã, database kiểm tra hạn, lượt, đơn tối thiểu và tự tính số tiền giảm |
+| Đơn QR không trả tiền thì sao? | Sau 24 giờ hệ thống tự hủy và trả hàng về kho |
 | Dữ liệu lưu ở đâu? | PostgreSQL trên Supabase; ảnh ở Supabase Storage; không dùng localStorage làm cơ sở dữ liệu |

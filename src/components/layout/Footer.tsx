@@ -10,17 +10,17 @@ export function Footer() {
   const { settings } = useBrand()
   const { isAdmin } = useAuth()
   return (
-    <footer className="mt-20 border-t border-border bg-surface">
-      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
-        <div className="space-y-3">
-          <Logo height={30} />
+    <footer className="mt-24 border-t border-border bg-surface-2/60">
+      <div className="container-page grid gap-10 py-14 sm:grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
+        <div className="space-y-4">
+          <Logo height={38} />
           <p className="max-w-xs text-sm text-muted">{brand.description}</p>
           {brand.slogan && <p className="text-sm font-medium text-primary">{brand.slogan}</p>}
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold">Danh mục</h2>
-          <ul className="mt-3 space-y-2 text-sm text-muted">
+          <h2 className="eyebrow !text-text">Danh mục</h2>
+          <ul className="mt-4 space-y-2.5 text-sm text-muted">
             {categories.map((c) => (
               <li key={c.id}>
                 <Link to={`/products?category=${c.id}`} className="hover:text-primary">
@@ -32,8 +32,8 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold">Khám phá</h2>
-          <ul className="mt-3 space-y-2 text-sm text-muted">
+          <h2 className="eyebrow !text-text">Khám phá</h2>
+          <ul className="mt-4 space-y-2.5 text-sm text-muted">
             <li><Link to="/beauty-finder" className="hover:text-primary">Beauty Finder</Link></li>
             <li><Link to="/shops" className="hover:text-primary">Cửa hàng</Link></li>
             <li><Link to="/products?sort=newest" className="hover:text-primary">Sản phẩm mới</Link></li>
@@ -43,8 +43,8 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold">Hỗ trợ</h2>
-          <ul className="mt-3 space-y-2 text-sm text-muted">
+          <h2 className="eyebrow !text-text">Hỗ trợ</h2>
+          <ul className="mt-4 space-y-2.5 text-sm text-muted">
             <li><Link to="/about" className="hover:text-primary">Giới thiệu</Link></li>
             <li><Link to="/faq" className="hover:text-primary">Câu hỏi thường gặp</Link></li>
             <li><Link to="/policies" className="hover:text-primary">Chính sách</Link></li>
@@ -54,7 +54,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold">Về dự án</h2>
+          <h2 className="eyebrow !text-text">Về dự án</h2>
           <dl className="mt-3 space-y-2 text-sm">
             <div>
               <dt className="sr-only">Nhóm thực hiện</dt>

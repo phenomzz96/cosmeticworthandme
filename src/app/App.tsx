@@ -32,6 +32,11 @@ const AdminUsersPage = lazyNamed(() => import('@/pages/admin/AdminUsersPage'), '
 const AdminReviewsPage = lazyNamed(() => import('@/pages/admin/AdminReviewsPage'), 'AdminReviewsPage')
 const SellerReviewsPage = lazyNamed(() => import('@/pages/seller/SellerReviewsPage'), 'SellerReviewsPage')
 const FavoritesPage = lazyNamed(() => import('@/pages/FavoritesPage'), 'FavoritesPage')
+const ComparePage = lazyNamed(() => import('@/pages/ComparePage'), 'ComparePage')
+const VouchersPage = lazyNamed(() => import('@/pages/VouchersPage'), 'VouchersPage')
+const NotificationsPage = lazyNamed(() => import('@/pages/NotificationsPage'), 'NotificationsPage')
+const SellerVouchersPage = lazyNamed(() => import('@/pages/seller/SellerVouchersPage'), 'SellerVouchersPage')
+const AdminVouchersPage = lazyNamed(() => import('@/pages/admin/AdminVouchersPage'), 'AdminVouchersPage')
 const AboutPage = lazyNamed(() => import('@/pages/InfoPages'), 'AboutPage')
 const ContactPage = lazyNamed(() => import('@/pages/InfoPages'), 'ContactPage')
 const FaqPage = lazyNamed(() => import('@/pages/InfoPages'), 'FaqPage')
@@ -63,6 +68,7 @@ export function App() {
                   <Route path="shops/:slug" element={<ShopPage />} />
                   <Route path="beauty-finder" element={<BeautyFinderPage />} />
                   <Route path="cart" element={<CartPage />} />
+                  <Route path="compare" element={<ComparePage />} />
 
                   {/* Trang thông tin */}
                   <Route path="about" element={<AboutPage />} />
@@ -81,6 +87,22 @@ export function App() {
                     element={
                       <RequireAuth>
                         <AccountPage />
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="vouchers"
+                    element={
+                      <RequireAuth>
+                        <VouchersPage />
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="notifications"
+                    element={
+                      <RequireAuth>
+                        <NotificationsPage />
                       </RequireAuth>
                     }
                   />
@@ -107,6 +129,7 @@ export function App() {
                     <Route path="shops" element={<AdminShopsPage />} />
                     <Route path="products" element={<AdminProductsPage />} />
                     <Route path="reviews" element={<AdminReviewsPage />} />
+                    <Route path="vouchers" element={<AdminVouchersPage />} />
                     <Route path="orders" element={<AdminOrdersPage />} />
                     <Route path="audit" element={<AdminAuditPage />} />
                     <Route path="brand" element={<AdminBrandPage />} />
@@ -153,6 +176,7 @@ export function App() {
                     <Route path="products/:id" element={<SellerProductFormPage />} />
                     <Route path="orders" element={<SellerOrdersPage />} />
                     <Route path="reviews" element={<SellerReviewsPage />} />
+                    <Route path="vouchers" element={<SellerVouchersPage />} />
                     <Route path="shop" element={<SellerShopSettingsPage />} />
                   </Route>
                   <Route path="*" element={<NotFoundPage />} />

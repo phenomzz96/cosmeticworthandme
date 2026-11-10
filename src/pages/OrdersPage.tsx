@@ -24,8 +24,11 @@ export function OrdersPage() {
   useEffect(() => {
     let cancelled = false
     setState((s) => ({ ...s, status: 'loading' }))
+    // Dọn đơn QR quá hạn trước khi tải (lỗi thì bỏ qua, vẫn tải danh sách)
     orderService
-      .listMine(page)
+      .expireOverdue()
+      .catch(() => undefined)
+      .then(() => orderService.listMine(page))
       .then((r) => !cancelled && setState({ status: 'ready', ...r }))
       .catch((err) => !cancelled && setState({ status: 'error', orders: [], total: 0, error: friendlyError(err) }))
     return () => {
@@ -112,6 +115,7 @@ export function OrderDetailPage() {
 
   const load = useCallback(async () => {
     try {
+      await orderService.expireOverdue().catch(() => undefined)
       const order = await orderService.getMineByCode(code)
       setState(order ? { status: 'ready', order } : { status: 'missing' })
     } catch (err) {
@@ -181,7 +185,7 @@ export function OrderDetailPage() {
         </div>
       )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
           {o.payment_method === 'qr_demo' && active && o.payment_status !== 'paid' && (
             <QrPaymentPanel order={o} onReport={() => run(() => orderService.reportPayment(o.id), 'Đã gửi thông báo chuyển khoản. Quản trị viên sẽ xác nhận.')} />
@@ -214,6 +218,12 @@ export function OrderDetailPage() {
                 <dt className="text-muted">Phí vận chuyển</dt>
                 <dd className="tabular-nums">{formatPrice(o.shipping_total)}</dd>
               </div>
+              {(o.discount_total ?? 0) > 0 && (
+                <div className="flex justify-between text-success">
+                  <dt>Giảm giá (voucher)</dt>
+                  <dd className="tabular-nums">−{formatPrice(o.discount_total!)}</dd>
+                </div>
+              )}
               <div className="flex justify-between border-t border-border pt-2 text-base font-semibold">
                 <dt>Tổng cộng</dt>
                 <dd className="tabular-nums">{formatPrice(o.grand_total)}</dd>
@@ -316,6 +326,18 @@ function ShopOrderCard({ so, events, onCancel }: { so: ShopOrder; events: OrderE
           <dt>Phí vận chuyển</dt>
           <dd className="tabular-nums">{formatPrice(so.shipping_fee)}</dd>
         </div>
+        {(so.shop_discount ?? 0) > 0 && (
+          <div className="flex justify-between text-success">
+            <dt>Voucher shop {so.shop_voucher_code}</dt>
+            <dd className="tabular-nums">−{formatPrice(so.shop_discount!)}</dd>
+          </div>
+        )}
+        {(so.platform_discount ?? 0) > 0 && (
+          <div className="flex justify-between text-success">
+            <dt>Voucher sàn {so.platform_voucher_code}</dt>
+            <dd className="tabular-nums">−{formatPrice(so.platform_discount!)}</dd>
+          </div>
+        )}
         <div className="flex justify-between font-semibold">
           <dt>Tổng đơn</dt>
           <dd className="tabular-nums">{formatPrice(so.total)}</dd>

@@ -1,7 +1,6 @@
 /**
- * SO SÁNH SẢN PHẨM — khung dữ liệu cho tính năng so sánh sau này.
- * Mỗi mục là một hàng trong bảng so sánh. Hiện đang dùng cho bảng "Thông tin sản phẩm"
- * trên trang chi tiết; trang so sánh nhiều sản phẩm sẽ dùng lại đúng danh sách này.
+ * SO SÁNH SẢN PHẨM — mỗi mục là một hàng trong bảng so sánh.
+ * Dùng cho bảng "Thông tin sản phẩm" trên trang chi tiết và trang /compare.
  */
 import { concernLabels, productTypeLabels, skinTypeLabels } from '@/data/taxonomy'
 import { formatPrice } from '@/lib/format'
@@ -32,7 +31,7 @@ export const compareFields: CompareField[] = [
     value: (p) => (p.fragranceFree === undefined ? '' : p.fragranceFree ? 'Không hương liệu' : 'Có hương liệu'),
     optional: true,
   },
-  { key: 'rating', label: 'Đánh giá', value: (p) => `${p.rating.toFixed(1)} / 5 (${p.reviewCount} lượt)` },
+  { key: 'rating', label: 'Đánh giá', value: (p) => (p.reviewCount > 0 ? `${p.rating.toFixed(1)} / 5 (${p.reviewCount} lượt)` : 'Chưa có đánh giá') },
 ]
 
 /** Danh sách sản phẩm tối đa trong một lần so sánh (dùng khi làm trang so sánh) */
