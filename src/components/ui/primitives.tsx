@@ -4,15 +4,16 @@ import { discountPercent, formatPrice } from '@/lib/format'
 import { Icon } from './Icon'
 
 /** Class cho nút. Dùng: className={button('primary')} trên <button> hoặc <Link> */
-export function button(variant: 'primary' | 'secondary' | 'ghost' | 'accent' = 'primary', size: 'md' | 'lg' | 'sm' = 'md') {
+export function button(variant: 'primary' | 'secondary' | 'ghost' | 'accent' | 'dark' = 'primary', size: 'md' | 'lg' | 'sm' = 'md') {
   const base =
-    'inline-flex items-center justify-center gap-2 rounded-control font-semibold whitespace-nowrap select-none disabled:cursor-not-allowed disabled:opacity-50'
-  const sizes = { sm: 'h-9 px-3.5 text-sm', md: 'h-11 px-5 text-[15px]', lg: 'h-13 px-7 text-base' }
+    'inline-flex items-center justify-center gap-2 rounded-control font-medium whitespace-nowrap select-none transition-colors disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none'
+  const sizes = { sm: 'h-9 px-4 text-sm', md: 'h-11 px-5 text-[15px]', lg: 'h-13 px-7 text-[15px]' }
   const variants = {
     primary: 'bg-primary text-on-primary hover:bg-primary-hover',
-    secondary: 'border border-border bg-surface text-text hover:border-primary hover:text-primary',
+    secondary: 'border border-border bg-surface text-text hover:border-text',
     ghost: 'text-text hover:bg-surface-2',
     accent: 'bg-accent text-on-accent hover:brightness-95',
+    dark: 'bg-ink text-on-ink hover:bg-ink-hover',
   }
   return `${base} ${sizes[size]} ${variants[variant]}`
 }
@@ -21,14 +22,14 @@ export function Price({ price, originalPrice, size = 'md' }: { price: number; or
   const off = discountPercent(price, originalPrice)
   return (
     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-      <span className={`font-bold tabular-nums text-text ${size === 'lg' ? 'text-3xl' : 'text-base'}`}>{formatPrice(price)}</span>
+      <span className={`font-semibold tabular-nums text-text ${size === 'lg' ? 'text-3xl' : 'text-[15px]'}`}>{formatPrice(price)}</span>
       {off > 0 && (
         <>
           <span className={`tabular-nums text-muted line-through ${size === 'lg' ? 'text-base' : 'text-xs'}`}>
             <span className="sr-only">Giá gốc </span>
             {formatPrice(originalPrice!)}
           </span>
-          <span className="rounded-md bg-sale/10 px-1.5 py-0.5 text-xs font-semibold text-sale">-{off}%</span>
+          <span className="rounded-full bg-sale/10 px-2 py-0.5 text-xs font-semibold text-sale">-{off}%</span>
         </>
       )}
     </div>

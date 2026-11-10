@@ -8,9 +8,9 @@ import type { AdminOrderRow, Order, OrderStatus, PaymentMethod, PaymentStatus, S
 export const ORDERS_PAGE_SIZE = 10
 
 const ORDER_FIELDS =
-  'id, code, recipient_name, phone, province, district, ward, street, note, payment_method, payment_status, payment_reported_at, payment_confirmed_at, payment_note, items_subtotal, shipping_total, grand_total, created_at, ' +
+  'id, code, recipient_name, phone, province, district, ward, street, note, payment_method, payment_status, payment_reported_at, payment_confirmed_at, payment_note, items_subtotal, shipping_total, discount_total, grand_total, created_at, ' +
   // Ghi rõ khóa ngoại để PostgREST không nhầm quan hệ (order_events cũng trỏ tới cả orders và shop_orders)
-  'shop_orders!shop_orders_order_id_fkey(id, order_id, shop_id, shop_name, status, items_subtotal, shipping_fee, total, cancel_reason, cancelled_by, refund_status, confirmed_at, shipped_at, delivered_at, cancelled_at, created_at, ' +
+  'shop_orders!shop_orders_order_id_fkey(id, order_id, shop_id, shop_name, status, items_subtotal, shipping_fee, shop_discount, platform_discount, shop_voucher_code, platform_voucher_code, total, cancel_reason, cancelled_by, refund_status, confirmed_at, shipped_at, delivered_at, cancelled_at, created_at, ' +
   'order_items(id, product_id, product_name, product_slug, brand_name, image_path, unit_price, quantity, line_total))'
 
 function sortShopOrders(o: Order): Order {
@@ -21,15 +21,29 @@ const page = (n: number, size: number) => ({ limit: size, offset: (Math.max(1, n
 const totalOf = (rows: { total_count?: number }[]) => (rows[0] ? Number(rows[0].total_count) : 0)
 
 export const orderService = {
-  async placeOrder(input: { lines: { productId: string; quantity: number }[]; addressId: string; paymentMethod: PaymentMethod; note: string }) {
+  async placeOrder(input: {
+    lines: { productId: string; quantity: number }[]
+    addressId: string
+    paymentMethod: PaymentMethod
+    note: string
+    voucherCodes?: string[]
+    requestId?: string | null
+  }) {
     const { data, error } = await requireSupabase().rpc('place_order', {
       p_items: input.lines.map((l) => ({ product_id: l.productId, quantity: l.quantity })),
       p_address_id: input.addressId,
       p_payment_method: input.paymentMethod,
       p_note: input.note.trim(),
+      p_voucher_codes: input.voucherCodes?.length ? input.voucherCodes : null,
+      p_request_id: input.requestId ?? null,
     })
     if (error) throw error
-    return data as { id: string; code: string; grand_total: number }
+    return data as { id: string; code: string; grand_total: number; duplicate?: boolean }
+  },
+
+  /** Hủy các đơn chuyển khoản QR quá 24 giờ chưa báo thanh toán (database tự kiểm tra, gọi nhiều lần không sao) */
+  async expireOverdue(): Promise<void> {
+    await requireSupabase().rpc('expire_overdue_orders')
   },
 
   async listMine(pageNo = 1): Promise<{ orders: Order[]; total: number }> {
@@ -68,6 +82,8 @@ export const orderService = {
   // ---------------------------------------------------------------- Người bán
   async sellerList(f: { status?: OrderStatus; search?: string; page?: number }): Promise<{ rows: SellerShopOrder[]; total: number }> {
     const { limit, offset } = page(f.page ?? 1, 20)
+    // Dọn đơn QR quá hạn chạy song song, không làm chậm danh sách (lần tải sau sẽ thấy đơn đã hủy)
+    void requireSupabase().rpc('expire_overdue_orders').then(undefined, () => undefined)
     const { data, error } = await requireSupabase().rpc('seller_list_shop_orders', {
       p_status: f.status ?? null,
       p_search: f.search?.trim() || null,
@@ -93,6 +109,8 @@ export const orderService = {
   // ---------------------------------------------------------------- Admin
   async adminList(f: { status?: OrderStatus; paymentStatus?: PaymentStatus; refundPending?: boolean; search?: string; page?: number }): Promise<{ rows: AdminOrderRow[]; total: number }> {
     const { limit, offset } = page(f.page ?? 1, 20)
+    // Dọn đơn QR quá hạn chạy song song, không làm chậm danh sách (lần tải sau sẽ thấy đơn đã hủy)
+    void requireSupabase().rpc('expire_overdue_orders').then(undefined, () => undefined)
     const { data, error } = await requireSupabase().rpc('admin_list_orders', {
       p_status: f.status ?? null,
       p_payment_status: f.paymentStatus ?? null,

@@ -11,7 +11,7 @@ import type { ProductInput, ProductStatus, SellerProduct, SellerShop, ShopInput 
 const SHOP_FIELDS =
   'id, owner_id, slug, name, tagline, description, logo_path, cover_path, theme_color, contact_email, contact_phone, location, policy, status, status_reason, created_at'
 const PRODUCT_FIELDS =
-  'id, shop_id, slug, name, brand_name, category, product_type, description, price, sale_price, sku, stock, status, size, skin_types, concerns, key_ingredients, texture, fragrance_free, placeholder_visual, rating, review_count, sold_count, admin_hidden, admin_hidden_reason, created_at, updated_at, product_images(id, path, sort_order)'
+  'id, shop_id, slug, name, brand_name, category, product_type, description, price, sale_price, sku, stock, status, size, skin_types, concerns, key_ingredients, how_to_use, texture, fragrance_free, placeholder_visual, rating, review_count, sold_count, admin_hidden, admin_hidden_reason, created_at, updated_at, product_images(id, path, sort_order)'
 
 function sortImages(p: SellerProduct): SellerProduct {
   return { ...p, product_images: [...(p.product_images ?? [])].sort((a, b) => a.sort_order - b.sort_order) }

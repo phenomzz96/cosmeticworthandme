@@ -1,11 +1,12 @@
 import { useState, type ReactNode } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { Breadcrumbs, button, EmptyState, ShopAvatar, Skeleton } from '@/components/ui/primitives'
 import { categories } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
 import { ShopCard } from '@/features/shops/ShopCard'
 import { FollowButton } from '@/features/social/SocialButtons'
+import { AvailableVouchers } from '@/features/vouchers/VoucherCard'
 import { formatCompact } from '@/lib/format'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import { useAsync } from '@/lib/useAsync'
@@ -36,6 +37,7 @@ export function ShopPage() {
 }
 
 function ShopView({ shop }: { shop: Shop }) {
+  const location = useLocation()
   const [category, setCategory] = useState<CategoryId | undefined>()
   // Số người theo dõi: lấy từ database, cộng/trừ ngay khi người xem bấm Theo dõi
   const [followDelta, setFollowDelta] = useState(0)
@@ -46,19 +48,21 @@ function ShopView({ shop }: { shop: Shop }) {
 
   return (
     <div>
-      <div className="border-b border-border bg-surface">
-        {shop.cover ? (
-          <img src={shop.cover} alt="" className="h-28 w-full object-cover md:h-40" />
-        ) : (
-          <div className="h-28 md:h-40" style={{ background: `linear-gradient(120deg, ${shop.color}55, ${shop.color}22 60%, transparent)` }} />
-        )}
-        <div className="container-page -mt-10 flex flex-col gap-4 pb-6 md:-mt-12 md:flex-row md:items-end md:justify-between">
+      <div className="border-b border-border">
+        <div className="container-page pt-4">
+          {shop.cover ? (
+            <img src={shop.cover} alt="" className="h-36 w-full rounded-[28px] object-cover md:h-56" />
+          ) : (
+            <div className="h-36 rounded-[28px] md:h-56" style={{ background: `linear-gradient(120deg, ${shop.color}55, ${shop.color}22 60%, transparent)` }} />
+          )}
+        </div>
+        <div className="container-page -mt-10 flex flex-col gap-4 px-8 pb-6 md:-mt-12 md:flex-row md:items-end md:justify-between">
           <div className="flex items-end gap-4">
-            <span className="rounded-full border-4 border-surface">
+            <span className="rounded-full border-4 border-bg">
               <ShopAvatar name={shop.name} color={shop.color} logo={shop.logo} size={88} />
             </span>
             <div className="pb-1">
-              <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight md:text-3xl">
+              <h1 className="flex items-center gap-2 text-3xl md:text-4xl">
                 {shop.name}
                 {shop.verified && <Icon name="shield" size={22} className="text-success" label="Gian hàng đã xác minh (mẫu)" />}
               </h1>
@@ -89,12 +93,12 @@ function ShopView({ shop }: { shop: Shop }) {
 
       <div className="container-page py-6">
         <Breadcrumbs items={[{ label: 'Trang chủ', to: '/' }, { label: 'Cửa hàng', to: '/shops' }, { label: shop.name }]} />
-        <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <p className="max-w-3xl whitespace-pre-line text-muted">{shop.description}</p>
           {(shop.policy || shop.contactEmail || shop.contactPhone) && (
             <aside className="space-y-3 rounded-card border border-border bg-surface p-4 text-sm">
               {shop.policy && (
-                <details>
+                <details id="policy" className="scroll-mt-40" open={location.hash === '#policy'}>
                   <summary className="cursor-pointer font-semibold">Chính sách cửa hàng</summary>
                   <p className="mt-2 whitespace-pre-line text-muted">{shop.policy}</p>
                 </details>
@@ -118,7 +122,11 @@ function ShopView({ shop }: { shop: Shop }) {
           )}
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-2" role="group" aria-label="Lọc sản phẩm của shop">
+        <div className="mt-8">
+          <AvailableVouchers shopIds={[shop.id]} title="Mã giảm giá của shop" includePlatform={false} />
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Lọc sản phẩm của shop">
           <Chip on={!category} onClick={() => setCategory(undefined)}>
             Tất cả
           </Chip>
@@ -145,7 +153,7 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
       type="button"
       aria-pressed={on}
       onClick={onClick}
-      className={`rounded-full border px-4 py-1.5 text-sm ${on ? 'border-primary bg-primary text-on-primary' : 'border-border bg-surface hover:border-primary'}`}
+      className={`rounded-full border px-4 py-1.5 text-sm ${on ? 'border-ink bg-ink text-on-ink' : 'border-border bg-surface hover:border-text'}`}
     >
       {children}
     </button>

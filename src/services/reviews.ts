@@ -48,6 +48,8 @@ export interface SellerReview {
 export interface AdminReview extends Omit<SellerReview, 'seller_replied_at'> {
   shop_name: string
   reviewer_email: string | null
+  report_count: number
+  report_reasons: string[] | null
 }
 
 export const EMPTY_REVIEWS: ProductReviews = {
@@ -57,7 +59,38 @@ export const EMPTY_REVIEWS: ProductReviews = {
   can_review: false,
 }
 
+export interface PublicReview {
+  id: string
+  rating: number
+  comment: string
+  reviewer_name: string
+  created_at: string
+  product_name: string
+  product_slug: string
+}
+
+export const REPORT_REASONS = [
+  { value: 'spam', label: 'Quảng cáo, spam' },
+  { value: 'offensive', label: 'Ngôn từ xúc phạm' },
+  { value: 'personal_info', label: 'Lộ thông tin cá nhân' },
+  { value: 'irrelevant', label: 'Không liên quan đến sản phẩm' },
+  { value: 'other', label: 'Lý do khác' },
+] as const
+
 export const reviewService = {
+  /** Đánh giá thật gần đây (4–5 sao, có nhận xét) cho trang chủ */
+  async latest(limit = 6): Promise<PublicReview[]> {
+    if (!isSupabaseConfigured || !supabase) return []
+    const { data, error } = await supabase.rpc('latest_reviews', { p_limit: limit })
+    if (error) throw error
+    return (data ?? []) as PublicReview[]
+  },
+
+  async report(reviewId: string, reason: string, note = ''): Promise<void> {
+    const { error } = await requireSupabase().rpc('report_review', { p_review_id: reviewId, p_reason: reason, p_note: note.trim() })
+    if (error) throw error
+  },
+
   async forProduct(productId: string, page = 1): Promise<ProductReviews> {
     // Dữ liệu mẫu khi chưa kết nối Supabase: chưa có đánh giá
     if (!isSupabaseConfigured || !supabase) return EMPTY_REVIEWS
@@ -98,7 +131,7 @@ export const reviewService = {
   },
 
   async adminList(
-    filter: { hidden?: boolean; maxRating?: number; query?: string },
+    filter: { hidden?: boolean; maxRating?: number; query?: string; reported?: boolean },
     page = 1,
     pageSize = 20,
   ): Promise<{ items: AdminReview[]; total: number }> {
@@ -108,6 +141,7 @@ export const reviewService = {
       p_query: filter.query?.trim() || null,
       p_limit: pageSize,
       p_offset: (Math.max(1, page) - 1) * pageSize,
+      p_reported: filter.reported ?? null,
     })
     if (error) throw error
     const items = (data ?? []) as AdminReview[]

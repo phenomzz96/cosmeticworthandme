@@ -4,6 +4,7 @@ import { Icon } from '@/components/ui/Icon'
 import { Breadcrumbs, button, EmptyState, ErrorState } from '@/components/ui/primitives'
 import { categories, categoryById, productTypeLabels, skinTypeLabels, typesByCategory } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
+import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
 import { useAsync } from '@/lib/useAsync'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { catalogService, SEARCH_PAGE_SIZE } from '@/services/catalog'
@@ -36,6 +37,9 @@ function parseQuery(params: URLSearchParams): ProductQuery {
     minPrice: min ? Number(min) : undefined,
     maxPrice: max ? Number(max) : undefined,
     skinType: skin && skin in skinTypeLabels ? (skin as SkinType) : undefined,
+    brands: (params.get('brand') ?? '').split(',').map((b) => b.trim()).filter(Boolean).slice(0, 20),
+    minRating: ['3', '4', '4.5'].includes(params.get('rating') ?? '') ? Number(params.get('rating')) : undefined,
+    inStock: params.get('stock') === '1' || undefined,
     sort: sortOptions.some((o) => o.value === sort) ? (sort as ProductSort) : 'popular',
   }
 }
@@ -75,13 +79,39 @@ export function ProductsPage() {
     update({ types: [...set].join(',') || null })
   }
 
+  const toggleBrand = (b: string) => {
+    const cur = query.brands ?? []
+    const has = cur.some((x) => x.toLowerCase() === b.toLowerCase())
+    const next = has ? cur.filter((x) => x.toLowerCase() !== b.toLowerCase()) : [...cur, b]
+    update({ brand: next.join(',') || null })
+  }
+
+  useCatalogVersion()
+  const [showAllBrands, setShowAllBrands] = useState(false)
+  const brands = catalogService.getBrandsSync(query.category)
+  const selectedBrands = new Set((query.brands ?? []).map((b) => b.toLowerCase()))
+  // Thương hiệu đã chọn luôn hiện (kể cả khi không nằm trong 8 thương hiệu đầu)
+  const visibleBrands = showAllBrands ? brands : brands.filter((b, i) => i < 8 || selectedBrands.has(b.name.toLowerCase()))
+
   const activeFilterCount =
-    (query.types?.length ?? 0) + (params.get('price') ? 1 : 0) + (query.skinType ? 1 : 0) + (query.category ? 1 : 0)
+    (query.types?.length ?? 0) + (params.get('price') ? 1 : 0) + (query.skinType ? 1 : 0) + (query.category ? 1 : 0) +
+    (query.brands?.length ?? 0) + (query.minRating ? 1 : 0) + (query.inStock ? 1 : 0)
   const availableTypes = query.category ? typesByCategory[query.category] : []
+
+  // Bộ lọc đang bật, hiện dạng thẻ có nút bỏ
+  const chips: { key: string; label: string; clear: () => void }[] = [
+    ...(query.types ?? []).map((t) => ({ key: 't' + t, label: productTypeLabels[t], clear: () => toggleType(t) })),
+    ...(query.brands ?? []).map((b) => ({ key: 'b' + b, label: b, clear: () => toggleBrand(b) })),
+    ...(params.get('price') ? [{ key: 'price', label: priceRanges.find((r) => r.key === params.get('price'))?.label ?? 'Khoảng giá', clear: () => update({ price: null }) }] : []),
+    ...(query.skinType ? [{ key: 'skin', label: skinTypeLabels[query.skinType], clear: () => update({ skin: null }) }] : []),
+    ...(query.minRating ? [{ key: 'rating', label: `Từ ${query.minRating} sao`, clear: () => update({ rating: null }) }] : []),
+    ...(query.inStock ? [{ key: 'stock', label: 'Còn hàng', clear: () => update({ stock: null }) }] : []),
+  ]
 
   const renderFilters = (idPrefix: string) => (
     <div className="space-y-7">
-      <fieldset>
+      {/* Trên máy tính, danh mục đã có ở hàng thẻ phía trên; bảng lọc trên điện thoại vẫn có */}
+      <fieldset className={idPrefix === 'd' ? 'hidden' : undefined}>
         <legend className="text-sm font-semibold">Danh mục</legend>
         <div className="mt-3 flex flex-col gap-1">
           <FilterRadio name={`${idPrefix}-category`} checked={!query.category} onChange={() => update({ category: null, types: null })}>
@@ -148,6 +178,50 @@ export function ProductsPage() {
         </div>
       </fieldset>
 
+      {brands.length > 0 && (
+        <fieldset>
+          <legend className="text-sm font-semibold">Thương hiệu</legend>
+          <div className="mt-3 flex flex-col gap-1">
+            {visibleBrands.map((b) => (
+              <label key={b.name} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm hover:bg-surface-2">
+                <input
+                  type="checkbox"
+                  checked={selectedBrands.has(b.name.toLowerCase())}
+                  onChange={() => toggleBrand(b.name)}
+                  className="accent-[var(--primary)]"
+                />
+                <span className="min-w-0 flex-1 truncate">{b.name}</span>
+                <span className="text-xs text-muted">{b.count}</span>
+              </label>
+            ))}
+          </div>
+          {brands.length > 8 && (
+            <button type="button" className="mt-1 px-2 text-sm font-medium text-primary hover:underline" onClick={() => setShowAllBrands((v) => !v)}>
+              {showAllBrands ? 'Thu gọn' : `Xem thêm ${brands.length - 8} thương hiệu`}
+            </button>
+          )}
+        </fieldset>
+      )}
+
+      <fieldset>
+        <legend className="text-sm font-semibold">Đánh giá</legend>
+        <div className="mt-3 flex flex-col gap-1">
+          <FilterRadio name={`${idPrefix}-rating`} checked={!query.minRating} onChange={() => update({ rating: null })}>
+            Mọi mức
+          </FilterRadio>
+          {['4.5', '4', '3'].map((r) => (
+            <FilterRadio key={r} name={`${idPrefix}-rating`} checked={query.minRating === Number(r)} onChange={() => update({ rating: r })}>
+              Từ {r.replace('.', ',')} sao trở lên
+            </FilterRadio>
+          ))}
+        </div>
+      </fieldset>
+
+      <label className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-semibold hover:bg-surface-2">
+        <input type="checkbox" checked={Boolean(query.inStock)} onChange={(e) => update({ stock: e.target.checked ? '1' : null })} className="accent-[var(--primary)]" />
+        Chỉ hiện sản phẩm còn hàng
+      </label>
+
       {activeFilterCount > 0 && (
         <button type="button" className="text-sm font-medium text-primary hover:underline" onClick={() => setParams(query.q ? { q: query.q } : {})}>
           Xóa bộ lọc
@@ -160,12 +234,32 @@ export function ProductsPage() {
     <div className="container-page py-6 md:py-8">
       <Breadcrumbs items={[{ label: 'Trang chủ', to: '/' }, { label: category?.name ?? 'Sản phẩm' }]} />
 
-      <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{title}</h1>
-          {category && !query.q && <p className="mt-1 text-sm text-muted">{category.description}</p>}
+      <p className="eyebrow mt-6">{query.q ? 'Tìm kiếm' : category ? category.label : 'Cửa hàng'}</p>
+      <h1 className="mt-2 text-4xl md:text-5xl">{title}</h1>
+      {category && !query.q && <p className="mt-2 max-w-2xl text-muted">{category.description}</p>}
+
+      {/* Danh mục dạng thẻ */}
+      <div className="scrollbar-none -mx-4 mt-6 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:px-0" role="group" aria-label="Chọn danh mục">
+        {[{ id: null as CategoryId | null, name: 'Tất cả' }, ...categories].map((c) => {
+          const on = (query.category ?? null) === c.id
+          return (
+            <button
+              key={c.id ?? 'all'}
+              type="button"
+              aria-pressed={on}
+              onClick={() => update({ category: c.id, types: null, brand: null })}
+              className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-colors motion-reduce:transition-none ${on ? 'border-ink bg-ink text-on-ink' : 'border-border bg-surface hover:border-text'}`}
+            >
+              {c.name}
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
+        <div className="min-w-0">
           {result.status === 'success' && (
-            <p className="mt-1 text-sm text-muted">
+            <p className="text-sm text-muted">
               {result.data.total} sản phẩm{pages > 1 && ` · Trang ${page}/${pages}`}
             </p>
           )}
@@ -197,15 +291,33 @@ export function ProductsPage() {
         </div>
       </div>
 
+      {chips.length > 0 && (
+        <ul className="mt-4 flex flex-wrap items-center gap-2" aria-label="Bộ lọc đang bật">
+          {chips.map((c) => (
+            <li key={c.key}>
+              <button type="button" onClick={c.clear} className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-sm text-primary hover:opacity-80">
+                {c.label} <Icon name="x" size={14} />
+                <span className="sr-only">(bỏ bộ lọc)</span>
+              </button>
+            </li>
+          ))}
+          <li>
+            <button type="button" className="px-2 text-sm font-medium text-muted hover:text-text" onClick={() => setParams(query.q ? { q: query.q } : {})}>
+              Xóa tất cả
+            </button>
+          </li>
+        </ul>
+      )}
+
       {filtersOpen && (
         <div id="filters-mobile" className="mt-4 rounded-card border border-border bg-surface p-4 lg:hidden">
           {renderFilters('m')}
         </div>
       )}
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[240px_1fr]">
+      <div className="mt-8 grid gap-10 lg:grid-cols-[240px_1fr]">
         <aside className="hidden lg:block" aria-label="Bộ lọc">
-          <div className="sticky top-36">{renderFilters('d')}</div>
+          <div className="sticky top-40 max-h-[calc(100dvh-11rem)] overflow-y-auto pr-2">{renderFilters('d')}</div>
         </aside>
         <div>
           {result.status === 'loading' && <ProductGridSkeleton count={8} />}
@@ -227,7 +339,7 @@ export function ProductsPage() {
                           <button
                             type="button"
                             aria-current={n === page ? 'page' : undefined}
-                            className={`h-9 min-w-9 rounded-full border px-3 text-sm ${n === page ? 'border-primary bg-primary text-on-primary' : 'border-border bg-surface hover:border-primary'}`}
+                            className={`h-9 min-w-9 rounded-full border px-3 text-sm ${n === page ? 'border-ink bg-ink text-on-ink' : 'border-border bg-surface hover:border-text'}`}
                             onClick={() => goPage(n)}
                           >
                             {n}

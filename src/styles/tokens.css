@@ -1,5 +1,7 @@
-/* 1) FONT CHỮ THƯƠNG HIỆU — đổi font: thay link dưới và biến --font-body */
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+/* 1) FONT CHỮ THƯƠNG HIỆU — đổi font: thay link dưới và biến --font-body / --font-display
+ *    Be Vietnam Pro: chữ nội dung. Cormorant Garamond: tiêu đề (chữ có chân, phong cách tạp chí làm đẹp).
+ *    Cả hai đều có đủ dấu tiếng Việt. */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap&subset=vietnamese');
 
 /*
  * 2) DESIGN TOKENS — nơi DUY NHẤT định nghĩa nhận diện thị giác:
@@ -7,63 +9,74 @@
  * Muốn đổi màu thương hiệu: chỉ sửa các giá trị ở đây.
  * Component KHÔNG dùng mã màu trực tiếp, chỉ dùng class như bg-surface, text-primary...
  *
- * Bảng màu: Mulberry (dâu tằm) làm màu chính, Champagne làm điểm nhấn "glow".
+ * Bảng màu (11/2026): nền kem ấm, chữ nâu tím đậm, màu chính tím lavender của Worth & Me
+ * (Admin đổi màu chính ở /admin/brand), điểm nhấn vàng champagne cho sao đánh giá.
  */
 
 :root,
 [data-theme='light'] {
   /* Font: Be Vietnam Pro được thiết kế cho tiếng Việt, dấu rõ ở mọi cỡ chữ */
   --font-body: 'Be Vietnam Pro', ui-sans-serif, system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
-  --card-radius: 16px;
+  --font-display: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+  --card-radius: 20px;
   --control-radius: 999px;
 
-  --bg: #fbf8f9;
-  --surface: #ffffff;
-  --surface-2: #f5edf1;
-  --border: #ead9e2;
-  --text: #241521;
-  --text-muted: #6e5a68;
+  --bg: #faf7f3;
+  --surface: #fffdfa;
+  --surface-2: #f2ebe4;
+  --border: #e7ded5;
+  --text: #2b2126;
+  --text-muted: #73646b;
 
-  --primary: #9b2d5f;
-  --primary-hover: #7e2049;
-  --primary-soft: #f8e6ee;
+  --primary: #79628e;
+  --primary-hover: #634d78;
+  --primary-soft: #efe8f4;
   --on-primary: #ffffff;
 
-  --accent: #f4c76b;
-  --accent-soft: #fdf3dc;
-  --on-accent: #3a2600;
+  /* Nút tối (nút chính ở trang chủ, thanh thông báo trên cùng) */
+  --ink: #2b2126;
+  --ink-hover: #45363d;
+  --on-ink: #faf7f3;
 
-  --sale: #b42318;
-  --success: #17804b;
-  --danger: #c62828;
-  --star: #d99a00;
+  --accent: #c9a46a;
+  --accent-soft: #f6eedf;
+  --on-accent: #2e2210;
 
-  --ring: #9b2d5f;
-  --shadow-color: 320 30% 20%;
+  --sale: #a8434f;
+  --success: #2f7a52;
+  --danger: #b3261e;
+  --star: #b98b3e;
+
+  --ring: #79628e;
+  --shadow-color: 20 20% 25%;
 }
 
 [data-theme='dark'] {
-  --bg: #170f16;
-  --surface: #21161f;
-  --surface-2: #2c1e29;
-  --border: #3e2b3a;
-  --text: #f3e9f0;
-  --text-muted: #c2afbd;
+  --bg: #141012;
+  --surface: #1c171a;
+  --surface-2: #261f23;
+  --border: #372d32;
+  --text: #f3ece7;
+  --text-muted: #b8a9b0;
 
-  --primary: #f08bb8;
-  --primary-hover: #f6a9cb;
-  --primary-soft: #4a2238;
-  --on-primary: #2a0e1c;
+  --primary: #c3aedb;
+  --primary-hover: #d5c5e7;
+  --primary-soft: #33293c;
+  --on-primary: #1d1424;
 
-  --accent: #f4c76b;
-  --accent-soft: #3d3020;
-  --on-accent: #2a1c00;
+  --ink: #f3ece7;
+  --ink-hover: #ffffff;
+  --on-ink: #141012;
 
-  --sale: #ff8a7a;
-  --success: #4ade80;
-  --danger: #ff7a7a;
-  --star: #f4c76b;
+  --accent: #d9b97f;
+  --accent-soft: #3a3022;
+  --on-accent: #241a08;
 
-  --ring: #f6a9cb;
-  --shadow-color: 320 50% 3%;
+  --sale: #f0939c;
+  --success: #6fcf97;
+  --danger: #ff8a80;
+  --star: #e2bd73;
+
+  --ring: #d5c5e7;
+  --shadow-color: 330 30% 2%;
 }

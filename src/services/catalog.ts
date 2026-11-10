@@ -86,6 +86,7 @@ interface ProductRow {
   review_count: number
   sold_count: number
   featured: boolean
+  how_to_use?: string | null
   created_at: string
   product_images?: { path: string; sort_order: number }[]
 }
@@ -93,7 +94,7 @@ interface ProductRow {
 export const SHOP_COLUMNS =
   'id, slug, name, tagline, description, logo_path, cover_path, theme_color, contact_email, contact_phone, location, policy, rating, follower_count, verified, created_at'
 export const PRODUCT_COLUMNS =
-  'id, slug, shop_id, category, product_type, name, brand_name, description, price, sale_price, stock, size, skin_types, concerns, key_ingredients, texture, fragrance_free, placeholder_visual, rating, review_count, sold_count, featured, created_at, product_images(path, sort_order)'
+  'id, slug, shop_id, category, product_type, name, brand_name, description, price, sale_price, stock, size, skin_types, concerns, key_ingredients, texture, fragrance_free, placeholder_visual, rating, review_count, sold_count, featured, how_to_use, created_at, product_images(path, sort_order)'
 
 export function shopFromRow(r: ShopRow): Shop {
   return {
@@ -142,6 +143,7 @@ export function productFromRow(r: ProductRow): Product {
     images: [...(r.product_images ?? [])].sort((a, b) => a.sort_order - b.sort_order).map((i) => shopMediaUrl(i.path)!).filter(Boolean),
     visual: r.placeholder_visual ?? DEFAULT_VISUAL,
     featured: r.featured,
+    howToUse: r.how_to_use ?? undefined,
     isSample: !r.product_images?.length,
     createdAt: r.created_at,
   }
@@ -195,6 +197,9 @@ export function filterProducts(list: Product[], query: ProductQuery): Product[] 
     if (query.minPrice != null && p.price < query.minPrice) return false
     if (query.maxPrice != null && p.price > query.maxPrice) return false
     if (query.skinType && p.skinTypes.length > 0 && !p.skinTypes.includes(query.skinType)) return false
+    if (query.brands?.length && !query.brands.some((b) => b.toLowerCase() === p.brandName.toLowerCase())) return false
+    if (query.minRating != null && !(p.reviewCount > 0 && p.rating >= query.minRating)) return false
+    if (query.inStock && p.stock <= 0) return false
     if (terms.length) {
       // Giống database: mỗi từ khóa khớp phần đầu một từ ("kem" khớp "kem dưỡng", không khớp "skem")
       const hay = ' ' + (searchIndex.get(p.id) ?? normalizeVi(p.name))
@@ -273,6 +278,9 @@ export const catalogService = {
         p_sort: query.sort ?? 'popular',
         p_limit: pageSize,
         p_offset: from,
+        p_brands: query.brands?.length ? query.brands : null,
+        p_min_rating: query.minRating ?? null,
+        p_in_stock: query.inStock ?? false,
       }),
       ensureLoaded().catch(() => undefined),
     ])
@@ -337,6 +345,58 @@ export const catalogService = {
 
   countProductsByShop(shopId: string): number {
     return products.filter((p) => p.shopId === shopId).length
+  },
+
+  /** Bán chạy: theo lượt bán thật (đơn đã giao). Chưa có lượt bán nào thì trả rỗng */
+  async getBestSellers(limit = 8): Promise<Product[]> {
+    if (isSupabaseConfigured) await ensureLoaded()
+    else await delay()
+    return [...products].filter((p) => p.soldCount > 0).sort((a, b) => b.soldCount - a.soldCount).slice(0, limit)
+  },
+
+  async getNewArrivals(limit = 8): Promise<Product[]> {
+    if (isSupabaseConfigured) await ensureLoaded()
+    else await delay()
+    return [...products].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, limit)
+  },
+
+  /** Số liệu thật của sàn cho trang chủ */
+  async getStats(): Promise<{ shops: number; products: number; brands: number; reviews: number }> {
+    if (isSupabaseConfigured) await ensureLoaded()
+    else await delay()
+    const sellingShops = new Set(products.map((p) => p.shopId))
+    return {
+      shops: shops.filter((s) => sellingShops.has(s.id)).length,
+      products: products.length,
+      brands: new Set(products.map((p) => p.brandName.trim().toLowerCase())).size,
+      reviews: products.reduce((n, p) => n + p.reviewCount, 0),
+    }
+  },
+
+  /** Danh sách thương hiệu (kèm số sản phẩm) cho bộ lọc, theo danh mục nếu có */
+  getBrandsSync(category?: CategoryId): { name: string; count: number }[] {
+    const map = new Map<string, { name: string; count: number }>()
+    for (const p of products) {
+      if (category && p.categoryId !== category) continue
+      const key = p.brandName.trim().toLowerCase()
+      const cur = map.get(key)
+      if (cur) cur.count++
+      else map.set(key, { name: p.brandName.trim(), count: 1 })
+    }
+    return [...map.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'vi'))
+  },
+
+  /** Gợi ý khi gõ ô tìm kiếm (tìm không dấu trong danh mục đã tải) */
+  suggestSync(q: string, limit = 6): { products: Product[]; brands: string[] } {
+    const terms = normalizeVi(q).split(/\s+/).filter(Boolean)
+    if (!terms.length) return { products: [], brands: [] }
+    const hits = products.filter((p) => {
+      const hay = ' ' + (searchIndex.get(p.id) ?? normalizeVi(p.name))
+      return terms.every((t) => hay.includes(' ' + t))
+    })
+    hits.sort((a, b) => b.soldCount - a.soldCount || b.reviewCount - a.reviewCount)
+    const brands = [...new Set(products.filter((p) => terms.every((t) => (' ' + normalizeVi(p.brandName)).includes(' ' + t))).map((p) => p.brandName.trim()))]
+    return { products: hits.slice(0, limit), brands: brands.slice(0, 3) }
   },
 }
 

@@ -32,13 +32,16 @@ Nếu `npm run build` báo lỗi TypeScript, gửi nguyên văn lỗi cho ngư�
 | 5 | `supabase/migrations/20261028000001_orders_payments.sql` | Đơn hàng, thanh toán COD/QR mô phỏng, quản trị đơn và sản phẩm |
 | 6 | `supabase/migrations/20261029000001_banners.sql` | Banner trang chủ |
 | 7 | `supabase/migrations/20261104000001_reviews_follows_favorites.sql` | Đánh giá sản phẩm, theo dõi shop, yêu thích; số liệu thật; loại "Tạo kiểu tóc" |
+| 8 | `supabase/migrations/20261111000001_vouchers_notifications_reports.sql` | Mã giảm giá (sàn + shop), chống đặt trùng, tự hủy đơn QR quá 24 giờ, thông báo, báo cáo đánh giá, lọc thương hiệu/điểm/còn hàng, "Cách dùng" sản phẩm |
 
 Mỗi file chạy **một lần**. Báo "Success. No rows returned" là đúng.
 Nếu một file báo lỗi giữa chừng: chụp màn hình lỗi, **không** chạy tiếp file sau, không sửa file migration; báo người phụ trách database.
 
-Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 7 migration) để có 5 cửa hàng mẫu và 29 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng.
+Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 8 migration) để có 5 cửa hàng mẫu và 29 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng.
 
-**Project đã chạy 6 migration trước đó** (bản đang chạy trên Netlify): chỉ cần chạy thêm file số 7, một lần. Không chạy lại các file 1–6. File 7 tự đưa điểm/lượt đánh giá/người theo dõi/lượt bán mẫu về số thật và chuyển các sản phẩm sáp, gôm đang xếp nhầm vào "Dầu gội" sang "Tạo kiểu tóc".
+**Project đã chạy 7 migration trước đó** (bản đang chạy trên Netlify): chỉ cần chạy thêm file số 8, một lần, **trước khi** merge Pull Request Đợt B. Không chạy lại các file 1–7. File 8 không xóa dữ liệu cũ: đơn cũ có giảm giá = 0, sản phẩm cũ để trống "Cách dùng".
+
+(Lịch sử: project chạy 6 file trước Đợt A thì chạy file 7 rồi tới file 8.)
 
 Kiểm tra nhanh trong SQL Editor:
 
@@ -46,6 +49,8 @@ Kiểm tra nhanh trong SQL Editor:
 select max(total_count) from public.search_products();   -- 29 nếu đã chạy dữ liệu mẫu
 select shipping_fee from public.site_settings;    -- 30000
 select count(*) from public.products where rating > 0;  -- 0 ngay sau migration 7 (chưa có đánh giá thật)
+select count(*) from public.vouchers;                    -- 0 ngay sau migration 8 (Admin/người bán tự tạo mã)
+select public.expire_overdue_orders();                   -- trả về số đơn QR quá 24 giờ vừa tự hủy (thường là 0)
 ```
 
 ## 3. Cấu hình đăng nhập
@@ -114,6 +119,12 @@ Muốn người ngoài nhóm (giảng viên) đăng ký được: cấu hình SM
 | 18 | Admin ẩn đánh giá ở `/admin/reviews` (nhập lý do) | Đánh giá biến mất, điểm tính lại; người viết thấy lý do |
 | 19 | Khách bấm "Theo dõi" ở trang shop và "Yêu thích" ở trang sản phẩm | Hiện trong `/favorites`; số người theo dõi tăng 1 |
 | 20 | Chủ shop tải ảnh sản phẩm PNG lớn | Ảnh lưu dạng `.webp`, nhẹ hơn nhiều so với ảnh gốc |
+| 21 | Admin tạo mã toàn sàn ở `/admin/vouchers`, chủ shop tạo mã shop ở `/seller/vouchers` | Mã hiện ở trang shop và `/vouchers`; nhật ký có `voucher.create` |
+| 22 | Khách nhập 2 mã ở giỏ hàng (bỏ chọn 1 sản phẩm) rồi đặt hàng | Chỉ sản phẩm đã chọn được đặt, giảm giá hiện trên đơn, lượt dùng mã tăng 1; món không chọn vẫn trong giỏ |
+| 23 | Bấm "Đặt hàng" 2 lần thật nhanh (hoặc mạng chậm) | Chỉ có 1 đơn |
+| 24 | Sau bước 22: chủ shop mở chuông thông báo; xác nhận đơn; khách mở chuông | Chủ shop có "Đơn mới …", khách có "Đơn … đã được xác nhận" |
+| 25 | Khách báo cáo một đánh giá của người khác | Admin thấy ở `/admin/reviews` → "Bị khách báo cáo" kèm lý do |
+| 26 | Lọc sản phẩm theo thương hiệu, "Chỉ hiện còn hàng"; gõ tên trong ô tìm kiếm | Bộ lọc hiện thành thẻ, "Xóa tất cả" bỏ hết; ô tìm kiếm gợi ý sản phẩm, thương hiệu, lịch sử tìm |
 
 Kiểm tra bảo mật nhanh (DevTools → Console, khi đang đăng nhập tài khoản thường, chạy ở `npm run dev`):
 

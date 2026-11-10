@@ -50,6 +50,12 @@ export function AccountPage() {
           <Link to="/favorites" className={button('secondary', 'sm')}>
             Yêu thích và theo dõi
           </Link>
+          <Link to="/vouchers" className={button('secondary', 'sm')}>
+            Ví voucher
+          </Link>
+          <Link to="/notifications" className={button('secondary', 'sm')}>
+            Thông báo
+          </Link>
           <Link to="/seller" className={button('secondary', 'sm')}>
             {profile.role === 'seller' ? 'Kênh người bán' : 'Cửa hàng của tôi'}
           </Link>

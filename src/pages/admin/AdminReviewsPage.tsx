@@ -12,7 +12,7 @@ import { friendlyError } from '@/lib/errors'
 import { formatDateTime } from '@/lib/format'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { catalogService } from '@/services/catalog'
-import { reviewService, type AdminReview } from '@/services/reviews'
+import { REPORT_REASONS, reviewService, type AdminReview } from '@/services/reviews'
 
 const PAGE_SIZE = 20
 
@@ -32,7 +32,7 @@ export function AdminReviewsPage() {
 
   const load = useCallback(async () => {
     try {
-      const f = filter === 'hidden' ? { hidden: true } : filter === 'low' ? { maxRating: 2 } : {}
+      const f = filter === 'hidden' ? { hidden: true } : filter === 'low' ? { maxRating: 2 } : filter === 'reported' ? { reported: true } : {}
       setState({ status: 'ready', ...(await reviewService.adminList({ ...f, query: search }, page, PAGE_SIZE)) })
     } catch (err) {
       setState({ status: 'error', items: [], total: 0, error: friendlyError(err) })
@@ -65,6 +65,7 @@ export function AdminReviewsPage() {
     `whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm ${on ? 'border-primary bg-primary text-on-primary' : 'border-border bg-surface hover:border-primary'}`
   const filters = [
     { id: 'all', label: 'Tất cả' },
+    { id: 'reported', label: 'Bị khách báo cáo' },
     { id: 'low', label: 'Từ 2 sao trở xuống' },
     { id: 'hidden', label: 'Đang bị ẩn' },
   ]
@@ -176,6 +177,11 @@ function AdminReviewRow({ review: r, onDone }: { review: AdminReview; onDone: (t
           </p>
           {r.comment ? <p className="mt-2 whitespace-pre-line text-sm">{r.comment}</p> : <p className="mt-2 text-sm italic text-muted">Không có nhận xét</p>}
           {r.seller_reply && <p className="mt-2 rounded-lg bg-surface-2 p-2 text-xs">Cửa hàng trả lời: {r.seller_reply}</p>}
+          {r.report_count > 0 && (
+            <p className="mt-2 text-xs font-semibold text-sale">
+              {r.report_count} báo cáo: {(r.report_reasons ?? []).map((x) => REPORT_REASONS.find((rr) => rr.value === x)?.label ?? x).join(', ')}
+            </p>
+          )}
           {r.hidden && <p className="mt-2 text-xs font-semibold text-danger">Đang bị ẩn: {r.hidden_reason}</p>}
         </div>
         {!hiding && (

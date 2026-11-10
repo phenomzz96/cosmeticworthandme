@@ -1,7 +1,8 @@
 /**
  * ĐẶT HÀNG — /checkout
- * Trình duyệt chỉ gửi id sản phẩm + số lượng + id địa chỉ + phương thức thanh toán.
- * Database (hàm place_order) tính lại giá, phí vận chuyển, kiểm tra tồn kho rồi mới tạo đơn.
+ * Trình duyệt chỉ gửi id sản phẩm + số lượng + id địa chỉ + phương thức thanh toán + mã giảm giá + mã yêu cầu.
+ * Database (hàm place_order) tính lại giá, phí vận chuyển, giảm giá, kiểm tra tồn kho rồi mới tạo đơn.
+ * Mã yêu cầu (request id) chống tạo 2 đơn khi bấm Đặt hàng 2 lần hoặc mạng chập chờn.
  * Số tiền hiển thị ở đây chỉ là tạm tính để khách xem trước.
  */
 import { useEffect, useMemo, useState } from 'react'
@@ -13,12 +14,15 @@ import { AddressCard, AddressForm, useAddresses } from '@/features/address/Addre
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useBrand } from '@/features/brand/BrandProvider'
 import { useCart, type CartItem } from '@/features/cart/CartProvider'
+import { VoucherBox } from '@/features/vouchers/VoucherBox'
+import { readCheckoutSelection, writeCheckoutSelection } from '@/lib/checkoutSelection'
 import { friendlyError } from '@/lib/errors'
 import { formatPrice } from '@/lib/format'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { addressService } from '@/services/addresses'
 import { catalogService } from '@/services/catalog'
 import { orderService } from '@/services/orders'
+import type { VoucherPreview } from '@/services/vouchers'
 import { paymentMethodLabels, type PaymentMethod } from '@/types/order'
 
 export function CheckoutPage() {
@@ -26,7 +30,15 @@ export function CheckoutPage() {
   const navigate = useNavigate()
   const { settings } = useBrand()
   const { isSuspended } = useAuth()
-  const { items, subtotal, syncing, removeOrdered } = useCart()
+  const { items: cartItems, syncing, removeOrdered } = useCart()
+  // Chỉ đặt các sản phẩm đã chọn ở giỏ hàng (không có lựa chọn → cả giỏ)
+  const [selection] = useState(() => readCheckoutSelection())
+  const items = selection.productIds ? cartItems.filter((i) => selection.productIds!.includes(i.productId)) : cartItems
+  const subtotal = items.reduce((n, i) => n + i.lineTotal, 0)
+  const [codes, setCodes] = useState<string[]>(selection.voucherCodes)
+  const [preview, setPreview] = useState<VoucherPreview | null>(null)
+  // Một mã yêu cầu cho mỗi lần vào trang đặt hàng; gửi lại cùng mã thì database trả về đơn đã tạo
+  const [requestId] = useState(() => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : null))
   const addresses = useAddresses()
   const [addressId, setAddressId] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
@@ -48,6 +60,7 @@ export function CheckoutPage() {
     return [...map.entries()]
   }, [items])
   const shipping = groups.length * settings.shippingFee
+  const discount = preview ? preview.items_subtotal - preview.after_discount : 0
 
   if (syncing) {
     return (
@@ -76,8 +89,10 @@ export function CheckoutPage() {
     setPlacing(true)
     try {
       const lines = items.map((i) => ({ productId: i.productId, quantity: i.quantity }))
-      const result = await orderService.placeOrder({ lines, addressId, paymentMethod: method, note })
+      const usable = codes.filter((c) => !preview?.errors.some((e) => e.code === c))
+      const result = await orderService.placeOrder({ lines, addressId, paymentMethod: method, note, voucherCodes: usable, requestId })
       removeOrdered(lines.map((l) => l.productId))
+      writeCheckoutSelection({ productIds: null, voucherCodes: [] })
       void catalogService.refresh().catch(() => undefined)
       navigate(`/orders/${result.code}?new=1`, { replace: true })
     } catch (err) {
@@ -92,7 +107,7 @@ export function CheckoutPage() {
   return (
     <div className="container-page py-6 md:py-8">
       <Breadcrumbs items={[{ label: 'Giỏ hàng', to: '/cart' }, { label: 'Đặt hàng' }]} />
-      <h1 className="mt-3 text-3xl font-bold tracking-tight">Đặt hàng</h1>
+      <h1 className="mt-4 text-4xl md:text-5xl">Đặt hàng</h1>
 
       {isSuspended && (
         <div className="mt-4">
@@ -100,7 +115,7 @@ export function CheckoutPage() {
         </div>
       )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-6">
           {/* 1. Địa chỉ */}
           <section className="rounded-card border border-border bg-surface p-5" aria-labelledby="ship-heading">
@@ -222,7 +237,16 @@ export function CheckoutPage() {
         </div>
 
         <aside className="h-fit rounded-card border border-border bg-surface p-5 lg:sticky lg:top-36">
-          <h2 className="text-lg font-semibold">Tóm tắt đơn hàng</h2>
+          <h2 className="font-display text-2xl font-semibold">Mã giảm giá</h2>
+          <div className="mt-3">
+            <VoucherBox
+              lines={items.map((i) => ({ productId: i.productId, quantity: i.quantity, shopId: i.product.shopId }))}
+              codes={codes}
+              onCodesChange={setCodes}
+              onPreview={setPreview}
+            />
+          </div>
+          <h2 className="mt-6 border-t border-border pt-5 font-display text-2xl font-semibold">Tóm tắt đơn hàng</h2>
           <dl className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted">Tạm tính ({items.reduce((n, i) => n + i.quantity, 0)} sản phẩm)</dt>
@@ -232,18 +256,24 @@ export function CheckoutPage() {
               <dt className="text-muted">Phí vận chuyển ({groups.length} đơn)</dt>
               <dd className="tabular-nums">{shipping ? formatPrice(shipping) : 'Miễn phí'}</dd>
             </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-success">
+                <dt>Giảm giá</dt>
+                <dd className="tabular-nums">−{formatPrice(discount)}</dd>
+              </div>
+            )}
             <div className="flex justify-between border-t border-border pt-3 text-base font-semibold">
               <dt>Tổng thanh toán</dt>
-              <dd className="tabular-nums">{formatPrice(subtotal + shipping)}</dd>
+              <dd className="tabular-nums">{formatPrice(Math.max(0, subtotal + shipping - discount))}</dd>
             </div>
           </dl>
-          <p className="mt-2 text-xs text-muted">Giá, phí và tồn kho được hệ thống kiểm tra lại khi bạn bấm Đặt hàng.</p>
+          <p className="mt-2 text-xs text-muted">Giá, phí, giảm giá và tồn kho được hệ thống kiểm tra lại khi bạn bấm Đặt hàng.</p>
           {error && (
             <div className="mt-4">
               <Alert kind="error">{error}</Alert>
             </div>
           )}
-          <button type="button" className={`${button('primary', 'lg')} mt-5 w-full`} disabled={placing || isSuspended || !addressId} onClick={() => void place()}>
+          <button type="button" className={`${button('dark', 'lg')} mt-5 w-full`} disabled={placing || isSuspended || !addressId} onClick={() => void place()}>
             {placing ? 'Đang đặt hàng...' : 'Đặt hàng'}
           </button>
           {!addressId && addresses.status === 'ready' && <p className="mt-2 text-center text-xs text-muted">Thêm địa chỉ giao hàng để đặt hàng.</p>}

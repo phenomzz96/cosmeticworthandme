@@ -53,6 +53,11 @@ export interface ShopOrder {
   status: OrderStatus
   items_subtotal: number
   shipping_fee: number
+  /** Giảm giá từ voucher của shop / phần voucher sàn chia cho đơn con này (migration 008) */
+  shop_discount?: number
+  platform_discount?: number
+  shop_voucher_code?: string | null
+  platform_voucher_code?: string | null
   total: number
   cancel_reason: string | null
   cancelled_by: string | null
@@ -93,6 +98,7 @@ export interface Order {
   payment_note: string | null
   items_subtotal: number
   shipping_total: number
+  discount_total?: number
   grand_total: number
   created_at: string
   shop_orders: ShopOrder[]

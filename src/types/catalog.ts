@@ -99,6 +99,8 @@ export interface Product {
   visual: ProductVisual
 
   featured?: boolean
+  /** Cách dùng do cửa hàng nhập (có thể trống) */
+  howToUse?: string
   /** Sản phẩm mẫu (dữ liệu demo, dùng hình minh họa) — sản phẩm thật luôn có ảnh do cửa hàng tải lên */
   isSample?: boolean
   createdAt: string
@@ -136,5 +138,11 @@ export interface ProductQuery {
   minPrice?: number
   maxPrice?: number
   skinType?: SkinType
+  /** Lọc theo thương hiệu (không phân biệt hoa thường) */
+  brands?: string[]
+  /** Chỉ sản phẩm có điểm đánh giá từ mức này trở lên */
+  minRating?: number
+  /** Chỉ sản phẩm còn hàng */
+  inStock?: boolean
   sort?: ProductSort
 }

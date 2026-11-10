@@ -8,7 +8,7 @@ import { friendlyError } from '@/lib/errors'
 import { formatDate } from '@/lib/format'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import { catalogService } from '@/services/catalog'
-import { EMPTY_REVIEWS, REVIEW_MAX_LENGTH, REVIEWS_PAGE_SIZE, reviewService, type ProductReviews, type ReviewItem } from '@/services/reviews'
+import { EMPTY_REVIEWS, REPORT_REASONS, REVIEW_MAX_LENGTH, REVIEWS_PAGE_SIZE, reviewService, type ProductReviews, type ReviewItem } from '@/services/reviews'
 import type { Product } from '@/types/catalog'
 
 const ratingWords = ['', 'Rất tệ', 'Chưa tốt', 'Bình thường', 'Tốt', 'Rất tốt']
@@ -98,8 +98,8 @@ export function ReviewsSection({ product }: { product: Product }) {
   const hasMore = items.length < r.summary.count && r.items.length === REVIEWS_PAGE_SIZE
 
   return (
-    <section id="reviews" className="mt-14 scroll-mt-40" aria-labelledby="reviews-heading">
-      <h2 id="reviews-heading" className="text-xl font-bold">
+    <section id="reviews" className="mt-20 scroll-mt-40" aria-labelledby="reviews-heading">
+      <h2 id="reviews-heading" className="section-title">
         Đánh giá sản phẩm
       </h2>
 
@@ -155,6 +155,9 @@ export function ReviewsSection({ product }: { product: Product }) {
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                       <Stars value={it.rating} size={14} />
                       <span className="text-sm font-semibold">{it.reviewer_name}</span>
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-success" title="Chỉ khách đã nhận hàng mới viết được đánh giá">
+                        <Icon name="check" size={13} /> Đã mua hàng
+                      </span>
                       {it.is_mine && <span className="rounded-full bg-primary-soft px-2 py-0.5 text-xs font-medium text-primary">Của bạn</span>}
                       <span className="text-xs text-muted">
                         {formatDate(it.created_at)}
@@ -170,6 +173,7 @@ export function ReviewsSection({ product }: { product: Product }) {
                         <p className="mt-1 whitespace-pre-line">{it.seller_reply}</p>
                       </div>
                     )}
+                    {!it.is_mine && user && <ReportReview reviewId={it.id} />}
                   </li>
                 ))}
               </ul>
@@ -330,6 +334,54 @@ function ReviewFormArea({
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+/** Báo cáo đánh giá vi phạm (quảng cáo, xúc phạm, lộ thông tin cá nhân...) — Admin xem ở /admin/reviews */
+function ReportReview({ reviewId }: { reviewId: string }) {
+  const [open, setOpen] = useState(false)
+  const [reason, setReason] = useState<string>('')
+  const [state, setState] = useState<'idle' | 'busy' | 'done' | string>('idle')
+  if (state === 'done') return <p className="mt-2 text-xs text-muted">Đã gửi báo cáo. Cảm ơn bạn!</p>
+  if (!open)
+    return (
+      <button type="button" className="mt-2 text-xs text-muted hover:text-text" onClick={() => setOpen(true)}>
+        Báo cáo đánh giá
+      </button>
+    )
+  const send = async () => {
+    if (!reason) return setState('Hãy chọn lý do.')
+    setState('busy')
+    try {
+      await reviewService.report(reviewId, reason)
+      setState('done')
+    } catch (e) {
+      setState(friendlyError(e))
+    }
+  }
+  return (
+    <div className="mt-3 rounded-xl border border-border p-3 text-sm">
+      <fieldset>
+        <legend className="text-xs font-semibold">Lý do báo cáo</legend>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {REPORT_REASONS.map((r) => (
+            <label key={r.value} className={`cursor-pointer rounded-full border px-3 py-1 text-xs ${reason === r.value ? 'border-ink bg-ink text-on-ink' : 'border-border'}`}>
+              <input type="radio" name={`report-${reviewId}`} value={r.value} className="sr-only" checked={reason === r.value} onChange={() => setReason(r.value)} />
+              {r.label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <div className="mt-3 flex items-center gap-2">
+        <button type="button" className={button('dark', 'sm')} disabled={state === 'busy'} onClick={() => void send()}>
+          Gửi báo cáo
+        </button>
+        <button type="button" className={button('ghost', 'sm')} onClick={() => setOpen(false)}>
+          Hủy
+        </button>
+        {state !== 'idle' && state !== 'busy' && <span className="text-xs text-danger">{state}</span>}
+      </div>
     </div>
   )
 }
