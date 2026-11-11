@@ -308,6 +308,77 @@ export function ScentArt({ className = '' }: { className?: string }) {
 }
 
 /** Bướm nhỏ trang trí (dùng ở các khối khác) */
+/**
+ * Tranh 4: Skincare Architect 3D — khuôn mặt cách điệu với lưới 3D, các vùng thoa sáng lên theo thứ tự chu trình,
+ * mặt trời (sáng) / mặt trăng (tối). Chỉ minh họa, không phải mô hình thật của module.
+ */
+export function RoutineArt({ className = '' }: { className?: string }) {
+  const zones = [
+    { x: 300, y: 222, n: 1, d: 0 },
+    { x: 246, y: 318, n: 2, d: 0.5 },
+    { x: 354, y: 318, n: 3, d: 1 },
+    { x: 300, y: 402, n: 4, d: 1.5 },
+  ]
+  return (
+    <svg viewBox="0 0 600 600" className={className} role="img" aria-label="Minh họa: khuôn mặt với lưới 3D và các vùng thoa theo thứ tự chu trình sáng – tối">
+      <Defs id="rt">
+        <radialGradient id="rt-face" cx="0.45" cy="0.38" r="0.7">
+          <stop offset="0" stopColor={v('petal-4')} />
+          <stop offset="1" stopColor={v('petal-3')} />
+        </radialGradient>
+        <radialGradient id="rt-glow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor={v('wing-1')} stopOpacity={0.85} />
+          <stop offset="1" stopColor={v('wing-1')} stopOpacity={0} />
+        </radialGradient>
+      </Defs>
+      <path d={frame} fill="url(#rt-sky)" />
+      {/* Mặt trời (sáng) và mặt trăng (tối) */}
+      <g transform="translate(118 168)">
+        <circle r={26} fill={v('heart')} opacity={0.9} />
+        {Array.from({ length: 8 }, (_, i) => (
+          <path key={i} d="M0 -36 L0 -46" stroke={v('heart')} strokeWidth={4} strokeLinecap="round" transform={`rotate(${i * 45})`} />
+        ))}
+      </g>
+      <g transform="translate(482 168)">
+        <circle r={28} fill={v('wing-1')} />
+        <circle r={26} cx={12} cy={-8} fill="url(#rt-sky)" />
+      </g>
+      {/* Tóc + khuôn mặt */}
+      <path d="M182 300 C 172 170 250 112 312 116 C 390 120 436 184 420 300 C 404 230 360 196 300 194 C 240 196 198 232 182 300Z" fill={v('hair')} />
+      <ellipse cx={300} cy={315} rx={112} ry={142} fill="url(#rt-face)" />
+      {/* Lưới 3D */}
+      <g fill="none" stroke={v('wing-1')} strokeWidth={1.2} opacity={0.45}>
+        {[-80, -40, 0, 40, 80].map((dx) => (
+          <ellipse key={dx} cx={300} cy={315} rx={Math.abs(dx) || 1} ry={142} />
+        ))}
+        {[-100, -50, 0, 50, 100].map((dy) => {
+          const ry = 142, rx = 112, k = Math.sqrt(Math.max(0, 1 - (dy * dy) / (ry * ry)))
+          return <ellipse key={dy} cx={300} cy={315 + dy} rx={rx * k} ry={10 * k} />
+        })}
+      </g>
+      {/* Mắt nhắm, nụ cười */}
+      <path d="M248 300 Q 262 310 276 300 M324 300 Q 338 310 352 300" fill="none" stroke={v('hair')} strokeWidth={3} strokeLinecap="round" />
+      <path d="M282 372 Q 300 384 318 372" fill="none" stroke={v('wing-2')} strokeWidth={4} strokeLinecap="round" />
+      {/* Vùng thoa theo thứ tự */}
+      {zones.map((z) => (
+        <g key={z.n} transform={`translate(${z.x} ${z.y})`}>
+          <circle r={30} fill="url(#rt-glow)" className="art-pulse" style={{ animationDelay: `${z.d}s` }} />
+          <circle r={13} fill={v('wing-1')} />
+          <text y={5} textAnchor="middle" fontSize={15} fontWeight={700} fill={v('petal-4')}>
+            {z.n}
+          </text>
+        </g>
+      ))}
+      {/* Chai lọ */}
+      <ellipse cx={300} cy={548} rx={230} ry={14} fill={v('wing-line')} opacity={0.08} />
+      <Pump x={120} y={545} h={150} body={v('petal-1')} cap={v('gold')} />
+      <Dropper x={480} y={545} h={170} liquid="rt-liquid" />
+      <Jar x={395} y={545} w={84} body={v('petal-2')} lid={v('gold')} />
+      <Butterfly x={470} y={300} s={0.75} rotate={12} gradient="rt-wing" delay={0.4} />
+    </svg>
+  )
+}
+
 export function ButterflyMark({ className = '', id = 'bm' }: { className?: string; id?: string }) {
   return (
     <svg viewBox="-60 -50 120 100" className={className} aria-hidden="true">

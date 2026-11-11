@@ -1,3 +1,4 @@
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useSearchParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
@@ -57,7 +58,7 @@ export function MegaMenu() {
 
   return (
     <div className="relative hidden border-t border-border lg:block" onMouseLeave={hide}>
-      <nav className="container-page flex items-center justify-center gap-6 xl:gap-8" aria-label="Danh mục">
+      <ScrollRow as="nav" aria-label="Danh mục" wrapClassName="container-page" className="mx-auto flex w-fit max-w-full items-center gap-3.5 xl:gap-5">
         {categories.map((c) => (
           <div
             key={c.id}
@@ -81,14 +82,18 @@ export function MegaMenu() {
         <NavLink to="/brands" className={({ isActive }) => itemClass(isActive)} onMouseEnter={hide}>
           Thương hiệu
         </NavLink>
-        <NavLink to="/shops" className={({ isActive }) => itemClass(isActive)} onMouseEnter={hide}>
+        {/* Màn hình 1024–1279px không đủ chỗ: "Cửa hàng" vẫn có ở chân trang và trang chủ */}
+        <NavLink to="/shops" className={({ isActive }) => `${itemClass(isActive)} max-xl:!hidden`} onMouseEnter={hide}>
           Cửa hàng
         </NavLink>
         <NavLink to="/beauty-finder" className={({ isActive }) => `${itemClass(isActive)} !text-primary`} onMouseEnter={hide}>
           <Icon name="sparkle" size={15} />
           Beauty Finder
         </NavLink>
-      </nav>
+        <NavLink to="/skincare-architect" className={({ isActive }) => `${itemClass(isActive)} !text-primary`} onMouseEnter={hide}>
+          Skincare 3D
+        </NavLink>
+      </ScrollRow>
 
       {cat && (
         <div

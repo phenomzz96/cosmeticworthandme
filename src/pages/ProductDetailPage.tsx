@@ -1,3 +1,4 @@
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
@@ -269,7 +270,7 @@ function ProductDetail({ product: initial }: { product: Product }) {
 
       {/* Mô tả / Thành phần / Cách dùng / Thông tin */}
       <section className="mt-16" aria-label="Chi tiết sản phẩm">
-        <div className="scrollbar-none flex gap-7 overflow-x-auto border-b border-border" role="tablist" aria-label="Chi tiết sản phẩm">
+        <ScrollRow role="tablist" aria-label="Chi tiết sản phẩm" className="flex gap-7 border-b border-border">
           {tabs.map((t) => (
             <button
               key={t.id}
@@ -284,7 +285,7 @@ function ProductDetail({ product: initial }: { product: Product }) {
               {t.label}
             </button>
           ))}
-        </div>
+        </ScrollRow>
         <div className="grid gap-8 pt-6 lg:grid-cols-[1.4fr_1fr]">
           <div id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`} className="min-w-0 leading-relaxed">
             {tab === 'desc' && <p className="whitespace-pre-line">{product.description}</p>}

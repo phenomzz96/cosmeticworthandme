@@ -3,6 +3,7 @@
  * - Chưa có shop → trang mở cửa hàng
  * - Có shop → thanh tab + thông báo trạng thái (chờ duyệt / bị từ chối / tạm ngưng)
  */
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { createContext, Suspense, useCallback, useContext, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { Alert } from '@/components/ui/Form'
@@ -103,7 +104,7 @@ export function SellerLayout() {
               </Link>
             )}
           </div>
-          <nav aria-label="Kênh người bán" className="scrollbar-none -mb-px mt-4 flex gap-1 overflow-x-auto">
+          <ScrollRow as="nav" aria-label="Kênh người bán" fade="surface" wrapClassName="-mb-px mt-4" className="flex gap-1 lg:flex-wrap lg:gap-x-0">
             {tabs.map((t) => (
               <NavLink
                 key={t.to}
@@ -116,7 +117,7 @@ export function SellerLayout() {
                 {t.label}
               </NavLink>
             ))}
-          </nav>
+          </ScrollRow>
         </div>
       </div>
       <div className="container-page pt-6">

@@ -3,6 +3,7 @@
  * Xem mọi đơn; xác nhận / từ chối thanh toán QR mô phỏng; đánh dấu đã hoàn tiền; hủy đơn con khi có khiếu nại.
  * Mọi thao tác qua hàm trong database (kiểm tra quyền Admin, ghi nhật ký).
  */
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Alert, TextAreaField } from '@/components/ui/Form'
@@ -76,7 +77,7 @@ export function AdminOrdersPage() {
       <p className="mt-1 text-sm text-muted">Đơn chờ xác nhận thanh toán nằm đầu danh sách. Thanh toán QR là mô phỏng: xác nhận nghĩa là giả lập đã nhận tiền.</p>
 
       <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="scrollbar-none flex gap-2 overflow-x-auto" role="group" aria-label="Lọc đơn">
+        <ScrollRow role="group" aria-label="Lọc đơn" className="flex gap-2">
           <button type="button" aria-pressed={!payment && !refund} className={chip(!payment && !refund)} onClick={() => update({ payment: null, refund: null })}>
             Tất cả
           </button>
@@ -86,7 +87,7 @@ export function AdminOrdersPage() {
           <button type="button" aria-pressed={refund} className={chip(refund)} onClick={() => update({ refund: '1', payment: null })}>
             Chờ hoàn tiền
           </button>
-        </div>
+        </ScrollRow>
         <div className="flex flex-col gap-2 sm:flex-row">
           <select value={status ?? ''} onChange={(e) => update({ status: e.target.value || null })} className="h-10 rounded-full border border-border bg-surface px-3 text-sm" aria-label="Trạng thái đơn con">
             <option value="">Mọi trạng thái đơn</option>

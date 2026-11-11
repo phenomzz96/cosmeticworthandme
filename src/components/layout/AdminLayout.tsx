@@ -1,3 +1,4 @@
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { Suspense } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { Skeleton } from '@/components/ui/primitives'
@@ -32,7 +33,7 @@ export function AdminLayout() {
               {profile?.email} · {profile ? roleLabels[profile.role] : ''}
             </p>
           </div>
-          <nav aria-label="Quản trị" className="scrollbar-none -mb-px flex w-full gap-1 overflow-x-auto sm:w-auto">
+          <ScrollRow as="nav" aria-label="Quản trị" fade="surface" wrapClassName="-mb-px w-full" className="flex gap-1 lg:flex-wrap lg:gap-x-0">
             {tabs.map((t) => (
               <NavLink
                 key={t.to}
@@ -47,7 +48,7 @@ export function AdminLayout() {
                 {t.label}
               </NavLink>
             ))}
-          </nav>
+          </ScrollRow>
         </div>
       </div>
       <Suspense

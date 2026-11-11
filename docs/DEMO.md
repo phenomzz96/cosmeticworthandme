@@ -13,7 +13,7 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 
 ## 1. Khách hàng (4 phút)
 
-1. Trang chủ: giới thiệu thương hiệu, banner (nếu đã thêm), danh mục, chế độ sáng/tối.
+1. Trang chủ: giới thiệu thương hiệu, banner (trang 2 giới thiệu **Skincare Architect 3D**), khối "Skincare Architect 3D" 3 bước, danh mục, chế độ sáng/tối.
 2. **Beauty Finder**: chọn nam/nữ và nhóm sản phẩm, trả lời 4–7 câu → gợi ý sản phẩm kèm % phù hợp và lý do. Nhấn mạnh: gợi ý dựa trên thông tin sản phẩm, không chẩn đoán y khoa.
 3. Gõ "nia" ở ô tìm kiếm → gợi ý hiện ngay. Tìm "kem chong nang" (không dấu) → lọc theo thương hiệu, giá, "chỉ còn hàng" → bộ lọc hiện thành thẻ, "Xóa tất cả".
 4. Mở chi tiết sản phẩm: nhiều ảnh, tab Thành phần / Cách dùng, **So sánh** 2 sản phẩm (`/compare`), **Chia sẻ**.

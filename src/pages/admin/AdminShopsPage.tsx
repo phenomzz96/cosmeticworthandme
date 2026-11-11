@@ -3,6 +3,7 @@
  * Danh sách shop (chờ duyệt lên đầu), lọc theo trạng thái, tìm theo tên/email chủ shop.
  * Duyệt / từ chối / tạm ngưng / mở lại đều qua hàm admin_set_shop_status trong database.
  */
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Alert } from '@/components/ui/Form'
@@ -66,7 +67,7 @@ export function AdminShopsPage() {
       <p className="mt-1 text-sm text-muted">Shop mới ở trạng thái chờ duyệt. Sản phẩm chỉ hiển thị với khách khi shop đang hoạt động. Duyệt shop sẽ chuyển chủ shop thành Người bán.</p>
 
       <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="scrollbar-none flex gap-2 overflow-x-auto" role="group" aria-label="Lọc theo trạng thái">
+        <ScrollRow role="group" aria-label="Lọc theo trạng thái" className="flex gap-2">
           {statusFilters.map((s) => (
             <button
               key={s || 'all'}
@@ -78,7 +79,7 @@ export function AdminShopsPage() {
               {s ? shopStatusLabels[s] : 'Tất cả'}
             </button>
           ))}
-        </div>
+        </ScrollRow>
         <input
           type="search"
           value={searchInput}

@@ -1,3 +1,4 @@
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
@@ -8,7 +9,7 @@ import { categories } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
 import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
 import { BannerCarousel } from '@/features/home/BannerCarousel'
-import { BloomArt, ButterflyMark, GroomArt, ScentArt } from '@/features/home/HeroArt'
+import { BloomArt, ButterflyMark, GroomArt, RoutineArt, ScentArt } from '@/features/home/HeroArt'
 import { skinTypeOptions } from '@/features/beauty-finder/questions'
 import { Stars } from '@/features/reviews/ReviewsSection'
 import { ShopCard } from '@/features/shops/ShopCard'
@@ -160,6 +161,8 @@ export function HomePage() {
 
       <FinderShowcase />
 
+      <ArchitectShowcase />
+
       {/* ĐÁNH GIÁ THẬT CỦA KHÁCH */}
       {reviews.status === 'success' && reviews.data.length > 0 && (
         <section className="container-page mt-20" aria-labelledby="reviews-heading">
@@ -186,7 +189,7 @@ export function HomePage() {
       <section className="container-page mt-20" aria-labelledby="shops-heading">
         <SectionHead eyebrow="Cửa hàng" title={`Cửa hàng trên ${settings.name}`} id="shops-heading" link={{ to: '/shops', label: 'Tất cả cửa hàng' }} />
         {shops.status === 'success' && (
-          <ul className="scrollbar-none -mx-4 mt-8 flex snap-x gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 lg:grid-cols-4">
+          <ScrollRow as="ul" aria-label="Cửa hàng nổi bật" wrapClassName="-mx-4 mt-8 md:mx-0" className="flex snap-x gap-4 px-4 pb-2 md:grid md:grid-cols-3 md:overflow-visible md:px-0 lg:grid-cols-4">
             {/* Chỉ giới thiệu shop đang có hàng; shop chưa có sản phẩm vẫn xem được ở trang Cửa hàng */}
             {shops.data
               .filter((s) => catalogService.countProductsByShop(s.id) > 0)
@@ -196,7 +199,7 @@ export function HomePage() {
                   <ShopCard shop={s} />
                 </li>
               ))}
-          </ul>
+          </ScrollRow>
         )}
         {shops.status === 'loading' && <div className="mt-8 h-40 animate-pulse rounded-card bg-surface-2" />}
       </section>
@@ -231,6 +234,17 @@ const heroSlides = [
     primary: { to: '/products', label: 'Mua sắm ngay' },
     secondary: { to: '/beauty-finder', label: 'Bắt đầu Beauty Finder' },
     Art: BloomArt,
+  },
+  {
+    key: 'architect',
+    eyebrow: 'Mới · Skincare Architect 3D',
+    title: 'Xếp chu trình sáng – tối,',
+    accent: 'xem thoa ở đâu trên mô hình 3D.',
+    text: () =>
+      'Trả lời Beauty Finder một lần: hệ thống chọn sản phẩm, sắp thứ tự từng bước, báo bước còn thiếu và tổ hợp cần thận trọng. Chỉ minh họa vị trí thoa, không chẩn đoán da.',
+    primary: { to: '/skincare-architect', label: 'Thử Skincare Architect 3D' },
+    secondary: { to: '/beauty-finder?focus=skincare', label: 'Làm Beauty Finder trước' },
+    Art: RoutineArt,
   },
   {
     key: 'chang',
@@ -454,6 +468,62 @@ function StoryCollage({ products }: { products: Product[] }) {
         </div>
       ))}
     </div>
+  )
+}
+
+/** Quảng bá tính năng chuyên biệt Skincare Architect 3D */
+function ArchitectShowcase() {
+  const steps = [
+    { n: 1, title: 'Trả lời Beauty Finder một lần', text: 'Loại da, vấn đề da, số bước bạn muốn: không phải hỏi lại.' },
+    { n: 2, title: 'Tự xếp chu trình sáng – tối', text: 'Sắp thứ tự từng bước, báo bước còn thiếu, sản phẩm trùng công dụng và tổ hợp cần thận trọng.' },
+    { n: 3, title: 'Xem thoa ở đâu trên mô hình 3D', text: 'Từng bước sáng lên đúng vùng da. Máy không hỗ trợ 3D thì xem sơ đồ 2D.' },
+  ]
+  return (
+    <section className="container-page mt-20" aria-labelledby="architect-home-heading">
+      <div
+        className="relative grid items-center gap-8 overflow-hidden rounded-[28px] p-7 sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:gap-12"
+        style={{ background: 'linear-gradient(140deg, var(--art-night-2), var(--art-night-1))' }}
+      >
+        <div className="min-w-0">
+          <p className="eyebrow inline-flex items-center gap-2 !text-[var(--art-moth)]">
+            <span className="rounded-full bg-[var(--art-moth)] px-2 py-0.5 text-[11px] font-bold tracking-normal text-[var(--art-night-1)]">MỚI</span>
+            Tính năng chuyên biệt
+          </p>
+          <h2 id="architect-home-heading" className="mt-3 font-display text-4xl font-semibold leading-tight text-[var(--art-petal-4)] sm:text-5xl">
+            Skincare Architect 3D
+          </h2>
+          <p className="mt-4 max-w-xl leading-relaxed text-[var(--art-petal-4)] opacity-80">
+            Biến sản phẩm bạn đã mua hoặc được gợi ý thành một chu trình chăm sóc da rõ ràng, có thứ tự, kèm mô hình khuôn mặt chỉ vị trí thoa.
+          </p>
+          <ol className="mt-7 grid gap-4">
+            {steps.map((s) => (
+              <li key={s.n} className="flex gap-4">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--art-wing-1)] font-bold text-[var(--art-petal-4)]">{s.n}</span>
+                <span className="min-w-0">
+                  <span className="block font-semibold text-[var(--art-petal-4)]">{s.title}</span>
+                  <span className="block text-sm leading-relaxed text-[var(--art-petal-4)] opacity-75">{s.text}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link to="/skincare-architect" className="inline-flex h-12 items-center gap-2 rounded-control bg-[var(--art-petal-4)] px-6 text-[15px] font-semibold text-[var(--art-night-1)] hover:opacity-90">
+              Thử ngay <Icon name="arrowRight" size={18} />
+            </Link>
+            <Link
+              to="/beauty-finder?focus=skincare"
+              className="inline-flex h-12 items-center gap-2 rounded-control border border-white/25 px-6 text-[15px] font-medium text-[var(--art-petal-4)] hover:bg-white/10"
+            >
+              <Icon name="sparkle" size={18} /> Làm Beauty Finder trước
+            </Link>
+          </div>
+          <p className="mt-5 text-xs text-[var(--art-petal-4)] opacity-60">Chỉ minh họa vị trí thoa theo thông tin cửa hàng khai báo, không dự đoán hiệu quả và không chẩn đoán da liễu.</p>
+        </div>
+        <div className="mx-auto w-full max-w-[420px]">
+          <RoutineArt className="h-auto w-full" />
+        </div>
+      </div>
+    </section>
   )
 }
 
