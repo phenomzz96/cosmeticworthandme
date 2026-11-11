@@ -1,6 +1,11 @@
 /* tokens.css (biến màu, font) đứng đầu; font tải bằng thẻ link trong index.html */
 @import './tokens.css';
 @import 'tailwindcss';
+/* Không quét mã module của nhóm 3D, script và tài liệu: tránh sinh class thừa từ chữ trong các file đó */
+@source not "../../modules";
+@source not "../../scripts";
+@source not "../../docs";
+@source not "../../supabase";
 
 /* dark: trong Tailwind dựa theo data-theme trên <html>, không theo media query */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
