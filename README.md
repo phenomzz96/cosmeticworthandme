@@ -132,7 +132,7 @@ Database kiểm tra toàn bộ: chỉ chủ shop sửa shop/sản phẩm/ảnh/�
 |---|---|
 | Tên thương hiệu, logo, favicon, màu chủ đạo, phí vận chuyển | Trang **/admin/brand** trên website (Admin). Lưu trên Supabase, mọi thiết bị thấy giống nhau, có lịch sử để khôi phục |
 | Giá trị mặc định khi chưa kết nối Supabase, tên nhóm, thành viên | `src/config/brand.ts` |
-| Bảng màu nền, font chữ, bo góc (cả sáng và tối) | `src/styles/tokens.css` |
+| Bảng màu nền, font chữ, bo góc (cả sáng và tối) | `src/styles/tokens.css` (đổi font: thêm thẻ link font trong `index.html`) |
 
 Ảnh logo nhận PNG/JPG/WebP tối đa 2 MB (không nhận SVG vì có thể chứa mã script).
 Chưa có logo thì website dùng **logo chữ dự phòng** sinh từ tên thương hiệu.

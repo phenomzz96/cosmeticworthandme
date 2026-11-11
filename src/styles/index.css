@@ -1,6 +1,11 @@
-/* tokens.css phải đứng đầu để link font hợp lệ */
+/* tokens.css (biến màu, font) đứng đầu; font tải bằng thẻ link trong index.html */
 @import './tokens.css';
 @import 'tailwindcss';
+/* Không quét mã module của nhóm 3D, script và tài liệu: tránh sinh class thừa từ chữ trong các file đó */
+@source not "../../modules";
+@source not "../../scripts";
+@source not "../../docs";
+@source not "../../supabase";
 
 /* dark: trong Tailwind dựa theo data-theme trên <html>, không theo media query */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
@@ -193,6 +198,19 @@
   to { opacity: 1; transform: none; }
 }
 .hero-in { animation: hero-in 600ms ease both; }
+
+/* Chuyển trang: nội dung mới hiện dần (chỉ đổi độ mờ, không dùng transform để không ảnh hưởng phần tử cố định) */
+@keyframes page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.page-in { animation: page-in 220ms ease-out both; }
+
+/* Khối dưới màn hình đầu: trình duyệt chỉ vẽ khi sắp cuộn tới (trang dài cuộn mượt hơn) */
+.defer-render {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
 @media (prefers-reduced-motion: reduce) {
-  .hero-in { animation: none; }
+  .hero-in, .page-in { animation: none; }
 }

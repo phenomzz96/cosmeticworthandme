@@ -9,6 +9,10 @@ export interface CheckoutSelection {
   /** id sản phẩm được chọn; null = cả giỏ */
   productIds: string[] | null
   voucherCodes: string[]
+  /** Sản phẩm có trong giỏ lúc lưu: sản phẩm thêm vào giỏ sau đó được chọn sẵn */
+  knownIds?: string[]
+  /** Lựa chọn tạo bởi nút "Mua ngay": chỉ dùng cho trang đặt hàng, trang giỏ hàng không áp dụng */
+  buyNow?: boolean
 }
 
 export function readCheckoutSelection(): CheckoutSelection {
@@ -18,6 +22,8 @@ export function readCheckoutSelection(): CheckoutSelection {
       return {
         productIds: Array.isArray(v.productIds) ? v.productIds.filter((x: unknown) => typeof x === 'string') : null,
         voucherCodes: Array.isArray(v.voucherCodes) ? v.voucherCodes.filter((x: unknown) => typeof x === 'string').slice(0, 10) : [],
+        knownIds: Array.isArray(v.knownIds) ? v.knownIds.filter((x: unknown) => typeof x === 'string') : undefined,
+        buyNow: v.buyNow === true,
       }
     }
   } catch {

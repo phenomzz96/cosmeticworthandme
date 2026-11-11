@@ -81,7 +81,7 @@ Beauty Finder (bảng câu hỏi gợi ý sản phẩm, đã có từ trước) 
 |---|---|---|
 | Bấm "Đặt hàng" 2 lần khi mạng chậm có thể tạo 2 đơn | Trung bình | Hiện chỉ khóa nút. Sửa: mã yêu cầu duy nhất kiểm tra trong database |
 | Trang sản phẩm chỉ hiện ảnh đầu tiên | Thấp | Người bán tải tới 8 ảnh nhưng khách không xem được |
-| Món trong giỏ bị ngừng bán/hết hàng | Thấp | Database chặn khi đặt, nhưng giỏ chưa báo trước |
+| Món trong giỏ bị ngừng bán/hết hàng | Đã xử lý (Đợt E) | Database chặn khi đặt; giỏ tự bỏ/giảm số lượng và báo rõ cho khách |
 | Tài khoản bị khóa vẫn đăng nhập được ở tầng Auth | Thấp | Database chặn mọi thao tác. Cần Edge Function để chặn tận gốc |
 | Danh mục trên trình duyệt tải tối đa 1.000 sản phẩm | Thấp | Trang danh sách tìm/lọc trong database nên không bị ảnh hưởng |
 | Dữ liệu thử công khai (shop "Lemontri") | Thấp | Chủ shop/Admin sửa, không cần code |

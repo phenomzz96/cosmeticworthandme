@@ -95,7 +95,7 @@ function ProductDetail({ product: initial }: { product: Product }) {
   // Mua ngay: thêm vào giỏ rồi chuyển thẳng tới trang đặt hàng, chỉ thanh toán sản phẩm này
   const buyNow = () => {
     if (canAdd > 0) add(product.id, Math.min(qty, canAdd))
-    writeCheckoutSelection({ productIds: [product.id], voucherCodes: [] })
+    writeCheckoutSelection({ productIds: [product.id], voucherCodes: [], buyNow: true })
     navigate('/checkout')
   }
 

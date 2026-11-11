@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { button } from '@/components/ui/primitives'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import { MESSAGES_CHANGED, messageService } from '@/services/messages'
-import { InboxView } from './InboxView'
+
+// Hộp thư chỉ tải khi khách mở khung chat (trang đầu nhẹ hơn)
+const InboxView = lazy(async () => ({ default: (await import('./InboxView')).InboxView }))
 
 /**
  * Khung chat nổi ở góc phải dưới: xem nhanh tin nhắn với cửa hàng và bộ phận hỗ trợ.
@@ -72,6 +74,7 @@ export function ChatWidget() {
           </div>
           <div className="min-h-0 flex-1">
             {user ? (
+              <Suspense fallback={<p className="p-6 text-center text-sm text-muted">Đang tải tin nhắn…</p>}>
               <InboxView
                 scope="customer"
                 compact
@@ -85,6 +88,7 @@ export function ChatWidget() {
                   </>
                 }
               />
+              </Suspense>
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
                 <Icon name="message" size={32} className="text-primary" />
@@ -103,6 +107,7 @@ export function ChatWidget() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
+        onPointerEnter={() => user && void import('./InboxView')}
         aria-expanded={open}
         aria-controls="chat-widget-panel"
         aria-label={unread ? `Tin nhắn, ${unread} chưa đọc` : 'Tin nhắn'}

@@ -1,7 +1,7 @@
-/* 1) FONT CHỮ THƯƠNG HIỆU — đổi font: thay link dưới và biến --font-body / --font-display
+/* 1) FONT CHỮ THƯƠNG HIỆU — đổi font: thay thẻ <link> font trong index.html và biến --font-body / --font-display
  *    Be Vietnam Pro: chữ nội dung. Cormorant Garamond: tiêu đề (chữ có chân, phong cách tạp chí làm đẹp).
- *    Cả hai đều có đủ dấu tiếng Việt. */
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap&subset=vietnamese');
+ *    Cả hai đều có đủ dấu tiếng Việt. Font khai báo bằng <link> trong index.html (tải song song với CSS của trang,
+ *    nhanh hơn @import trong CSS). */
 
 /*
  * 2) DESIGN TOKENS — nơi DUY NHẤT định nghĩa nhận diện thị giác:

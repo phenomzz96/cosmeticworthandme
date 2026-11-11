@@ -5,20 +5,24 @@ import { RequireAuth } from '@/features/auth/RequireAuth'
 import { BrandProvider } from '@/features/brand/BrandProvider'
 import { CartProvider } from '@/features/cart/CartProvider'
 import { ThemeProvider } from '@/features/theme/ThemeProvider'
-import { AccountPage } from '@/pages/AccountPage'
-import { CartPage } from '@/pages/CartPage'
 import { HomePage } from '@/pages/HomePage'
-import { LoginPage } from '@/pages/LoginPage'
-import { ForgotPasswordPage, ResetPasswordPage } from '@/pages/PasswordPages'
-import { ProductDetailPage } from '@/pages/ProductDetailPage'
-import { ProductsPage } from '@/pages/ProductsPage'
-import { RegisterPage } from '@/pages/RegisterPage'
-import { ShopPage, ShopsPage } from '@/pages/ShopPage'
 import { NotFoundPage } from '@/pages/StatusPages'
 import { ADMIN_ROLES } from '@/types/account'
 import { lazyNamed } from './lazyNamed'
+import { loaders, usePrefetchRoutes } from './prefetch'
 
-// Trang quản trị, kênh người bán, đặt hàng, Beauty Finder: tải riêng khi cần để trang chủ nhẹ hơn
+// Mọi trang trừ trang chủ tải riêng khi cần (trang chủ nhẹ hơn). Các trang hay mở được tải sẵn khi trình duyệt rảnh
+// hoặc khi người dùng rê chuột / chạm vào liên kết (src/app/prefetch.ts), nên chuyển trang vẫn tức thì.
+const ProductsPage = lazyNamed(loaders.products, 'ProductsPage')
+const ProductDetailPage = lazyNamed(loaders.productDetail, 'ProductDetailPage')
+const ShopsPage = lazyNamed(loaders.shops, 'ShopsPage')
+const ShopPage = lazyNamed(loaders.shops, 'ShopPage')
+const CartPage = lazyNamed(loaders.cart, 'CartPage')
+const AccountPage = lazyNamed(loaders.account, 'AccountPage')
+const LoginPage = lazyNamed(loaders.login, 'LoginPage')
+const RegisterPage = lazyNamed(loaders.register, 'RegisterPage')
+const ForgotPasswordPage = lazyNamed(loaders.password, 'ForgotPasswordPage')
+const ResetPasswordPage = lazyNamed(loaders.password, 'ResetPasswordPage')
 const AdminLayout = lazyNamed(() => import('@/components/layout/AdminLayout'), 'AdminLayout')
 const SellerLayout = lazyNamed(() => import('@/features/seller/SellerLayout'), 'SellerLayout')
 const AdminAuditPage = lazyNamed(() => import('@/pages/admin/AdminAuditPage'), 'AdminAuditPage')
@@ -41,15 +45,15 @@ const AdminPagesPage = lazyNamed(() => import('@/pages/admin/AdminPagesPage'), '
 const MessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'MessagesPage')
 const SellerMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'SellerMessagesPage')
 const AdminMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'AdminMessagesPage')
-const BrandsPage = lazyNamed(() => import('@/pages/BrandsPage'), 'BrandsPage')
-const SkincareArchitectPage = lazyNamed(() => import('@/pages/SkincareArchitectPage'), 'SkincareArchitectPage')
+const BrandsPage = lazyNamed(loaders.brands, 'BrandsPage')
+const SkincareArchitectPage = lazyNamed(loaders.architect, 'SkincareArchitectPage')
 const AboutPage = lazyNamed(() => import('@/pages/InfoPages'), 'AboutPage')
 const ContactPage = lazyNamed(() => import('@/pages/InfoPages'), 'ContactPage')
 const FaqPage = lazyNamed(() => import('@/pages/InfoPages'), 'FaqPage')
 const PoliciesPage = lazyNamed(() => import('@/pages/InfoPages'), 'PoliciesPage')
 const TermsPage = lazyNamed(() => import('@/pages/InfoPages'), 'TermsPage')
-const BeautyFinderPage = lazyNamed(() => import('@/pages/BeautyFinderPage'), 'BeautyFinderPage')
-const CheckoutPage = lazyNamed(() => import('@/pages/CheckoutPage'), 'CheckoutPage')
+const BeautyFinderPage = lazyNamed(loaders.beautyFinder, 'BeautyFinderPage')
+const CheckoutPage = lazyNamed(loaders.checkout, 'CheckoutPage')
 const SellerDashboardPage = lazyNamed(() => import('@/pages/seller/SellerDashboardPage'), 'SellerDashboardPage')
 const SellerOrdersPage = lazyNamed(() => import('@/pages/seller/SellerOrdersPage'), 'SellerOrdersPage')
 const SellerProductFormPage = lazyNamed(() => import('@/pages/seller/SellerProductFormPage'), 'SellerProductFormPage')
@@ -58,6 +62,11 @@ const SellerShopSettingsPage = lazyNamed(() => import('@/pages/seller/SellerShop
 const OrdersPage = lazyNamed(() => import('@/pages/OrdersPage'), 'OrdersPage')
 const OrderDetailPage = lazyNamed(() => import('@/pages/OrdersPage'), 'OrderDetailPage')
 
+function RoutePrefetch() {
+  usePrefetchRoutes()
+  return null
+}
+
 export function App() {
   return (
     <ThemeProvider>
@@ -65,6 +74,7 @@ export function App() {
         <AuthProvider>
           <CartProvider>
             <BrowserRouter>
+              <RoutePrefetch />
               <Routes>
                 <Route element={<AppLayout />}>
                   <Route index element={<HomePage />} />

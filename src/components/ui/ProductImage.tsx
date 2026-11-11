@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Product, ProductVisual } from '@/types/catalog'
 
 interface ProductImageProps {
@@ -15,18 +16,29 @@ interface ProductImageProps {
  */
 export function ProductImage({ product, index = 0, className = '', eager = false }: ProductImageProps) {
   const src = product.images[index]
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={product.name}
-        loading={eager ? 'eager' : 'lazy'}
-        decoding="async"
-        className={`h-full w-full object-cover ${className}`}
-      />
-    )
-  }
+  if (src) return <FadeImg src={src} alt={product.name} eager={eager} className={className} />
   return <PackshotIllustration visual={product.visual} label={product.name} className={className} />
+}
+
+/** Ảnh hiện dần khi tải xong (không "bật" ra đột ngột); ảnh có sẵn trong bộ nhớ đệm hiện ngay */
+function FadeImg({ src, alt, eager, className }: { src: string; alt: string; eager: boolean; className: string }) {
+  const [shown, setShown] = useState(false)
+  return (
+    <img
+      key={src}
+      src={src}
+      alt={alt}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchPriority={eager ? 'high' : undefined}
+      decoding="async"
+      ref={(el) => {
+        if (el?.complete && el.naturalWidth > 0 && !shown) setShown(true)
+      }}
+      onLoad={() => setShown(true)}
+      onError={() => setShown(true)}
+      className={`h-full w-full object-cover transition-opacity duration-300 motion-reduce:transition-none ${shown ? 'opacity-100' : 'opacity-0'} ${className}`}
+    />
+  )
 }
 
 function PackshotIllustration({ visual, label, className }: { visual: ProductVisual; label: string; className: string }) {

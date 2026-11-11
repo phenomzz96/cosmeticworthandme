@@ -3,14 +3,13 @@
  *
  * - Đã cấu hình Supabase: đọc sản phẩm 'active' của shop 'active' từ database.
  *   Database (RLS) tự ẩn shop bị tạm ngưng, chủ shop bị khóa, sản phẩm nháp/ẩn.
- * - Chưa cấu hình: dùng dữ liệu mẫu trong src/data/mock (để chạy thử giao diện).
+ * - Chưa cấu hình: dùng dữ liệu mẫu trong src/data/mock (để chạy thử giao diện). Dữ liệu mẫu tải riêng khi cần,
+ *   nên bản đã cấu hình Supabase không phải tải phần này.
  *
  * Giai đoạn này tải toàn bộ danh mục đang bán một lần (vài trăm sản phẩm) rồi lọc ở trình duyệt.
  * Giai đoạn 3 sẽ chuyển tìm kiếm, lọc, phân trang sang phía server khi dữ liệu lớn hơn.
  */
 import { categories, categoryById, productTypeLabels } from '@/data/taxonomy'
-import { mockProducts } from '@/data/mock/products'
-import { mockShops } from '@/data/mock/shops'
 import { isSupabaseConfigured, supabase } from '@/lib/supabase'
 import { normalizeVi } from '@/lib/text'
 import { shopMediaUrl } from '@/services/media'
@@ -22,9 +21,9 @@ export const SEARCH_PAGE_SIZE = 24
 const REFRESH_AFTER_MS = 60_000
 
 // ------------------------------------------------------------------ Kho dữ liệu trong bộ nhớ
-let products: Product[] = isSupabaseConfigured ? [] : mockProducts
-let shops: Shop[] = isSupabaseConfigured ? [] : mockShops
-let loaded = !isSupabaseConfigured
+let products: Product[] = []
+let shops: Shop[] = []
+let loaded = false
 let loadedAt = 0
 let version = 0
 let inflight: Promise<void> | null = null
@@ -175,9 +174,26 @@ async function loadFromDatabase() {
   listeners.forEach((l) => l())
 }
 
+/** Chưa cấu hình Supabase: nạp dữ liệu mẫu (file riêng, chỉ tải trong chế độ này) */
+async function loadMock() {
+  const [{ mockProducts }, { mockShops }] = await Promise.all([import('@/data/mock/products'), import('@/data/mock/shops')])
+  products = mockProducts
+  shops = mockShops
+  buildIndex()
+  loaded = true
+  version++
+  listeners.forEach((l) => l())
+}
+
 /** Đảm bảo danh mục đã tải (tải lại nếu đã cũ hơn 60 giây) */
 async function ensureLoaded(force = false): Promise<void> {
-  if (!isSupabaseConfigured) return
+  if (!isSupabaseConfigured) {
+    if (loaded) return
+    inflight ??= loadMock().finally(() => {
+      inflight = null
+    })
+    return inflight
+  }
   const stale = Date.now() - loadedAt > REFRESH_AFTER_MS
   if (loaded && !stale && !force) return
   if (!inflight) {
@@ -233,7 +249,13 @@ export function filterProducts(list: Product[], query: ProductQuery): Product[] 
   return out
 }
 
-const delay = (ms = 120) => new Promise((r) => setTimeout(r, ms))
+/** Chế độ dữ liệu mẫu: đợi dữ liệu mẫu nạp xong + giả lập độ trễ mạng */
+const delay = async (ms = 120) => {
+  await ensureLoaded()
+  await new Promise((r) => setTimeout(r, ms))
+}
+// Chế độ dữ liệu mẫu: nạp ngay khi khởi động
+if (!isSupabaseConfigured) void ensureLoaded()
 
 export const catalogService = {
   isLoaded: () => loaded,

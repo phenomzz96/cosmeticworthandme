@@ -202,12 +202,16 @@ function NotificationBell() {
         .then((n) => alive && setUnread(n))
         .catch(() => undefined)
     void load()
-    const t = window.setInterval(load, 60_000)
+    // Chỉ hỏi lại khi thẻ đang mở; quay lại thẻ thì cập nhật ngay
+    const t = window.setInterval(() => document.visibilityState === 'visible' && load(), 60_000)
+    const onVisible = () => document.visibilityState === 'visible' && load()
     window.addEventListener('wm:notifications-changed', load)
+    document.addEventListener('visibilitychange', onVisible)
     return () => {
       alive = false
       window.clearInterval(t)
       window.removeEventListener('wm:notifications-changed', load)
+      document.removeEventListener('visibilitychange', onVisible)
     }
   }, [pathname])
   if (!isSupabaseConfigured) return null

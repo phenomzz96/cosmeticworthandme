@@ -1,5 +1,5 @@
 import { ScrollRow } from '@/components/ui/ScrollRow'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
@@ -10,8 +10,8 @@ import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard
 import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
 import { BannerCarousel } from '@/features/home/BannerCarousel'
 import { BloomArt, ButterflyMark, GroomArt, RoutineArt, ScentArt } from '@/features/home/HeroArt'
-import { skinTypeOptions } from '@/features/beauty-finder/questions'
-import { Stars } from '@/features/reviews/ReviewsSection'
+import { skinTypeOptions } from '@/features/beauty-finder/skinTypeOptions'
+import { Stars } from '@/features/reviews/Stars'
 import { ShopCard } from '@/features/shops/ShopCard'
 import { formatCompact } from '@/lib/format'
 import { useAsync } from '@/lib/useAsync'
@@ -117,7 +117,7 @@ export function HomePage() {
       </section>
 
       {/* VỀ SÀN — số liệu thật */}
-      <section className="container-page mt-20" aria-labelledby="story-heading">
+      <section className="defer-render container-page mt-20" aria-labelledby="story-heading">
         <div className="grid overflow-hidden rounded-[28px] bg-primary-soft lg:grid-cols-2">
           <StoryCollage products={featured.status === 'success' ? featured.data : []} />
           <div className="p-7 sm:p-12">
@@ -149,7 +149,7 @@ export function HomePage() {
       </section>
 
       {/* HÀNG MỚI */}
-      <section className="container-page mt-20" aria-labelledby="new-heading">
+      <section className="defer-render container-page mt-20" aria-labelledby="new-heading">
         <SectionHead eyebrow="Vừa lên kệ" title="Sản phẩm mới" id="new-heading" link={{ to: '/products?sort=newest', label: 'Xem tất cả' }} />
         <div className="mt-8">
           {fresh.status === 'loading' && <ProductGridSkeleton count={4} />}
@@ -165,7 +165,7 @@ export function HomePage() {
 
       {/* ĐÁNH GIÁ THẬT CỦA KHÁCH */}
       {reviews.status === 'success' && reviews.data.length > 0 && (
-        <section className="container-page mt-20" aria-labelledby="reviews-heading">
+        <section className="defer-render container-page mt-20" aria-labelledby="reviews-heading">
           <SectionHead eyebrow="Khách hàng nói gì" title="Đánh giá từ người đã mua" id="reviews-heading" />
           <ul className="mt-8 grid gap-4 md:grid-cols-3">
             {reviews.data.map((r) => (
@@ -186,7 +186,7 @@ export function HomePage() {
       )}
 
       {/* CỬA HÀNG */}
-      <section className="container-page mt-20" aria-labelledby="shops-heading">
+      <section className="defer-render container-page mt-20" aria-labelledby="shops-heading">
         <SectionHead eyebrow="Cửa hàng" title={`Cửa hàng trên ${settings.name}`} id="shops-heading" link={{ to: '/shops', label: 'Tất cả cửa hàng' }} />
         {shops.status === 'success' && (
           <ScrollRow as="ul" aria-label="Cửa hàng nổi bật" wrapClassName="-mx-4 mt-8 md:mx-0" className="flex snap-x gap-4 px-4 pb-2 md:grid md:grid-cols-3 md:overflow-visible md:px-0 lg:grid-cols-4">
@@ -276,17 +276,34 @@ function Hero() {
   const [paused, setPaused] = useState(false)
   const reduced = useMemo(() => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches, [])
 
+  // Chỉ tự chuyển khi banner đang trong màn hình và thẻ trình duyệt đang mở (đỡ tốn pin, không giật khi cuộn)
+  const sectionRef = useRef<HTMLElement>(null)
+  const [visible, setVisible] = useState(true)
   useEffect(() => {
-    if (paused || reduced) return
+    const el = sectionRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { threshold: 0.25 })
+    io.observe(el)
+    const onVis = () => setVisible(document.visibilityState === 'visible' && el.getBoundingClientRect().bottom > 0)
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      io.disconnect()
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (paused || reduced || !visible) return
     const t = window.setTimeout(() => setIndex((i) => (i + 1) % heroSlides.length), HERO_INTERVAL)
     return () => window.clearTimeout(t)
-  }, [index, paused, reduced])
+  }, [index, paused, reduced, visible])
 
   const slide = heroSlides[index]
   const go = (i: number) => setIndex((i + heroSlides.length) % heroSlides.length)
 
   return (
     <section
+      ref={sectionRef}
       className="relative overflow-hidden"
       aria-roledescription="carousel"
       aria-label="Giới thiệu nổi bật"
@@ -298,23 +315,37 @@ function Hero() {
       <h1 className="sr-only">{settings.name}: sàn mỹ phẩm nhiều cửa hàng cho cả nam và nữ</h1>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-32 top-0 h-[38rem] w-[38rem] rounded-full opacity-70 blur-3xl"
-        style={{ background: 'radial-gradient(circle, var(--primary-soft) 0%, var(--accent-soft) 45%, transparent 70%)' }}
+        className="pointer-events-none absolute -right-32 top-0 h-[38rem] w-[38rem] rounded-full opacity-70"
+        style={{ background: 'radial-gradient(circle, var(--primary-soft) 0%, var(--accent-soft) 40%, transparent 68%)' }}
       />
       <div className="container-page relative grid items-center gap-8 py-10 md:py-14 lg:grid-cols-[1fr_1fr] lg:gap-12 lg:py-16">
-        <div key={slide.key} className="hero-in" aria-roledescription="slide" aria-label={`${index + 1} / ${heroSlides.length}`}>
-          <p className="eyebrow">{slide.eyebrow}</p>
-          <h2 className="mt-5 max-w-xl font-display text-[2.6rem] font-semibold leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[4.4rem]">
-            {slide.title} <em className="font-medium italic text-primary">{slide.accent}</em>
-          </h2>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted">{slide.text(settings.name)}</p>
-          <div className="mt-9 flex flex-wrap gap-3">
-            <Link to={slide.primary.to} className={button('dark', 'lg')}>
-              {slide.primary.label} <Icon name="arrowRight" size={18} />
-            </Link>
-            <Link to={slide.secondary.to} className={button('secondary', 'lg')}>
-              <Icon name="sparkle" size={18} /> {slide.secondary.label}
-            </Link>
+        <div>
+          {/* Mọi trang chữ xếp chồng trong cùng một ô: chiều cao bằng trang dài nhất, đổi trang không làm phần dưới nhảy */}
+          <div className="grid">
+            {heroSlides.map((s, i) => (
+              <div
+                key={s.key}
+                className={`[grid-area:1/1] ${i === index ? 'hero-in' : 'invisible'}`}
+                aria-roledescription="slide"
+                aria-label={`${i + 1} / ${heroSlides.length}`}
+                aria-hidden={i === index ? undefined : true}
+                inert={i === index ? undefined : true}
+              >
+                <p className="eyebrow">{s.eyebrow}</p>
+                <h2 className="mt-5 max-w-xl font-display text-[2.6rem] font-semibold leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[4.4rem]">
+                  {s.title} <em className="font-medium italic text-primary">{s.accent}</em>
+                </h2>
+                <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted">{s.text(settings.name)}</p>
+                <div className="mt-9 flex flex-wrap gap-3">
+                  <Link to={s.primary.to} className={button('dark', 'lg')}>
+                    {s.primary.label} <Icon name="arrowRight" size={18} />
+                  </Link>
+                  <Link to={s.secondary.to} className={button('secondary', 'lg')}>
+                    <Icon name="sparkle" size={18} /> {s.secondary.label}
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
           <div className="mt-10 flex items-center gap-4">
             <button type="button" onClick={() => go(index - 1)} className="grid h-10 w-10 place-items-center rounded-full border border-border hover:border-text" aria-label="Trang trước">
@@ -338,8 +369,8 @@ function Hero() {
           </div>
         </div>
 
-        <div key={`art-${slide.key}`} className="hero-in relative mx-auto w-full max-w-[560px]">
-          <slide.Art className="h-auto w-full drop-shadow-sm" />
+        <div key={`art-${slide.key}`} className="hero-in relative mx-auto aspect-square w-full max-w-[560px]">
+          <slide.Art className="h-full w-full" />
         </div>
       </div>
     </section>
@@ -395,7 +426,7 @@ function ForHerForHim() {
     },
   ]
   return (
-    <section className="container-page mt-20" aria-label="Mua sắm theo phong cách">
+    <section className="defer-render container-page mt-20" aria-label="Mua sắm theo phong cách">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {tiles.map((t) => (
           <div
@@ -442,7 +473,7 @@ function TrustStrip() {
     { icon: 'truck' as const, title: 'Thanh toán khi nhận', text: 'Hỗ trợ COD, theo dõi đơn từng bước' },
   ]
   return (
-    <section className="border-y border-border bg-surface/70" aria-label="Cam kết của sàn">
+    <section className="defer-render border-y border-border bg-surface/70" aria-label="Cam kết của sàn">
       <ul className="container-page grid grid-cols-2 gap-x-4 gap-y-6 py-7 lg:grid-cols-4">
         {items.map((it) => (
           <li key={it.title} className="flex items-start gap-3">
@@ -479,7 +510,7 @@ function ArchitectShowcase() {
     { n: 3, title: 'Xem thoa ở đâu trên mô hình 3D', text: 'Từng bước sáng lên đúng vùng da. Máy không hỗ trợ 3D thì xem sơ đồ 2D.' },
   ]
   return (
-    <section className="container-page mt-20" aria-labelledby="architect-home-heading">
+    <section className="defer-render container-page mt-20" aria-labelledby="architect-home-heading">
       <div
         className="relative grid items-center gap-8 overflow-hidden rounded-[28px] p-7 sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:gap-12"
         style={{ background: 'linear-gradient(140deg, var(--art-night-2), var(--art-night-1))' }}
@@ -529,7 +560,7 @@ function ArchitectShowcase() {
 
 function FinderShowcase() {
   return (
-    <section className="container-page mt-20" aria-labelledby="finder-heading">
+    <section className="defer-render container-page mt-20" aria-labelledby="finder-heading">
       <div className="grid gap-10 rounded-[28px] border border-border bg-surface p-7 sm:p-12 lg:grid-cols-[1fr_1.2fr] lg:gap-14">
         <div>
           <p className="eyebrow">Beauty Finder</p>

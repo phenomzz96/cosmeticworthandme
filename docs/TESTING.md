@@ -46,7 +46,8 @@ với một **client Supabase giả lập** mô phỏng các luật quyền chí
 | Đợt C: chân trang, banner nhiều slide, menu danh mục thả xuống, Nước hoa / Nam giới, Thương hiệu A–Z, thanh trượt giá, Beauty Finder mới, Câu hỏi thường gặp, Admin sửa nội dung trang, tin nhắn khách ↔ shop ↔ hỗ trợ (khung chat nổi), mobile + tối | 76/76 |
 | Skincare Architect 3D: handshake, đồng bộ danh mục sàn, sản phẩm đã mua (đơn hủy không tính), Beauty Finder → module không hỏi lại + bộ đề xuất vào chu trình, gợi ý mua + giỏ hàng, sáng/tối + tương phản, tách dữ liệu khi đổi tài khoản, form người bán, trang sản phẩm, mở module độc lập, tự chuyển 2D, desktop + điện thoại tối | 45/45 |
 | Đợt D: thanh tab Admin/người bán đủ chữ trên máy tính, mũi tên + tự cuộn tới tab đang chọn trên điện thoại, nhóm lọc, thanh danh mục 1024–1600px, quảng bá Skincare Architect 3D (banner, khối trang chủ, thanh danh mục, menu điện thoại), tương phản, sáng/tối | 31/31 |
-| **Tổng** | **567/567**, không có lỗi JavaScript |
+| Đợt E: tải sẵn trang khi rảnh / khi rê chuột liên kết, banner không đổi chiều cao và dừng khi khuất màn hình, Quay lại về đúng chỗ đang xem, Tiến tới / mở trang mới về đầu trang, đổi sắp xếp giữ chỗ đang xem, mở thẳng 4 trang không nhảy bố cục (CLS < 0.1), nút có hiệu ứng nhấn, trang hiện dần, giỏ báo sản phẩm ngừng bán / hết hàng / giảm số lượng (điện thoại + máy tính, sáng/tối) | 33/33 |
+| **Tổng** | **600/600** (gồm thuật toán Beauty Finder 54), không có lỗi JavaScript |
 
 Kiểm tra che chữ tự động (Đợt D): 42 trang (khách, Admin, người bán) × 5 độ rộng (390, 768, 1024, 1280, 1440px) × sáng/tối: không có trang kéo ngang, không có hàng cuộn ngang thiếu mũi tên, không có chữ bị cắt mà không có dấu "…".
 
@@ -66,3 +67,15 @@ Danh sách 20 bước ở [DEPLOY.md mục 7](DEPLOY.md#7-kiểm-tra-sau-khi-dep
 
 - Thay đổi database: thêm file migration mới (không sửa file đã chạy) và thêm tình huống truy cập trái phép vào `supabase/tests/`.
 - Trước khi merge: `npm run build` chạy được, đã thử luồng chính trên deploy preview của Netlify, cả chế độ sáng và tối, cả điện thoại.
+
+## Đo hiệu suất (Đợt E, trong môi trường của Claude)
+
+Bản build kiểm tra (esbuild, tách file giống Vite), điện thoại giả lập (CPU chậm 4 lần, mạng 4G), so với `main` trước Đợt E:
+
+| Chỉ số | Trước | Sau |
+|---|---|---|
+| Mã JavaScript cần cho lần mở đầu | 575 KB | 464 KB (−19%) |
+| Dịch chuyển bố cục khi mở thẳng trang sản phẩm / chi tiết | 0,02–0,10 | 0 |
+| Thời gian chặn luồng chính khi mở trang chủ (trung vị 3 lần) | ~500–580 ms | ~440 ms |
+
+Số đo trong sandbox có dao động; bản thật (Vite + thư viện Supabase thật) sẽ khác về con số tuyệt đối. Có thể đo lại bằng Lighthouse (Chrome DevTools) trên Deploy Preview.
