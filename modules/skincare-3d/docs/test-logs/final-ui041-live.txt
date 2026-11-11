@@ -1,0 +1,65 @@
+✓ Trang chủ có một lời mời rõ ràng vào tính năng
+✓ Mở tính năng → chỉ hiện giai đoạn "Mục tiêu"
+✓ Chưa vào bước Mô hình: KHÔNG tải Three.js / mô hình, không có canvas
+✓ Mục tiêu: bảng phân tích kỹ thuật thu gọn mặc định; có danh sách sản phẩm đã mua
+✓ Mục tiêu: đúng MỘT nút chính
+✓ Công cụ developer ẩn mặc định (giả lập lỗi, hiệu năng)
+✓ Bấm tạo routine khi chưa chọn mục tiêu → nhắc rõ, vẫn ở bước 1
+✓ Chọn mục tiêu → Tạo routine → chuyển sang "Routine"
+✓ Routine: hiện thứ tự bước sáng/tối, tên sản phẩm, mục đích
+✓ Routine: thông tin nâng cao nằm trong phần mở rộng (đóng mặc định)
+✓ Routine: đúng MỘT nút chính ("Xem trên mô hình 3D"), một nút Lưu
+✓ Thanh 3 bước: bước 1 đã xong, bước 2 đang xem
+✓ Mở mô hình 3D → giai đoạn "Mô hình 3D"; 3D tải lúc này
+✓ Mô hình: điều khiển mặc định chỉ gồm 3D/2D + Đặt lại góc nhìn; góc nghiêng/thu phóng/chọn vùng nằm trong menu đóng
+✓ Mô hình: chưa chọn bước → lời nhắc ngắn, không có nút chính thừa
+✓ Mô hình: danh sách bước duy nhất (không lặp ở nơi khác trong màn hình)
+✓ Chọn bước → thẻ giải thích: tên bước, sản phẩm, mục đích, vùng thoa
+✓ Thông tin chi tiết chỉ hiện khi cần ("Xem chi tiết" đóng mặc định)
+✓ Mở "Xem chi tiết" → cách dùng sản phẩm
+✓ Mở "Thêm điều khiển": hiện góc nghiêng, thu phóng, chọn vùng – và KHÔNG che mô hình
+✓ Chọn vùng Trán → thẻ thông tin vùng; các bước liên quan được đánh dấu trong danh sách bước
+✓ Luồng chính: không có lỗi JavaScript
+✓ Theo dõi & lịch sử: tách khỏi 3 bước chính; mặc định tab Nhật ký
+✓ Tab "timeline": chỉ khu này hiện, nút tab ở trạng thái chọn
+✓ Tab "versions": chỉ khu này hiện, nút tab ở trạng thái chọn
+✓ Tab "journal": chỉ khu này hiện, nút tab ở trạng thái chọn
+✓ Phiên bản: chưa lưu → thông báo rõ
+✓ Lưu routine ở bước 2 → báo đã lưu
+✓ Khôi phục từ tab Phiên bản → quay về bước Routine, có thông báo
+✓ Timeline vẫn hoạt động (đang áp dụng v1)
+✓ Nhật ký vẫn lưu được
+✓ Developer mode (chân trang) → hiện công cụ dev, vẫn đủ chức năng
+✓ Dev: bật hiệu năng → hiện số liệu chẩn đoán
+✓ Tắt developer mode → ẩn thanh dev và bảng hiệu năng
+✓ Phần mở rộng giữ trạng thái mở sau khi routine vẽ lại (Chỉnh sửa sản phẩm)
+✓ Điều hướng + ẩn/hiện: không có lỗi JavaScript
+✓ Cảnh báo quan trọng hiển thị ngay, ngoài các phần thu gọn
+✓ Tiêu đề cảnh báo đọc được ngay; lý do mở bằng "Vì sao?"
+✓ Mở cảnh báo → thấy lý do
+✓ Lưu ý in trên sản phẩm (vd. gây khô/châm chích) hiện ngay trong dòng bước
+✓ Lưu ý của sản phẩm cũng hiện ngay trên thẻ giải thích ở bước 3
+✓ Cảnh báo: không có lỗi JavaScript
+✓ ?dev → developer mode bật sẵn
+✓ Rời bước Mô hình → 3D dừng render
+✓ Quay lại bước Mô hình → dùng lại viewer cũ (không khởi tạo lại, 1 canvas)
+✓ [1440px] không cuộn ngang ở cả 4 màn hình
+✓ [1440px] mô hình lớn; thông tin bên cạnh; thanh điều khiển không đè lên mô hình
+✓ [1440px] không có lỗi JavaScript
+✓ [1024px] không cuộn ngang ở cả 4 màn hình
+✓ [1024px] mô hình lớn; thông tin bên cạnh; thanh điều khiển không đè lên mô hình
+✓ [1024px] không có lỗi JavaScript
+✓ [768px] không cuộn ngang ở cả 4 màn hình
+✓ [768px] mô hình lớn; mô hình trước, thông tin bên dưới; thanh điều khiển không đè lên mô hình
+✓ [768px] vùng chạm đủ lớn (≥ 34 px) cho các nút chính trên màn hình mô hình
+✓ [768px] không có lỗi JavaScript
+✓ [390px] không cuộn ngang ở cả 4 màn hình
+✓ [390px] mô hình lớn; mô hình trước, thông tin bên dưới; thanh điều khiển không đè lên mô hình
+✓ [390px] vùng chạm đủ lớn (≥ 34 px) cho các nút chính trên màn hình mô hình
+✓ [390px] không có lỗi JavaScript
+✓ [360px] không cuộn ngang ở cả 4 màn hình
+✓ [360px] mô hình lớn; mô hình trước, thông tin bên dưới; thanh điều khiển không đè lên mô hình
+✓ [360px] vùng chạm đủ lớn (≥ 34 px) cho các nút chính trên màn hình mô hình
+✓ [360px] không có lỗi JavaScript
+
+63 kiểm thử giao diện 0.4.1 đạt.

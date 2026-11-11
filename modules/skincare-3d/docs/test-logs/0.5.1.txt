@@ -1,0 +1,20 @@
+Skincare Prototype 0.5.1 – kết quả kiểm thử (2026-11-04)
+Môi trường: Node 22, Chromium headless (Playwright) với WebGL phần mềm SwiftShader, Three.js r160 cục bộ (--three-dir).
+
+npm test (Node):
+  engine 18 · manager 18 · v031 29 · v04 20 · v041 18 · v042 19 · v043 23 · v05 19 · v051 17  → 181 bài đạt
+
+Giao diện (python tests/<bộ>.e2e.py http://localhost:8061 --three-dir=…):
+  ui 17 · ui031 44 · ui04 72 · ui041 63 · ui042 66 · ui043 68 · ui05 44 · ui051 29  → 403 bài đạt
+  ui051 chạy thêm qua tests/serve_like_live_server.py (mô phỏng Live Server, cổng 5500): 29/29 đạt.
+  Nhật ký đầy đủ: final-*-051.txt, final-ui051.txt, final-ui051-live.txt, final-node-051.txt.
+
+Ghi chú độ ổn định: trước khi quán tính xoay chuyển sang theo thời gian thật, ui04 (kéo xoay) và ui05 (đặt lại góc nhìn) đôi khi
+fail trên renderer phần mềm (chờ vòng render dừng quá lâu). Sau thay đổi: hai lần chạy toàn bộ cuối đều đạt. ui05 nay chờ vòng render tự dừng (tối đa 8 s).
+
+Đo (SwiftShader, khung 721×612):
+  0.5:   ~100 ms/khung, khởi tạo 3D ~0,64 s
+  0.5.1: ~210–400 ms/khung (dao động theo tải máy), khởi tạo 3D ~1,25 s (gồm giải nén meshopt)
+  Đứng yên: 0 khung (render theo nhu cầu). GPU thật: chưa đo được trong môi trường này.
+
+Tối ưu GLB: 4 356 584 → 1 530 800 byte; ảnh render trước/sau khác ≤ 0,016 % điểm ảnh (ngưỡng > 8/255).

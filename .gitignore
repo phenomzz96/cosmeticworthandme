@@ -8,3 +8,6 @@ dist
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+
+# Tự sinh từ modules/skincare-3d khi chạy dev/build (scripts/copy-skincare-3d.mjs)
+public/skincare-3d/

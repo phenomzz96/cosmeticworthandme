@@ -1,0 +1,70 @@
+✓ [1440px] tiêu đề "Lộ trình chăm sóc da" và đúng bốn mốc Bắt đầu / Tuần 1 / Tuần 2 / Tuần 4
+✓ [1440px] đang xem ngày bắt đầu: nêu rõ ngày, nhãn "Đã qua", "Ngày bắt đầu theo dõi"
+✓ [1440px] chỉ MỘT khối routine + MỘT khối nhật ký (không lặp nhiều bản)
+✓ [1440px] không còn đoạn giải thích "Ngày 0…" dài, không lộ trường kỹ thuật
+✓ [1440px] khu "Tùy chỉnh mốc theo dõi" thu gọn, ô chỉnh ngày bắt đầu chưa hiện
+✓ [1440px] không cuộn ngang
+✓ [1440px] bốn mốc nằm trọn trong màn hình, vùng chạm ≥ 44px
+✓ [1440px] không có lỗi JavaScript
+✓ [768px] tiêu đề "Lộ trình chăm sóc da" và đúng bốn mốc Bắt đầu / Tuần 1 / Tuần 2 / Tuần 4
+✓ [768px] đang xem ngày bắt đầu: nêu rõ ngày, nhãn "Đã qua", "Ngày bắt đầu theo dõi"
+✓ [768px] chỉ MỘT khối routine + MỘT khối nhật ký (không lặp nhiều bản)
+✓ [768px] không còn đoạn giải thích "Ngày 0…" dài, không lộ trường kỹ thuật
+✓ [768px] khu "Tùy chỉnh mốc theo dõi" thu gọn, ô chỉnh ngày bắt đầu chưa hiện
+✓ [768px] không cuộn ngang
+✓ [768px] bốn mốc nằm trọn trong màn hình, vùng chạm ≥ 44px
+✓ [768px] không có lỗi JavaScript
+✓ [390px] tiêu đề "Lộ trình chăm sóc da" và đúng bốn mốc Bắt đầu / Tuần 1 / Tuần 2 / Tuần 4
+✓ [390px] đang xem ngày bắt đầu: nêu rõ ngày, nhãn "Đã qua", "Ngày bắt đầu theo dõi"
+✓ [390px] chỉ MỘT khối routine + MỘT khối nhật ký (không lặp nhiều bản)
+✓ [390px] không còn đoạn giải thích "Ngày 0…" dài, không lộ trường kỹ thuật
+✓ [390px] khu "Tùy chỉnh mốc theo dõi" thu gọn, ô chỉnh ngày bắt đầu chưa hiện
+✓ [390px] không cuộn ngang
+✓ [390px] bốn mốc nằm trọn trong màn hình, vùng chạm ≥ 44px
+✓ [390px] không có lỗi JavaScript
+✓ Tuần 1 (quá khứ, có nhật ký): routine đã áp dụng v1 + nhật ký đúng số liệu đã ghi
+✓ Tuần 2 (tương lai, chưa có lịch mới): bản tham khảo có điều kiện, ghi rõ không phải dữ liệu thực tế
+✓ Tuần 2: chỉ một danh sách routine (v1), không hiện song song "đang áp dụng" và "dự kiến"
+✓ Tuần 4 (tương lai, đã có lịch v2): hiển thị lịch đã ghi nhận, ghi rõ chưa phải dữ liệu sử dụng thực tế
+✓ Bắt đầu: quay lại ngày bắt đầu, nút đúng được đánh dấu
+✓ Hôm nay: routine đang áp dụng; không mốc nào được chọn sai
+✓ Ngày trước lần áp dụng đầu tiên: trống trung thực, không routine giả, nêu ngày bắt đầu áp dụng
+✓ Ngày xa trong tương lai: bản tham khảo (hoặc lịch đã ghi), không số liệu sử dụng
+✓ Chọn ngày trùng một mốc → mốc đó được đánh dấu
+✓ Ngày quá khứ: không hiện ghi chú bản nháp
+✓ Hôm nay có bản nháp: một dòng ngắn (không thẻ routine thứ hai), có đường dẫn tới routine
+✓ Enter trên mốc → chọn mốc, tiêu điểm vẫn ở mốc đó sau khi vẽ lại
+✓ Space trên mốc → chọn mốc
+✓ Enter trên "Tùy chỉnh mốc theo dõi" mở khu; thấy ô ngày và câu giải thích ngắn
+✓ Space trên summary đóng lại
+✓ Bàn phím: không có lỗi JavaScript
+✓ Đổi ngày bắt đầu theo dõi: thông báo ngắn, các mốc dịch theo
+✓ Đổi ngày bắt đầu theo dõi: applications, corrections, versions, journal GIỮ NGUYÊN trong bộ nhớ
+✓ Khu "Tùy chỉnh" vẫn mở sau khi vẽ lại (kể cả khi thao tác nhanh)
+✓ Hai ngày khác nhau: lưu ý ngắn luôn hiện ngoài khu thu gọn, không che sự khác biệt
+✓ "Xem giải thích" mở khu Tùy chỉnh + phần giải thích, đưa tiêu điểm tới đó
+✓ Khác ngày: có thẻ "khác ngày bắt đầu theo dõi" + ngày áp dụng thực tế trong khu Tùy chỉnh
+✓ Bỏ ngày bắt đầu theo dõi: lịch sử giữ nguyên, không tự đặt lại, các mốc không còn ngày
+✓ Không có ngày bắt đầu: chọn mốc không bịa ngày/routine
+✓ Không có ngày bắt đầu nhưng vẫn chọn được ngày bất kỳ: routine + nhật ký đúng
+✓ Đổi mốc: không có lỗi JavaScript
+✓ Timeline không còn công cụ sửa lịch sử
+✓ Tab Phiên bản có "Lịch sử áp dụng (2)" thu gọn
+✓ Bấm "Sửa ngày áp dụng" chỉ mở biểu mẫu: nêu rõ hậu quả, CHƯA ghi gì
+✓ Hủy → lịch sử không đổi, có thông báo
+✓ Xác nhận → chỉ GHI THÊM bản ghi sửa; bản ghi gốc, phiên bản, nhật ký, ngày bắt đầu theo dõi nguyên vẹn
+✓ Thông báo hậu quả hiện ngay tại tab Phiên bản
+✓ Timeline tính lại theo ngày đã sửa; vẫn báo (ngắn) rằng ngày áp dụng đã được chỉnh, không lộ trường kỹ thuật
+✓ Sửa ngày: không có lỗi JavaScript
+✓ User A: có dữ liệu
+✓ Đổi sang User B: không thấy routine/nhật ký/ngày của A; trống trung thực
+✓ User B chọn hôm nay: "Chưa có routine nào đang được áp dụng"; không tự tạo số liệu
+✓ Quay lại A: dữ liệu còn nguyên
+✓ Đổi tài khoản: không có lỗi JavaScript
+✓ XSS: nhật ký/tên bước/ghi chú hiện thành chữ trên Timeline
+✓ XSS: không thực thi mã, không dialog
+✓ XSS: không thuộc tính on*, không thẻ img/svg lạ trong Timeline
+✓ XSS: lý do sửa ngày hiện thành chữ ở tab Phiên bản
+✓ XSS: không có lỗi JavaScript
+
+68 kiểm thử giao diện 0.4.3 đạt.

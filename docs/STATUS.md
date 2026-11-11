@@ -15,7 +15,7 @@ Cập nhật: 11/11/2026, sau Đợt C (nội dung trang, tin nhắn, danh mục
 | Biến thể sản phẩm | Chưa làm (để sau) |
 | Mã giảm giá | Mã toàn sàn (Admin) + mã shop (người bán); mỗi đơn tối đa 1 mã sàn + 1 mã mỗi shop; database tính và chia giảm giá |
 | Giao diện | Bố cục tham khảo ri98.netlify.app (thanh trên, hero vòm, tiêu đề chữ có chân), giữ màu tím lavender của Worth & Me; không lấy ảnh, tên hay nội dung của trang tham khảo |
-| 4 tính năng chuyên biệt (Skin Quiz, Skin Roadmap, Skincare Architect, Beauty Quest) | Nhóm khác phụ trách, Đợt B và C không đụng tới. Beauty Finder (Đợt C) để người dùng tự chọn loại da, không tự đánh giá da |
+| 4 tính năng chuyên biệt (Skin Quiz, Skin Roadmap, Skincare Architect, Beauty Quest) | Nhóm khác phụ trách. **Skincare Architect 3D** (gói v1.0.2) đã nhúng nguyên trạng ở `/skincare-architect`, xem [SKINCARE-3D.md](SKINCARE-3D.md). 3 tính năng còn lại chưa có. Beauty Finder để người dùng tự chọn loại da, không tự đánh giá da |
 | Email | Bộ gửi mặc định của Supabase (chỉ thành viên team). Bật SMTP riêng khi cần demo với người ngoài |
 
 ## Đã hoàn thành và đã kiểm thử (trong môi trường của Claude)
@@ -62,6 +62,7 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 | Beauty Finder đọc nhóm hương, tình trạng tóc từ chữ trong mô tả sản phẩm | Cửa hàng ghi rõ nốt hương, công dụng trong mô tả thì gợi ý chính xác hơn |
 | Lịch sử tìm kiếm, đã xem gần đây, danh sách so sánh lưu trên trình duyệt | Chỉ là tiện ích riêng từng máy, không phải dữ liệu dùng chung |
 | Đánh giá chưa có ảnh đính kèm | Chỉ chấm sao + nhận xét chữ |
+| Skincare Architect 3D chưa đồng bộ sản phẩm của sàn, còn thương hiệu mẫu "Lumière Skin" | Xem [SKINCARE-3D.md](SKINCARE-3D.md) |
 
 ## Đang chờ nhóm cung cấp
 

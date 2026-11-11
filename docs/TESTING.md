@@ -43,7 +43,8 @@ với một **client Supabase giả lập** mô phỏng các luật quyền chí
 | Đợt A: số liệu thật, trang thông tin, đánh giá (chưa mua → không được; nhận hàng → viết, sửa, xóa), người bán trả lời, Admin ẩn, theo dõi shop, yêu thích, nén ảnh WebP khi tải lên, mobile + tối | 68/68 |
 | Đợt B: giao diện mới, gợi ý + lịch sử tìm kiếm, lọc thương hiệu/điểm/còn hàng, trang sản phẩm (tab, so sánh, chia sẻ, mua ngay, đã xem gần đây), mã giảm giá (Admin, người bán, ví, giỏ, đặt hàng, lượt dùng), chọn món trong giỏ, thông báo, báo cáo đánh giá, "Cách dùng", mobile + tối | 79/79 |
 | Đợt C: chân trang, banner 3 slide, menu danh mục thả xuống, Nước hoa / Nam giới, Thương hiệu A–Z, thanh trượt giá, Beauty Finder mới, Câu hỏi thường gặp, Admin sửa nội dung trang, tin nhắn khách ↔ shop ↔ hỗ trợ (khung chat nổi), mobile + tối | 75/75 |
-| **Tổng** | **469/469**, không có lỗi JavaScript |
+| Nhúng Skincare Architect 3D: liên kết, handshake `skincare:ready`, `hostOrigin`, module chạy, mở toàn màn hình, tự chuyển 2D khi không tải được 3D, desktop + điện thoại tối | 17/17 |
+| **Tổng** | **486/486**, không có lỗi JavaScript |
 
 Kiểm tra TypeScript bằng trình biên dịch thật với kiểu thư viện rút gọn: không lỗi. **Nhóm vẫn cần chạy `npm.cmd run build`** để kiểm tra với thư viện thật.
 

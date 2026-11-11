@@ -1,0 +1,68 @@
+✓ [1440px] chỉ có MỘT khối tổng hợp cảnh báo; không còn dãy thẻ cảnh báo đỏ/vàng liên tiếp
+✓ [1440px] tóm tắt nêu trạng thái, số mục cần xem lại và từng nhóm
+✓ [1440px] tên sản phẩm bị giữ ngoài routine thấy ngay ở trạng thái thu gọn
+✓ [1440px] không lặp: 8 thẻ cũ → 3 dòng; mỗi nhóm đúng một dòng
+✓ [1440px] chi tiết thu gọn mặc định; lý do dài chưa hiện
+✓ [1440px] lượng chữ cảnh báo hiển thị ngay giảm (≤ 520 ký tự; 0.4.1 đo được 848 ký tự cho cùng phạm vi)
+✓ [1440px] mỗi bước chỉ có tối đa MỘT nhãn ngắn
+✓ [1440px] không cuộn ngang
+✓ [1440px] khối tóm tắt không quá dài (≤ 300px)
+✓ [1440px] Enter trên "Xem giải thích chi tiết" mở phần chi tiết
+✓ [1440px] chi tiết có lý do đầy đủ, sản phẩm liên quan và cảnh báo gốc của từng mục
+✓ [1440px] chi tiết trong khung hình, không tràn ngang
+✓ [1440px] Space đóng lại
+✓ [1440px] chuột mở/đóng được
+✓ [1440px] không có lỗi JavaScript
+✓ [768px] chỉ có MỘT khối tổng hợp cảnh báo; không còn dãy thẻ cảnh báo đỏ/vàng liên tiếp
+✓ [768px] tóm tắt nêu trạng thái, số mục cần xem lại và từng nhóm
+✓ [768px] tên sản phẩm bị giữ ngoài routine thấy ngay ở trạng thái thu gọn
+✓ [768px] không lặp: 8 thẻ cũ → 3 dòng; mỗi nhóm đúng một dòng
+✓ [768px] chi tiết thu gọn mặc định; lý do dài chưa hiện
+✓ [768px] lượng chữ cảnh báo hiển thị ngay giảm (≤ 520 ký tự; 0.4.1 đo được 848 ký tự cho cùng phạm vi)
+✓ [768px] mỗi bước chỉ có tối đa MỘT nhãn ngắn
+✓ [768px] không cuộn ngang
+✓ [768px] khối tóm tắt không quá dài (≤ 300px)
+✓ [768px] Enter trên "Xem giải thích chi tiết" mở phần chi tiết
+✓ [768px] chi tiết có lý do đầy đủ, sản phẩm liên quan và cảnh báo gốc của từng mục
+✓ [768px] chi tiết trong khung hình, không tràn ngang
+✓ [768px] Space đóng lại
+✓ [768px] chuột mở/đóng được
+✓ [768px] không có lỗi JavaScript
+✓ [390px] chỉ có MỘT khối tổng hợp cảnh báo; không còn dãy thẻ cảnh báo đỏ/vàng liên tiếp
+✓ [390px] tóm tắt nêu trạng thái, số mục cần xem lại và từng nhóm
+✓ [390px] tên sản phẩm bị giữ ngoài routine thấy ngay ở trạng thái thu gọn
+✓ [390px] không lặp: 8 thẻ cũ → 3 dòng; mỗi nhóm đúng một dòng
+✓ [390px] chi tiết thu gọn mặc định; lý do dài chưa hiện
+✓ [390px] lượng chữ cảnh báo hiển thị ngay giảm (≤ 520 ký tự; 0.4.1 đo được 848 ký tự cho cùng phạm vi)
+✓ [390px] mỗi bước chỉ có tối đa MỘT nhãn ngắn
+✓ [390px] không cuộn ngang
+✓ [390px] khối tóm tắt không quá dài (≤ 420px)
+✓ [390px] Enter trên "Xem giải thích chi tiết" mở phần chi tiết
+✓ [390px] chi tiết có lý do đầy đủ, sản phẩm liên quan và cảnh báo gốc của từng mục
+✓ [390px] chi tiết trong khung hình, không tràn ngang
+✓ [390px] Space đóng lại
+✓ [390px] chuột mở/đóng được
+✓ [390px] không có lỗi JavaScript
+✓ Tổ hợp cần thận trọng hiện thành dòng riêng, nổi bật (mức danger), có tên sản phẩm, khi chi tiết còn thu gọn
+✓ Nhóm A đứng đầu danh sách tóm tắt
+✓ Lưu ý in trên nhãn sản phẩm (gây khô/châm chích…) vẫn thấy được: nhãn ngắn ở bước + đầy đủ trong chi tiết
+✓ Chi tiết liệt kê lưu ý trên nhãn sản phẩm
+✓ Khu chỉnh sửa đang đóng trước khi bấm đường dẫn
+✓ Nút "Chỉnh sửa sản phẩm" trong tóm tắt mở khu chỉnh sửa và đưa tiêu điểm tới đó
+✓ Chi tiết đã mở vẫn giữ trạng thái mở sau khi routine vẽ lại
+✓ Bỏ BHA → dòng thận trọng biến mất (nhóm cập nhật theo Engine)
+✓ Bỏ sản phẩm trùng và thiếu dữ liệu → số mục cần xem lại giảm, nhóm Trùng/Dữ liệu biến mất
+✓ Chuyển sang tài khoản A (chưa có routine) → không còn cảnh báo của B
+✓ Chuyển lại B → cảnh báo của B (đã bỏ p02/p09/p11) hiển thị đúng, không lẫn người dùng khác
+✓ Chuyển tài khoản: không có lỗi JavaScript
+✓ Mô hình: thẻ bước hiện cảnh báo của chính bước đang chọn, cùng thuật ngữ nhóm với trang Routine
+✓ Mô hình: không lặp lại cảnh báo của cả routine (Retinol, Chống nắng, Kem Glow Mystery, dưỡng ẩm)
+✓ Mô hình: lý do chỉ mở khi cần ("Vì sao?"); thẻ không có nhiều khối đỏ/vàng liên tiếp
+✓ Mô hình: mở bằng bàn phím thấy lý do đầy đủ
+✓ Mô hình: cảnh báo nằm trong cột thông tin, không chồng lên khung mô hình
+✓ Mô hình: không có lỗi JavaScript
+✓ Routine không cảnh báo: không có danh sách nhóm, giữ nguyên lời nhắc "không có nghĩa là đã được xác nhận an toàn"
+✓ Không cảnh báo: không có nút chỉnh sửa thừa trong khối tóm tắt
+✓ Không cảnh báo: không có lỗi JavaScript
+
+66 kiểm thử giao diện 0.4.2 đạt.

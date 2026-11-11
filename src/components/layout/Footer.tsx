@@ -45,6 +45,7 @@ export function Footer() {
             <li><Link to="/shops" className={linkClass}>Cửa hàng</Link></li>
             <li><Link to="/vouchers" className={linkClass}>Ví voucher</Link></li>
             <li><Link to="/beauty-finder" className={linkClass}>Beauty Finder</Link></li>
+            <li><Link to="/skincare-architect" className={linkClass}>Skincare Architect 3D</Link></li>
           </ul>
         </div>
 

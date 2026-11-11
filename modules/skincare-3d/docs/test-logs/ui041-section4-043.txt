@@ -1,0 +1,8 @@
+✓ Cảnh báo quan trọng hiển thị ngay dưới dạng dòng tóm tắt, ngoài các phần thu gọn
+✓ Dòng tóm tắt nêu tên sản phẩm; lý do đầy đủ nằm trong "Xem giải thích chi tiết" (đóng mặc định)
+✓ Mở chi tiết → thấy lý do
+✓ Lưu ý của sản phẩm/bước hiện ngay trong dòng bước dưới dạng nhãn ngắn
+✓ Lưu ý của bước cũng hiện ngay trên thẻ giải thích ở bước 3
+✓ Cảnh báo: không có lỗi JavaScript
+
+6 bước kiểm tra mục 4 đạt.

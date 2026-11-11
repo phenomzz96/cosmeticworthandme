@@ -123,6 +123,7 @@ Database kiểm tra toàn bộ: chỉ chủ shop sửa shop/sản phẩm/ảnh/�
 - **Tin nhắn**: khách bấm "Nhắn tin cho shop" ở trang sản phẩm/cửa hàng, hoặc gửi câu hỏi cho bộ phận hỗ trợ ở trang Liên hệ, Câu hỏi thường gặp. Khung chat nổi ở góc phải; hộp thư `/messages`, `/seller/messages`, `/admin/messages`.
 - **Nội dung trang do Admin sửa** (`/admin/pages`): Giới thiệu, Liên hệ, Câu hỏi thường gặp, Chính sách, Điều khoản, thanh thông báo, mô tả chân trang. Có xem trước và "Khôi phục mặc định".
 - **Danh mục**: Skincare, Makeup, Haircare, Body Care, Nước hoa, Nam giới, Beauty Tools; menu thả xuống theo loại sản phẩm và thương hiệu; trang Thương hiệu A–Z (`/brands`); thanh trượt khoảng giá.
+- **Skincare Architect 3D** (`/skincare-architect`): tính năng chuyên biệt của nhóm 3D, nhúng nguyên trạng từ `modules/skincare-3d` (xem [docs/SKINCARE-3D.md](docs/SKINCARE-3D.md)).
 - **Beauty Finder**: hỏi dành cho nam/nữ, rồi câu hỏi đổi theo nhóm (da mặt, trang điểm, tóc, cơ thể, nước hoa); kết quả có % phù hợp, lý do và lưu ý. Loại da do người dùng tự chọn, không chẩn đoán.
 
 ## 4. Thương hiệu
@@ -143,6 +144,8 @@ supabase/
 ├── migrations/               ★ SQL tạo bảng, RLS, hàm phía server (chạy theo thứ tự)
 ├── seed/demo_catalog.sql     Dữ liệu mẫu tùy chọn (7 shop, 49 sản phẩm)
 └── tests/                    Kiểm thử bảo mật trên Postgres local (xem supabase/README.md)
+modules/skincare-3d/          Tính năng chuyên biệt Skincare Architect 3D (gói của nhóm 3D, giữ nguyên)
+scripts/copy-skincare-3d.mjs  Tự chép module 3D vào public/skincare-3d trước khi dev/build
 src/
 ├── app/App.tsx               Định tuyến các trang, chặn trang theo quyền
 ├── config/brand.ts           Giá trị thương hiệu mặc định & thông tin nhóm

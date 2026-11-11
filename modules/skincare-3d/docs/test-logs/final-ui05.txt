@@ -1,0 +1,46 @@
+✓ 3D tải được: 1 canvas, 3 lưới, 3 lệnh vẽ, không texture
+✓ Đứng yên → không có vòng render chạy ngầm
+✓ Tải tài nguyên 3D chỉ một lần mỗi loại; GLB ≤ 1 MB
+✓ Canvas WebGL hoạt động
+✓ Tải mô hình: không có lỗi JavaScript
+✓ Kéo bắt đầu trên má → xoay mô hình, KHÔNG chọn vùng
+✓ Nhấp đúng vào má trái → chọn "Má trái", highlight đúng vùng
+✓ Dòng dưới mô hình nói rõ đang xem vùng nào
+✓ Nhấp chọn vùng forehead (raycast trên lưới thật)
+✓ Nhấp chọn vùng chin (raycast trên lưới thật)
+✓ Nhấp chọn vùng cheekR (raycast trên lưới thật)
+✓ Thu nhỏ liên tục → dừng ở giới hạn xa
+✓ Phóng to liên tục → dừng ở giới hạn gần, không xuyên vào đầu
+✓ Xoay mạnh nhiều lần → góc xoay/nghiêng trong giới hạn hữu ích
+✓ Đặt lại góc nhìn → về chính diện
+✓ Bấm nhanh qua mọi bước (x2) → chỉ bước cuối được chọn, highlight/thẻ/dòng trạng thái khớp nhau
+✓ Chuyển bước nhanh: một canvas, không vòng render thừa sau khi dừng
+✓ 3D↔2D 10 lần: vẫn 1 canvas, không khởi tạo lại, số lưới/vật liệu không tăng
+✓ Sau khi chuyển: lựa chọn bước giữ nguyên ở cả 3D
+✓ Ở 2D: 3D dừng render, 2D hiện, lựa chọn vẫn hiển thị
+✓ 3D↔2D: không có lỗi JavaScript
+✓ Đổi tài khoản: bỏ lựa chọn của tài khoản trước, mô hình hết highlight, không hiện routine của A
+✓ Quay lại A: dữ liệu A còn nguyên
+✓ Three.js đang được giữ lại (3D chưa sẵn sàng)
+✓ 3D khởi tạo xong muộn → KHÔNG ghi đè lựa chọn 2D của người dùng (vẫn 2D, 3D dừng)
+✓ Bấm 3D lại → dùng mô hình đã tải, không tải lại
+✓ Race 3D: không có lỗi JavaScript
+✓ Mất mạng/CDN: chuyển 2D, nêu nguyên nhân ngắn + gợi ý cần Internet, không lộ URL trong phần hiển thị
+✓ Chi tiết kỹ thuật mở được khi cần (có thông điệp gốc)
+✓ 2D vẫn chọn được vùng: nhấp "Má trái" → thẻ thông tin + dòng trạng thái cập nhật
+✓ Mất mạng: không có lỗi JavaScript
+✓ WebGL không khả dụng: báo rõ, dùng 2D, trang không lỗi
+✓ Mục tiêu → Tạo routine: tới Routine, có hành động tiếp theo rõ ràng
+✓ Routine → bấm bước: sang Mô hình với ĐÚNG bước đó, dòng dưới mô hình nói rõ đang xem gì
+✓ Mobile: dòng trạng thái nằm ngay dưới mô hình (thấy phản hồi không cần cuộn)
+✓ Mô hình: routine chưa lưu → gợi ý quay lại để lưu (không thêm nút Lưu thứ hai)
+✓ Quay lại Routine: bước đang chọn vẫn giữ
+✓ Đã lưu → Mô hình đề xuất "Theo dõi & lịch sử", lựa chọn bước vẫn giữ
+✓ → Theo dõi & lịch sử
+✓ Mobile: không cuộn ngang ở cuối luồng; không có lỗi JavaScript
+✓ Timeline: ảnh tải chậm của ngày trước KHÔNG ghi đè ảnh của ngày đang chọn
+✓ Timeline: chuyển sang ngày không có ảnh → ảnh cũ không xuất hiện
+✓ Nhật ký: bấm xem ảnh liên tiếp → chỉ ảnh của lần bấm mới nhất
+✓ Race ảnh: không có lỗi JavaScript
+
+44 kiểm thử giao diện 0.5 đạt.

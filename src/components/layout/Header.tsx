@@ -310,6 +310,9 @@ export function Header() {
             <Link to="/beauty-finder" className="flex items-center gap-2 rounded-xl px-3 py-3 font-semibold text-primary hover:bg-surface-2">
               <Icon name="sparkle" size={18} /> Beauty Finder
             </Link>
+            <Link to="/skincare-architect" className="flex items-center gap-2 rounded-xl px-3 py-3 font-semibold text-primary hover:bg-surface-2">
+              <Icon name="sparkle" size={18} /> Skincare Architect 3D
+            </Link>
             <Link to="/products" className="rounded-xl px-3 py-3 hover:bg-surface-2">
               Tất cả sản phẩm
             </Link>

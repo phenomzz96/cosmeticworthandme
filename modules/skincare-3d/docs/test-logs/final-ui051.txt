@@ -1,0 +1,33 @@
+✓ Mô hình 0.5.1 tải và giải nén được: 6 lưới (da, mắt, nắp, tóc, tóc tơ, lông mày+mi), 7 lệnh vẽ, 0 texture
+✓ Các lưới có đủ dữ liệu sau giải nén (đỉnh/tam giác khớp tệp gốc trước nén)
+✓ Vật liệu đúng: da/tóc Physical, lông mày+mi Lambert, mắt Physical (shader mống mắt)
+✓ Bộ giải nén meshopt lấy từ CHÍNH gói three@0.160.0 (cùng CDN), một lần
+✓ Không lỗi JavaScript khi tải
+✓ Chưa ở chế độ nhẹ khi vừa tải
+✓ Chính diện: đỉnh đầu là tóc nâu sẫm, vùng trán là da sáng (tóc không che trán)
+✓ Mắt (cận): mống mắt nâu ấm (không xám, không đen kịt) quanh đồng tử
+✓ Nghiêng: thấy búi tóc thấp sau gáy
+✓ Nhấp Trán: chọn đúng vùng (raycast lưới da mới) và bề mặt chuyển sắc nhấn
+✓ Nhấp Má trái: chọn đúng vùng (raycast lưới da mới) và bề mặt chuyển sắc nhấn
+✓ Nhấp Má phải: chọn đúng vùng (raycast lưới da mới) và bề mặt chuyển sắc nhấn
+✓ Nhấp Cằm: chọn đúng vùng (raycast lưới da mới) và bề mặt chuyển sắc nhấn
+✓ Nhấp lên tóc (đỉnh đầu): không chọn vùng nào, không lỗi
+✓ Lông mày/mi không phải vùng da để chọn (rê chuột lên lông mày không báo vùng)
+   (đo trên renderer phần mềm SwiftShader: 3 khung/giây khi kéo, trung vị 382.0 ms/khung; GPU thật nhanh hơn nhiều)
+✓ Renderer phần mềm vẫn tương tác được (không treo): ≥ 2 khung/giây, ≤ 600 ms/khung
+✓ Đứng yên → không render ngầm
+   (chế độ nhẹ bật thủ công)
+✓ Chế độ nhẹ cho thiết bị chậm: mật độ điểm ảnh = 1, vẫn render, không lỗi
+✓ Điện thoại dọc: đỉnh tóc và cằm đều nằm trong khung 3D
+✓ Điện thoại: chạm vào cằm → chọn "Cằm"
+✓ Điện thoại: không lỗi JavaScript
+✓ Không tải được 3D → tự chuyển 2D
+✓ Sơ đồ 2D có tóc (vén gọn, cùng hình dáng mô hình 3D)
+✓ 2D: vùng forehead không bị tóc/nét mặt che (phần tử trên cùng tại tâm vùng là chính vùng đó)
+✓ 2D: vùng cheekL không bị tóc/nét mặt che (phần tử trên cùng tại tâm vùng là chính vùng đó)
+✓ 2D: vùng cheekR không bị tóc/nét mặt che (phần tử trên cùng tại tâm vùng là chính vùng đó)
+✓ 2D: vùng chin không bị tóc/nét mặt che (phần tử trên cùng tại tâm vùng là chính vùng đó)
+✓ 2D: nhấp "Trán" → chọn đúng vùng
+✓ 2D dự phòng: không lỗi JavaScript
+
+29 kiểm thử giao diện 0.5.1 đạt.

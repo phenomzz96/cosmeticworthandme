@@ -1,0 +1,74 @@
+✓ 3D khởi tạo: 1 canvas, 1 lần init, vòng render nghỉ khi không có thay đổi
+✓ Test 1: kéo chuột → mô hình xoay (azimuth đổi), KHÔNG chọn vùng
+✓ Test 1: sau khi xoay xong, vòng render dừng (không vẽ liên tục)
+✓ Đặt lại góc nhìn: về chính diện
+✓ Test 2: nhấp vào trán → chọn vùng Trán, bảng thông tin cập nhật
+✓ Test 2: vùng Trán được tô trên bề mặt (màu chuyển sang xanh nhạt)
+✓ Test 2: thanh chọn vùng đồng bộ (nút Trán ở trạng thái chọn)
+✓ Test 2: vùng khác (má trái) không bị tô khi chọn trán
+✓ Quy ước trái/phải: điểm má trái (bên phải màn hình) → vùng "Má trái"
+✓ Nhấp vào mũi (không phải vùng da) → giữ nguyên lựa chọn
+✓ Rê chuột qua vùng: gợi ý tên vùng, chưa chọn
+✓ Test 1–2: không có lỗi JavaScript
+✓ Vuốt bằng ngón tay → xoay mô hình, không chọn vùng
+✓ Chụm/mở hai ngón → không chọn vùng
+✓ Chạm vào má phải → chọn "Má phải" (cảm ứng)
+✓ Cảm ứng: không có lỗi JavaScript
+✓ Test 3: chọn bước BHA (pm:treat) → highlight đúng vùng khai báo: trán + cằm
+✓ Test 3: bảng giải thích: sản phẩm, vùng, cảnh báo của bước
+✓ Test 3: thẻ bước được đánh dấu "Đang chọn"; bộ chọn bước trong studio đồng bộ
+✓ Test 3: bước "toàn mặt" → phủ toàn mặt + 4 vùng (không bỏ qua highlight)
+✓ Test 4: thay BHA bằng Retinol → bước vẫn được chọn, vùng cập nhật (trán + hai má), thông tin cập nhật
+✓ Test 4: cảnh báo/lưu ý được tính lại theo sản phẩm mới
+✓ Test 4: bỏ sản phẩm → bước đang chọn biến mất → tự bỏ chọn, có thông báo, mô hình hết highlight
+✓ Chọn vùng từ thanh vùng da → các bước liên quan được đánh dấu trong routine
+✓ Từ danh sách bước của vùng → mở chi tiết bước
+✓ Test 3–4: không có lỗi JavaScript
+✓ Test 5: ở 2D vòng render 3D dừng hẳn
+✓ Test 5: 3D↔2D ×8 → vẫn 1 canvas, 1 lần khởi tạo, không còn vòng render chờ
+✓ Test 5: lựa chọn giữ nguyên qua các lần chuyển; 2D hiển thị cùng vùng
+✓ Test 10: số geometry/material/texture không tăng sau 8 lần chuyển
+✓ Test 10: bộ nhớ JS không tăng bất thường (< 4 MB sau GC)
+✓ 2D giữ lựa chọn: bước toàn mặt → 4 vùng + phủ toàn mặt
+✓ 2D: chọn cằm → đồng bộ thông tin + thanh vùng
+✓ 2D: chọn vùng bằng bàn phím (Tab + Enter)
+✓ Quay lại 3D: highlight vùng đã chọn ở 2D
+✓ Chuyển sang trang Cửa hàng: 3D tạm dừng
+✓ Tab bị ẩn: không render khung nào dù có yêu cầu
+✓ Tab hiện lại: render tiếp, rồi nghỉ
+✓ Đổi kích thước cửa sổ → renderer khớp khung chứa, khoảng cách camera trong giới hạn
+✓ Phóng to tối đa: camera không vào trong mô hình (≥ giới hạn tối thiểu)
+✓ Thu nhỏ tối đa: mô hình không biến mất (≤ giới hạn tối đa)
+✓ Nút góc nhìn thực sự điều khiển camera (má trái: +x, má phải: −x)
+✓ Chế độ hiệu năng (dev): tắt mặc định, bật thì hiện số liệu thật
+✓ Test 5/10: không có lỗi JavaScript
+✓ prefers-reduced-motion: camera chuyển góc tức thì (không tween)
+✓ Test 6: lỗi giả lập khi đang chạy → thông báo, chuyển 2D, viewer 3D được giải phóng
+✓ Test 6: giữ bước đang chọn; 2D hiển thị vùng của bước
+✓ Test 6: còn bật giả lập → bấm 3D vẫn lỗi ở bước khởi tạo, không màn hình trắng
+✓ Khởi tạo lại sau dispose: 1 canvas mới, highlight khôi phục
+✓ Lỗi → khởi tạo lại ×3: không dồn canvas, tài nguyên như ban đầu
+✓ Test 6: các chức năng khác vẫn chạy (lưu routine)
+✓ Test 6: không có lỗi JavaScript
+✓ Không hỗ trợ WebGL → báo rõ nguyên nhân, dùng 2D, trang không lỗi
+✓ Không tải được Three.js (mất mạng/CDN bị chặn) → báo rõ, dùng 2D
+✓ Chế độ dự phòng 2D vẫn chọn vùng được
+✓ Test 7 [1440px]: không cuộn ngang; mô hình đủ lớn và không bị che; nút đủ lớn để chạm
+✓ Test 7 [1440px]: không có lỗi JavaScript
+✓ Test 7 [1024px]: không cuộn ngang; mô hình đủ lớn và không bị che; nút đủ lớn để chạm
+✓ Test 7 [1024px]: không có lỗi JavaScript
+✓ Test 7 [768px]: không cuộn ngang; mô hình đủ lớn và không bị che; nút đủ lớn để chạm
+✓ Test 7 [768px]: không có lỗi JavaScript
+✓ Test 7 [390px]: không cuộn ngang; mô hình đủ lớn và không bị che; nút đủ lớn để chạm
+✓ Test 7 [390px]: không có lỗi JavaScript
+✓ Test 8: nhớ tài khoản đang chọn từ 0.3.1 (skc:uid)
+✓ Test 8: đọc dữ liệu 0.3.1: đủ phiên bản, ghi chú hiển thị dạng chữ, không có thông báo chuyển đổi
+✓ Test 8: lịch sử áp dụng + bản ghi sửa ngày + Ngày 0 giữ nguyên
+✓ Test 8: nhật ký 0.3.1 hiển thị đúng (ký tự HTML là chữ)
+✓ Test 8: mở bằng 0.4 không ghi lại dữ liệu
+✓ Test 8: tài nguyên tách theo tài khoản (User B có 1 phiên bản riêng)
+✓ Test 8: không có lỗi JavaScript
+✓ Test 9: dữ liệu chứa HTML/JS không được thực thi, không tạo thuộc tính on*, hiển thị thành chữ
+✓ Test 9: không có lỗi JavaScript
+
+72 kiểm thử giao diện 0.4 đạt.

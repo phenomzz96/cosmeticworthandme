@@ -1,0 +1,12 @@
+== engine (gốc, không đổi)
+18 kiểm thử đạt.
+== manager (gốc, không đổi)
+18 kiểm thử đạt.
+== v031 GỐC trên mã 0.4.1
+✗ 6a. không có eval/new Function/setTimeout chuỗi/document.write/insertAdjacentHTML/outerHTML — ENOENT: no such file or directory, open 'v041/js/face3d.js'
+✗ 6b. innerHTML chỉ được gán trong html.js (setHtml) và viewer2d.js (SVG hằng số) — ENOENT: no such file or directory, open 'v041/js/face3d.js'
+✗ 6d. không có bí mật/token, chỉ một nguồn mạng ngoài (jsDelivr cho Three.js) — ENOENT: no such file or directory, open 'v041/js/face3d.js'
+[catch-harness] 26 đạt 3 lỗi
+== v04 GỐC trên mã 0.4.1
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'v041/js/face3d.js' imported from v041/tests/_orig_v04.mjs
+  url: 'file://v041/js/face3d.js'
