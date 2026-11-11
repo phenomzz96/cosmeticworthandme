@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lumière Skin – Kiến trúc sư chu trình Skincare</title>
+<meta name="description" content="Dựng routine skincare từ sản phẩm bạn đã chọn và minh họa vị trí áp dụng trên mô hình khuôn mặt 3D/2D.">
+<meta name="theme-color" content="#f7f4f0">
+<link rel="stylesheet" href="css/style.css">
+<!-- Phụ thuộc Internet: Three.js 0.160.0 (jsDelivr), chỉ tải khi mở bước "Mô hình 3D". Mô hình đầu nằm trong assets/head.glb (CC0). -->
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head><body>
+<a class="skip" href="#main">Bỏ qua tới nội dung chính</a>
+<header class="topbar"><div class="topbar-in">
+ <a class="brand" href="#" data-act="view" data-v="home" aria-label="Lumière Skin – về cửa hàng"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 3a13 13 0 0 1 0 26z" fill="currentColor" opacity=".85"/></svg><span>Lumière <em>Skin</em></span></a>
+ <nav class="tabs" aria-label="Điều hướng chính"><button data-act="view" data-v="home">Cửa hàng</button><button data-act="view" data-v="feature">Routine của tôi</button></nav>
+ <span class="acct acct-chip" id="acctChip" aria-live="polite"></span>
+ <label class="acct" id="acctPicker" hidden><span>Hồ sơ demo</span><select id="userSel"></select></label>
+</div></header>
+<main id="main">
+<div id="storage"></div>
+<section id="home"></section>
+<section id="feature" hidden>
+ <div class="flowbar">
+  <nav aria-label="Các bước"><ol id="stepper" class="flow"></ol></nav>
+  <button class="track-btn" data-act="stage" data-s="track" id="trackBtn">Theo dõi &amp; lịch sử</button>
+ </div>
+ <div id="devbar" class="devbar" hidden role="group" aria-label="Công cụ developer"><b>Developer mode</b><button id="simBtn" class="chip" data-act="sim"></button><button id="perfBtn" class="chip" data-act="perf"></button></div>
+ <section class="panel" data-stage="goals" id="stage-goals" aria-labelledby="goalsTitle">
+  <div id="quiz"></div>
+  <details class="more" id="analysisBox"><summary>Xem phân tích sản phẩm đã mua</summary><div id="analysis"></div></details>
+ </section>
+ <section class="panel" data-stage="routine" id="stage-routine" hidden><div id="routine"></div></section>
+ <section class="panel" data-stage="model" id="stage-model" hidden>
+  <div class="studio" id="studio">
+   <div class="stage-col" id="viewerCard">
+    <div class="toolbar" role="toolbar" aria-label="Điều khiển mô hình">
+     <div class="seg" role="group" aria-label="Chế độ hiển thị"><button data-act="mode" data-m="3d">3D</button><button data-act="mode" data-m="2d">2D</button></div>
+     <div class="seg" role="group" aria-label="Chế độ xem khuôn mặt"><button data-act="viewface" data-f="highlight">Vùng đang chọn</button><button data-act="viewface" data-f="original">Nguyên bản</button></div>
+     <button class="only3d ghost" data-act="reset">Đặt lại góc nhìn</button>
+     <details class="menu" id="moreCtl"><summary>Thêm điều khiển</summary><div class="menu-body">
+      <div class="only3d"><span class="lbl">Góc nhìn</span><div class="seg"><button data-act="preset" data-p="front">Chính diện</button><button data-act="preset" data-p="left">Má trái</button><button data-act="preset" data-p="right">Má phải</button></div></div>
+      <div class="only3d"><span class="lbl">Thu phóng</span><div class="seg"><button data-act="zoom" data-f="0.85" aria-label="Phóng to">+</button><button data-act="zoom" data-f="1.18" aria-label="Thu nhỏ">−</button></div></div>
+      <div><span class="lbl">Chọn vùng da</span><div class="zonebar" id="zonebar" role="group" aria-label="Chọn vùng da"></div></div>
+     </div></details>
+    </div>
+    <div id="notice" role="alert"></div>
+    <div id="perfHint"></div>
+    <div class="stage-wrap"><div id="v3d" class="stage"></div><div id="v2d" class="stage" hidden></div></div>
+    <p class="stage-hint" id="stageHint"></p>
+    <div id="perf" class="perf" hidden></div>
+   </div>
+   <aside class="info-col" aria-label="Bước đang xem"><div id="stepPick"></div><div id="info" aria-live="polite"></div><div id="modelNext" class="model-next"></div></aside>
+  </div>
+  <p class="disc">Mô hình chỉ minh họa vị trí áp dụng theo dữ liệu sản phẩm, không dự đoán hiệu quả. Màu da trên mô hình không thay đổi theo routine.</p>
+ </section>
+ <section class="panel" data-stage="track" id="stage-track" hidden>
+  <div class="panel-head"><h1>Theo dõi &amp; lịch sử</h1><p class="lead">Nhật ký da, lộ trình áp dụng routine và các phiên bản đã lưu.</p></div>
+  <div class="subtabs" role="tablist" aria-label="Theo dõi"><button role="tab" data-act="tab" data-t="journal">Nhật ký</button><button role="tab" data-act="tab" data-t="timeline">Lộ trình</button><button role="tab" data-act="tab" data-t="versions">Phiên bản</button></div>
+  <div data-tab="journal" id="journal" role="tabpanel" aria-label="Nhật ký"></div>
+  <div data-tab="timeline" id="timeline" role="tabpanel" aria-label="Timeline" hidden></div>
+  <div data-tab="versions" id="versions" role="tabpanel" aria-label="Phiên bản" hidden></div>
+ </section>
+</section>
+</main>
+<footer class="foot">
+ <p class="foot-note">Gợi ý routine chỉ mang tính minh họa, không phải chẩn đoán hay tư vấn da liễu chuyên môn.</p>
+ <details class="foot-more"><summary>Thông tin thêm</summary>
+  <p><b>Lumière Skin</b> là thương hiệu giả lập dùng cho mục đích minh họa; sản phẩm và tài khoản hiển thị là dữ liệu mẫu, không phải sản phẩm thương mại đã được xác minh. Bộ quy tắc gợi ý chưa được chuyên gia da liễu kiểm duyệt. Mô hình khuôn mặt 3D dựng từ MakeHuman (giấy phép CC0); phần tóc tự dựng riêng cho dự án.</p>
+ </details>
+ <button class="link" data-act="devmode" id="devBtn" aria-pressed="false" hidden>Developer mode</button>
+</footer>
+<script type="module" src="js/main.js"></script>
+</body></html>

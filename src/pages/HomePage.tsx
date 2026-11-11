@@ -504,6 +504,10 @@ function FinderShowcase() {
             <Link to="/beauty-finder?focus=haircare" className="font-medium text-primary underline-offset-4 hover:underline">
               Chăm sóc tóc
             </Link>
+            <span className="text-muted">·</span>
+            <Link to="/skincare-architect" className="font-medium text-primary underline-offset-4 hover:underline">
+              Skincare Architect 3D
+            </Link>
           </p>
         </div>
       </div>

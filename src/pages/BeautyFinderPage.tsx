@@ -4,7 +4,8 @@ import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { button, EmptyState, ErrorState, Price, Skeleton } from '@/components/ui/primitives'
 import { concernLabels, productTypeLabels, skinTypeLabels } from '@/data/taxonomy'
-import { ingredientHints, relaxSuggestions, scoreProducts, type FinderResult } from '@/features/beauty-finder/engine'
+import { ingredientHints, relaxSuggestions, scoreProducts, starterSet, type FinderResult } from '@/features/beauty-finder/engine'
+import { saveFinderSkin } from '@/features/skincare-3d/finderBridge'
 import {
   answersFromParams,
   answersToParams,
@@ -33,7 +34,7 @@ import {
   type StepKey,
 } from '@/features/beauty-finder/questions'
 import { useCart } from '@/features/cart/CartProvider'
-import { routineStepOf, sortByRoutine } from '@/features/routine/routine'
+import { routineStepOf } from '@/features/routine/routine'
 import { useAsync } from '@/lib/useAsync'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { catalogService } from '@/services/catalog'
@@ -443,14 +444,14 @@ function Insights({ answers }: { answers: FinderAnswers }) {
 
 function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit: () => void; onApply: (a: FinderAnswers) => void }) {
   const products = useAsync(() => catalogService.getAllActiveProducts(), [])
-  const [order, setOrder] = useState<'match' | 'routine'>('match')
+  const all = useMemo(() => (products.status === 'success' ? scoreProducts(products.data, answers) : []), [products, answers])
+  const results = all.slice(0, RESULT_LIMIT)
+  const starter = useMemo(() => (answers.focus === 'skincare' ? starterSet(all, answers) : []), [all, answers])
 
-  const results = useMemo(
-    () => (products.status === 'success' ? scoreProducts(products.data, answers).slice(0, RESULT_LIMIT) : []),
-    [products, answers],
-  )
-  const routineOrder = answers.focus === 'skincare' && order === 'routine'
-  const shown = routineOrder ? sortByRoutine(results.map((r) => ({ ...r, type: r.product.type }))) : results
+  // Nhớ câu trả lời da mặt gần nhất trên trình duyệt này, để Skincare Architect 3D không phải hỏi lại
+  useEffect(() => {
+    if (answers.focus === 'skincare') saveFinderSkin(answers)
+  }, [answers])
 
   return (
     <div className="mt-6">
@@ -468,6 +469,8 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
       </div>
 
       <Insights answers={answers} />
+
+      {answers.focus === 'skincare' && products.status === 'success' && <ArchitectHandoff answers={answers} starter={starter} />}
 
       {products.status === 'loading' && (
         <div className="mt-6 space-y-4">
@@ -508,26 +511,11 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
         <>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted">
-              {results.length} sản phẩm phù hợp nhất, sắp theo {routineOrder ? 'thứ tự các bước chăm sóc da' : 'mức độ phù hợp'}.
+              {results.length} sản phẩm phù hợp nhất, sắp theo mức độ phù hợp.
             </p>
-            {answers.focus === 'skincare' && (
-              <div className="inline-flex rounded-full border border-border bg-surface p-1 text-sm" role="group" aria-label="Thứ tự hiển thị">
-                {(['match', 'routine'] as const).map((o) => (
-                  <button
-                    key={o}
-                    type="button"
-                    aria-pressed={order === o}
-                    onClick={() => setOrder(o)}
-                    className={`rounded-full px-3 py-1.5 ${order === o ? 'bg-ink text-on-ink' : 'text-muted hover:text-text'}`}
-                  >
-                    {o === 'match' ? 'Phù hợp nhất' : 'Theo các bước'}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
           <ol className="mt-4 grid gap-4 lg:grid-cols-2">
-            {shown.map((r) => (
+            {results.map((r) => (
               <li key={r.product.id}>
                 <ResultCard result={r} />
               </li>
@@ -536,6 +524,43 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
         </>
       )}
     </div>
+  )
+}
+
+/** Chuyển sang Skincare Architect 3D: module dùng lại câu trả lời + bộ sản phẩm đề xuất, tự sắp sáng/tối và minh họa 3D */
+function ArchitectHandoff({ answers, starter }: { answers: FinderAnswers; starter: FinderResult[] }) {
+  const params = answersToParams(answers)
+  if (starter.length) params.set('pick', starter.map((r) => r.product.id).join(','))
+  params.set('from', 'finder')
+  return (
+    <section className="mt-6 overflow-hidden rounded-card border border-border bg-surface" aria-labelledby="architect-heading">
+      <div className="grid gap-5 p-5 sm:p-6 md:grid-cols-[1fr_auto] md:items-center">
+        <div>
+          <p className="eyebrow">Bước tiếp theo</p>
+          <h2 id="architect-heading" className="mt-1 font-display text-3xl font-semibold leading-tight">
+            Xếp thành chu trình sáng – tối, xem trên mô hình 3D
+          </h2>
+          <p className="mt-2 text-sm text-muted">
+            Skincare Architect 3D dùng luôn câu trả lời của bạn (không hỏi lại), cùng sản phẩm bạn đã mua trên sàn
+            {starter.length ? ' và bộ sản phẩm đề xuất dưới đây' : ''}; tự sắp thứ tự, báo bước còn thiếu và tổ hợp cần thận trọng.
+          </p>
+          {starter.length > 0 ? (
+            <ul className="mt-3 flex flex-wrap gap-2" aria-label="Bộ sản phẩm đề xuất cho chu trình">
+              {starter.map((r) => (
+                <li key={r.product.id} className="rounded-full bg-surface-2 px-3 py-1 text-xs">
+                  <span className="text-muted">{productTypeLabels[r.product.type]}:</span> {r.product.name}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-xs text-muted">Chưa có sản phẩm nào trong kết quả được cửa hàng khai báo đủ công dụng và thời điểm dùng.</p>
+          )}
+        </div>
+        <Link to={`/skincare-architect?${params.toString()}`} className={button('dark', 'lg')}>
+          <Icon name="sparkle" size={18} /> Mở Skincare Architect 3D
+        </Link>
+      </div>
+    </section>
   )
 }
 

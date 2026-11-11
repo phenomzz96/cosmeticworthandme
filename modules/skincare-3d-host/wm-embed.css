@@ -1,0 +1,139 @@
+/* Worth & Me — giao diện cho Skincare Architect 3D KHI NHÚNG trong website (html.wm-embed). Mở module độc lập: không áp dụng.
+   Chỉ đổi biến màu/font của module sang màu Worth & Me và ẩn phần thương hiệu mẫu; không đổi bố cục hay chức năng. */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap&subset=vietnamese');
+
+html.wm-embed {
+  --wm-acc: #79628e;
+  --bg: #faf7f3;
+  --surface: #fffdfa;
+  --surface-2: #f5efe9;
+  --sand: #efe7df;
+  --ink: #2b2126;
+  --ink-2: #4a3d44;
+  --mut: #74666d;
+  --line: #e7ddd6;
+  --line-2: #efe7e1;
+  --acc: var(--wm-acc);
+  --acc-2: color-mix(in oklab, var(--wm-acc) 82%, black);
+  --acc-soft: color-mix(in oklab, var(--wm-acc) 13%, #fffdfa);
+  --acc-ink: color-mix(in oklab, var(--wm-acc) 70%, black);
+  --font: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --r: 20px;
+}
+
+html.wm-embed[data-wm-theme='dark'] {
+  color-scheme: dark;
+  --bg: #171215;
+  --surface: #211a1e;
+  --surface-2: #2a2226;
+  --sand: #2f262b;
+  --ink: #f3ece7;
+  --ink-2: #d9ccd3;
+  --mut: #a8979f;
+  --line: #3a2f35;
+  --line-2: #322a2e;
+  --acc: color-mix(in oklab, var(--wm-acc) 55%, white);
+  --acc-2: color-mix(in oklab, var(--wm-acc) 40%, white);
+  --acc-soft: color-mix(in oklab, var(--wm-acc) 30%, #1c171a);
+  --acc-ink: color-mix(in oklab, var(--wm-acc) 25%, white);
+  --ok: #7fcf9d;
+  --ok-bg: #1d3226;
+  --warn: #f0c46b;
+  --warn-bg: #3a2e14;
+  --danger: #f19a90;
+  --danger-bg: #3d1f1c;
+  --info: #9cc3ea;
+  --info-bg: #1b2a3a;
+  --neutral: #c3b8bd;
+  --neutral-bg: #2c2529;
+  --sh: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -14px rgba(0, 0, 0, 0.6);
+}
+
+/* Website đã có thanh điều hướng và cửa hàng thật: ẩn thanh trên, cửa hàng mẫu và đoạn giới thiệu thương hiệu mẫu */
+html.wm-embed .topbar,
+html.wm-embed #home,
+html.wm-embed .foot-more,
+html.wm-embed .skip {
+  display: none !important;
+}
+html.wm-embed h1,
+html.wm-embed h2 {
+  font-family: var(--serif);
+}
+
+/* Một số màu module viết thẳng (nền trắng): đổi theo chế độ tối */
+html.wm-embed[data-wm-theme='dark'] input[type='date'],
+html.wm-embed[data-wm-theme='dark'] input:not([type]),
+html.wm-embed[data-wm-theme='dark'] input[type='text'],
+html.wm-embed[data-wm-theme='dark'] select,
+html.wm-embed[data-wm-theme='dark'] textarea,
+html.wm-embed[data-wm-theme='dark'] button.danger-ghost {
+  background: var(--surface);
+  color: var(--ink);
+}
+html.wm-embed[data-wm-theme='dark'] button:hover {
+  border-color: var(--mut);
+}
+html.wm-embed[data-wm-theme='dark'] .tag.am {
+  background: #3a2e14;
+  color: #f0c46b;
+}
+html.wm-embed[data-wm-theme='dark'] .tag.pm {
+  background: #26233f;
+  color: #c3bdf2;
+}
+html.wm-embed[data-wm-theme='dark'] .hero-main,
+html.wm-embed[data-wm-theme='dark'] .product .pic {
+  background: var(--surface-2);
+}
+
+/* Chế độ tối: chữ trên nền màu nhấn (nhấn đã được làm sáng) dùng màu nền tối cho đủ tương phản */
+html.wm-embed[data-wm-theme='dark'] button.primary,
+html.wm-embed[data-wm-theme='dark'] .pickbtn[aria-pressed='true'],
+html.wm-embed[data-wm-theme='dark'] .tl-node.sel .dot,
+html.wm-embed[data-wm-theme='dark'] .skip {
+  color: var(--bg);
+}
+/* Hộp cảnh báo / thông tin: module viết thẳng màu chữ đậm cho nền sáng */
+html.wm-embed[data-wm-theme='dark'] .alert.warn,
+html.wm-embed[data-wm-theme='dark'] #notice,
+html.wm-embed[data-wm-theme='dark'] .status.review,
+html.wm-embed[data-wm-theme='dark'] .status.incomplete {
+  color: var(--warn);
+}
+html.wm-embed[data-wm-theme='dark'] .alert.danger,
+html.wm-embed[data-wm-theme='dark'] .storagebar,
+html.wm-embed[data-wm-theme='dark'] .status.unmet,
+html.wm-embed[data-wm-theme='dark'] .status.insufficient {
+  color: var(--danger);
+}
+html.wm-embed[data-wm-theme='dark'] .alert.info,
+html.wm-embed[data-wm-theme='dark'] .flash,
+html.wm-embed[data-wm-theme='dark'] .hintbox,
+html.wm-embed[data-wm-theme='dark'] .status.partial {
+  color: var(--info);
+}
+html.wm-embed[data-wm-theme='dark'] .wl {
+  background: rgba(255, 255, 255, 0.06);
+}
+html.wm-embed[data-wm-theme='dark'] .flow button:hover,
+html.wm-embed[data-wm-theme='dark'] .tl-node:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+html.wm-embed[data-wm-theme='dark'] .step.rel,
+html.wm-embed[data-wm-theme='dark'] .tl-node .dot,
+html.wm-embed[data-wm-theme='dark'] .hist li::before,
+html.wm-embed[data-wm-theme='dark'] .chartbox {
+  background: var(--surface-2);
+}
+html.wm-embed[data-wm-theme='dark'] .tlbox.draft {
+  background: var(--warn-bg);
+}
+html.wm-embed[data-wm-theme='dark'] .fixbox {
+  background: var(--danger-bg);
+  box-shadow: 0 0 0 1px var(--line);
+}
+html.wm-embed[data-wm-theme='dark'] .stage-wrap {
+  background: radial-gradient(ellipse 70% 60% at 50% 38%, #2f262b 0%, #211a1e 70%, #171215 100%);
+}

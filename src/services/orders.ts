@@ -57,6 +57,17 @@ export const orderService = {
     return { orders: (data as unknown as Order[]).map(sortShopOrders), total: count ?? 0 }
   },
 
+  /** Sản phẩm khách đã mua (đơn con chưa bị hủy), mới nhất trước — dùng cho Skincare Architect 3D */
+  async purchasedProductIds(): Promise<string[]> {
+    const { data, error } = await requireSupabase().from('orders').select(ORDER_FIELDS).order('created_at', { ascending: false }).limit(100)
+    if (error) throw error
+    const ids: string[] = []
+    for (const o of (data ?? []) as unknown as Order[])
+      for (const so of o.shop_orders ?? [])
+        if (so.status !== 'cancelled') for (const it of so.order_items ?? []) if (it.product_id && !ids.includes(it.product_id)) ids.push(it.product_id)
+    return ids
+  },
+
   async getMineByCode(code: string): Promise<Order | null> {
     const { data, error } = await requireSupabase()
       .from('orders')

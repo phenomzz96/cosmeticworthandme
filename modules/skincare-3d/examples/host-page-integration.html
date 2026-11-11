@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ví dụ nhúng Skincare Prototype — hai chiều (v1.0)</title>
+<style>
+ body{font:15px/1.5 system-ui,sans-serif;margin:0;padding:24px;background:#f3f1ee;color:#222}
+ h1{font-size:18px}
+ .wrap{display:flex;gap:16px;flex-wrap:wrap}
+ .frame-col{flex:1 1 640px}
+ iframe{width:100%;height:900px;border:1px solid #ccc;border-radius:8px;background:#fff}
+ .log-col{flex:1 1 320px;min-width:280px;display:flex;flex-direction:column;gap:10px}
+ .log{background:#111;color:#9f9;font:12px/1.4 monospace;padding:10px;border-radius:8px;height:600px;overflow:auto;white-space:pre-wrap}
+ .hint{font-size:13px;color:#555;background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px}
+ button{font:inherit;padding:8px 12px;border-radius:6px;border:1px solid #999;background:#fff;cursor:pointer}
+ button:hover{background:#eee}
+ code{background:#eee;padding:1px 4px;border-radius:3px}
+</style></head>
+<body>
+<h1>Ví dụ nhúng hai chiều: trang host gửi catalogue/khách hàng thật cho prototype (dữ liệu mẫu minh họa)</h1>
+<div class="hint">
+ <b>Chiều host → app (mới ở v1.0):</b> trang host tạo iframe với <code>?hostOrigin=&lt;origin của chính host&gt;</code>
+ trên URL, rồi <code>postMessage({source:'skincare-widget-host', type:'skincare:sync', payload:{...}}, iframeOrigin)</code>.
+ App chỉ chấp nhận message nếu <code>event.origin</code> khớp đúng <code>hostOrigin</code> đã khai báo VÀ
+ <code>event.source===window.parent</code> — xem <a href="../docs/integration.md">docs/integration.md</a> để biết đầy đủ
+ giao thức, lược đồ dữ liệu sản phẩm (đơn giản hoặc kiểu WooCommerce) và các giới hạn hiện tại.<br>
+ <b>Chiều app → host (từ v0.6):</b> app tự phát <code>routine:updated</code>, <code>version:saved</code>, và giờ thêm
+ <code>host:applied</code> (báo cáo phần dữ liệu nào được nhận/bị bỏ qua) sau mỗi lần <code>skincare:sync</code>.
+</div>
+<div class="wrap">
+ <div class="frame-col"><iframe id="skc" src="" title="Skincare Prototype"></iframe></div>
+ <div class="log-col">
+  <div class="hint">Bấm theo thứ tự: <b>1) Nạp catalogue</b> (kiểu WooCommerce, cố ý có 1 sản phẩm thiếu field) →
+   <b>2) Gửi quiz + sản phẩm đã mua</b>. Xem báo cáo <code>host:applied</code> trong log để thấy adapter đã map/bỏ qua gì.
+   Hai nút này TỰ KHÓA cho tới khi app báo <code>skincare:ready</code> — đây là cách đúng để biết app đã sẵn sàng
+   nhận dữ liệu, thay vì đoán theo sự kiện <code>load</code> của iframe (không đảm bảo app đã đăng ký xong message
+   listener ở mọi trình duyệt/điều kiện tải).</div>
+  <div id="readyState" class="hint" style="font-weight:600">⏳ Đang chờ app báo sẵn sàng (skincare:ready)…</div>
+  <div><button id="b1" disabled>1) Nạp catalogue mẫu (WooCommerce-style)</button> <button id="b2" disabled>2) Gửi mục tiêu + sản phẩm đã mua</button></div>
+  <div class="log" id="log">(đang tải iframe…)</div>
+ </div>
+</div>
+<script>
+const log = s => { const el = document.getElementById('log'); el.textContent += s + '\n'; el.scrollTop = el.scrollHeight; };
+const frame = document.getElementById('skc');
+// HAI origin khác nhau, dễ nhầm — đây chính là lỗi phổ biến nhất khi tích hợp postMessage hai chiều:
+//  - hostOrigin = origin của CHÍNH TRANG NÀY (host). Khai báo cho app qua ?hostOrigin=... để app biết AI được phép
+//    gửi dữ liệu vào, và app sẽ nhắm đúng origin này khi gửi routine:updated/host:applied ngược lại.
+//  - appOrigin = origin của index.html (app) sau khi resolve URL — là targetOrigin khi HOST gửi message VÀO iframe
+//    (postMessage's đối số thứ 2 luôn là origin của BÊN NHẬN, không phải bên gửi). Hai domain khác nhau khi triển
+//    khai thật (host trên shop.example.com, app trên cdn khác) thì hostOrigin ≠ appOrigin — không được dùng lẫn.
+// Mở trực tiếp bằng file:// thì origin là "null" ở cả hai phía; dùng '*' CHỈ để chạy demo này, triển khai thật
+// (phục vụ qua http/https) PHẢI dùng origin cụ thể ở cả hai chỗ, không được dùng '*'.
+const hostOrigin = location.origin && location.origin !== 'null' ? location.origin : '*';
+const appOrigin = (() => { try { const o = new URL('../index.html', location.href).origin; return o && o !== 'null' ? o : '*'; } catch { return '*'; } })();
+frame.src = '../index.html?hostOrigin=' + encodeURIComponent(hostOrigin);
+log(`Đang nạp iframe. hostOrigin=${hostOrigin} (khai báo cho app) · appOrigin=${appOrigin} (dùng làm targetOrigin khi gửi vào iframe)` + (hostOrigin === '*' ? ' — đang chạy demo không có origin thật (file:// hoặc tương tự); triển khai thật phải dùng origin https:// cụ thể ở cả hai phía.' : ''));
+
+// Host cũng nên kiểm tra e.origin (không chỉ m.source) — appOrigin là nguồn DUY NHẤT đáng tin của message
+// gửi NGƯỢC LẠI từ app. e.source === frame.contentWindow khẳng định message đến đúng từ iframe này, không
+// phải từ một iframe/script khác không liên quan trên trang (áp dụng CÙNG nguyên tắc 2 lớp mà app.js dùng
+// cho chiều ngược lại, xem js/main.js: kiểm tra origin + source, không chỉ nội dung message).
+let ready = false;
+window.addEventListener('message', e => {
+ if (appOrigin !== '*' && e.origin !== appOrigin) return; // bỏ qua message không đến từ đúng origin của app
+ if (e.source !== frame.contentWindow) return; // bỏ qua message không đến từ CHÍNH iframe này
+ const m = e.data;
+ if (!m || m.source !== 'skincare-widget') return;
+ if (m.type === 'skincare:ready') {
+  ready = true; document.getElementById('b1').disabled = false; document.getElementById('b2').disabled = false;
+  document.getElementById('readyState').textContent = '✅ App đã sẵn sàng (skincare:ready nhận lúc ' + new Date().toLocaleTimeString() + ') — có thể gửi dữ liệu.';
+  log('[skincare:ready] protocolVersion=' + m.detail?.protocolVersion + ' — bắt đầu cho phép gửi skincare:sync');
+ }
+ else if (m.type === 'host:applied') log('[host:applied] adapter report:\n' + JSON.stringify(m.detail.report, null, 1));
+ else if (m.type === 'host:error') log('[host:error] ' + m.detail.message);
+ else if (m.type === 'routine:updated') log(`[routine:updated] quiz=${JSON.stringify(m.detail.quiz)} sốSảnPhẩm=${m.detail.productIds?.length ?? 0}`);
+ else if (m.type === 'version:saved') log(`[version:saved] v${m.detail.version?.n}`);
+ else log(`[${m.type}] ` + JSON.stringify(m.detail));
+});
+
+// 1) Catalogue mẫu kiểu WooCommerce REST (categories[].slug, meta_data[]) — ĐÚNG field adapter hiểu, cộng 1 sản phẩm
+// cố ý THIẾU category/functions để minh họa: adapter không tự bịa, chỉ báo cáo lại cho host biết là thiếu.
+const wooCatalog = [
+ { id: 301, name: 'Gentle Hydrating Cleanser', sku: 'HC-301',
+   categories: [{ slug: 'cleanser' }],
+   meta_data: [
+     { key: 'skincare_functions', value: 'cleanse' },
+     { key: 'skincare_period', value: 'both' },
+     { key: 'ingredients', value: 'Glycerin, Panthenol' }] },
+ { id: 302, name: 'Hyaluronic Boost Serum', sku: 'HC-302',
+   categories: [{ slug: 'serum' }],
+   meta_data: [
+     { key: 'skincare_functions', value: 'hydrate' },
+     { key: 'skincare_period', value: 'both' },
+     { key: 'skincare_actives', value: 'hyaluronic' }] },
+ { id: 303, name: 'Daily Defense SPF50', sku: 'HC-303',
+   categories: [{ slug: 'sunscreen' }],
+   meta_data: [
+     { key: 'skincare_functions', value: 'uv-protect' },
+     { key: 'skincare_period', value: 'am' }] },
+ { id: 304, name: 'Mystery Night Cream (chưa khai báo thông tin)', sku: 'HC-304' } // cố ý thiếu — xem báo cáo
+];
+
+document.getElementById('b1').onclick = () => {
+ frame.contentWindow.postMessage({ source: 'skincare-widget-host', type: 'skincare:sync', payload: { catalog: wooCatalog } }, appOrigin);
+ log('→ đã gửi skincare:sync { catalog: 4 sản phẩm (1 cố ý thiếu field) } tới appOrigin=' + appOrigin);
+};
+document.getElementById('b2').onclick = () => {
+ frame.contentWindow.postMessage({ source: 'skincare-widget-host', type: 'skincare:sync',
+  payload: { goals: ['hydrate', 'uv-protect-but-unknown'], skin: 'dry', purchasedProductIds: ['301', '302', '303', 'not-in-catalog'] } }, appOrigin);
+ log('→ đã gửi skincare:sync { goals, skin, purchasedProductIds } (cố ý có 1 goal và 1 id không hợp lệ) tới appOrigin=' + appOrigin);
+};
+</script>
+</body></html>

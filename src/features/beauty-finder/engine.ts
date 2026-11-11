@@ -16,8 +16,9 @@
  */
 import { concernLabels, productTypeLabels, skinTypeLabels } from '@/data/taxonomy'
 import { routineStepOf } from '@/features/routine/routine'
+import { activesOf, CORE_STEPS, finderToModuleQuiz, isRoutineReady, MODULE_CATEGORY, MODULE_GOALS, SKINCARE_FUNCTIONS } from '@/features/skincare-3d/routineFields'
 import { normalizeVi } from '@/lib/text'
-import type { Product, ProductType, SkinConcern } from '@/types/catalog'
+import type { Product, ProductType, SkincareFunction, SkinConcern } from '@/types/catalog'
 import {
   bodyOptions,
   budgetOptions,
@@ -67,6 +68,8 @@ export const WEIGHTS = {
   audienceMismatch: -14,
   strongActiveForSensitive: -15,
   ratingFactor: 8,
+  declaredFunction: 14,
+  routineReady: 6,
 } as const
 
 /** Vượt ngân sách tối đa bao nhiêu % vẫn được giữ lại (kèm lưu ý) */
@@ -79,7 +82,27 @@ const needTypes: Record<CareNeed, ProductType[]> = {
 }
 
 /** Hoạt chất mạnh: nhận diện theo tên thành phần chính */
-const STRONG_ACTIVES = [/retinol/i, /\bbha\b/i, /salicylic/i, /vitamin c 1[5-9]|vitamin c 2/i, /\baha\b/i]
+/**
+ * Hoạt chất mạnh: dùng CHUNG nhóm hoạt chất với Skincare Architect 3D (retinoid, BHA, AHA, Vitamin C — các hoạt chất
+ * module giữ ngoài chu trình khi chọn mục tiêu "da dễ kích ứng"), để hai tính năng không cho kết quả ngược nhau.
+ */
+const STRONG = ['retinoid', 'bha', 'aha', 'vitc']
+
+/**
+ * Mối quan tâm → công dụng người bán khai báo (skincare_functions, migration 010).
+ * Bốn dòng đầu khớp bộ quy tắc mục tiêu của Skincare Architect (acne, oil, hydrate, sensitive).
+ */
+export const concernFunctions: Record<SkinConcern, SkincareFunction[]> = {
+  acne: ['exfoliate', 'renewal', 'oil-control'],
+  pores: ['oil-control', 'exfoliate'],
+  dehydration: ['hydrate'],
+  redness: ['soothe'],
+  dullness: ['antioxidant', 'exfoliate'],
+  'dark-spots': ['antioxidant'],
+  aging: ['renewal', 'antioxidant'],
+  'sun-protection': ['uv-protect'],
+}
+const fnLabel = (f: SkincareFunction) => SKINCARE_FUNCTIONS.find((x) => x.value === f)?.label.toLowerCase() ?? f
 
 /** Từ khóa (đã bỏ dấu) cho tiêu chí dựa trên mô tả */
 const hairKeywords: Record<HairConcern, RegExp> = {
@@ -164,7 +187,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
     const skinSpecific = p.skinTypes.length > 0
     if (usesSkin && skin && skinSpecific && !p.skinTypes.includes(skin)) continue
 
-    const hasStrongActive = p.keyIngredients.some((i) => STRONG_ACTIVES.some((re) => re.test(i)))
+    const hasStrongActive = activesOf(p.keyIngredients).some((a) => STRONG.includes(a))
     if (hasStrongActive && answers.avoid.includes('strong-actives')) continue
 
     let overBudget = false
@@ -236,6 +259,23 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
         score += Math.min(WEIGHTS.concernMax, matched.length * WEIGHTS.concernEach)
         reasons.push(`Hướng tới: ${matched.map((c) => concernLabels[c].toLowerCase()).join(', ')}`)
       }
+      // Công dụng người bán khai báo (cùng dữ liệu Skincare Architect dùng để xếp chu trình)
+      possible += WEIGHTS.declaredFunction
+      const wanted = new Set(answers.concerns.flatMap((c) => concernFunctions[c]))
+      const fns = (p.skincareFunctions ?? []).filter((f) => wanted.has(f))
+      if (fns.length) {
+        score += WEIGHTS.declaredFunction
+        reasons.push(`Công dụng khai báo: ${fns.map(fnLabel).join(', ')}`)
+      }
+    }
+
+    // Đủ thông tin để Skincare Architect 3D xếp vào chu trình
+    if (answers.focus === 'skincare' && MODULE_CATEGORY[p.type]) {
+      possible += WEIGHTS.routineReady
+      if (isRoutineReady(p)) {
+        score += WEIGHTS.routineReady
+        reasons.push(`Xếp được vào chu trình 3D (dùng ${p.usePeriod === 'am' ? 'buổi sáng' : p.usePeriod === 'pm' ? 'buổi tối' : 'cả sáng và tối'})`)
+      } else cautions.push('Cửa hàng chưa khai báo công dụng/thời điểm dùng: chưa xếp được vào chu trình 3D')
     }
 
     // Số bước chăm sóc
@@ -395,4 +435,46 @@ export const ingredientHints: Record<SkinConcern, string> = {
   dullness: 'Vitamin C, AHA/PHA',
   redness: 'Rau má, Panthenol',
   'sun-protection': 'Kem chống nắng phổ rộng SPF30 trở lên',
+}
+
+// ------------------------------------------------------------------ BỘ SẢN PHẨM CHO SKINCARE ARCHITECT 3D
+
+/** Nhóm bước cần có theo số bước người dùng chọn (khớp các bước của Skincare Architect) */
+const starterSteps: Record<CareNeed, ('cleanser' | 'toner' | 'serum' | 'treatment' | 'moisturizer' | 'sunscreen')[]> = {
+  basic: ['cleanser', 'moisturizer', 'sunscreen'],
+  targeted: ['cleanser', 'serum', 'treatment', 'moisturizer', 'sunscreen'],
+  complete: ['cleanser', 'toner', 'serum', 'treatment', 'moisturizer', 'sunscreen'],
+}
+
+/**
+ * Beauty Finder CHỌN sản phẩm, Skincare Architect 3D SẮP XẾP chu trình: lấy sản phẩm phù hợp nhất cho mỗi nhóm bước
+ * (chỉ sản phẩm đã khai báo đủ công dụng + thời điểm dùng) để chuyển sang module. Không tự sắp sáng/tối, không kiểm tra
+ * xung đột — việc đó do module làm.
+ * Theo cùng quy tắc với module: bước tùy chọn (toner, serum, đặc trị) chỉ nhận sản phẩm có công dụng khớp mục tiêu, nên
+ * chọn sản phẩm khớp mục tiêu cho các bước đó, và (khi khách chọn từ 4 bước) bổ sung sản phẩm cho mục tiêu còn thiếu.
+ * Mục tiêu "da dễ kích ứng" hoặc khách chọn tránh hoạt chất mạnh: không chọn sản phẩm có retinoid/AHA/BHA/vitamin C.
+ */
+export function starterSet(results: FinderResult[], answers: FinderAnswers): FinderResult[] {
+  const quiz = finderToModuleQuiz(answers.concerns, answers.skinType)
+  const goalFns = new Set(quiz.goals.flatMap((g) => MODULE_GOALS[g]?.functions ?? []))
+  const avoid = new Set([
+    ...quiz.goals.flatMap((g) => MODULE_GOALS[g]?.avoidActives ?? []),
+    ...(answers.avoid.includes('strong-actives') ? STRONG : []),
+  ])
+  const usable = results.filter((r) => isRoutineReady(r.product) && !activesOf(r.product.keyIngredients).some((a) => avoid.has(a)))
+  const fnsOf = (r: FinderResult) => r.product.skincareFunctions ?? []
+  const picked: FinderResult[] = []
+  for (const cat of starterSteps[answers.need]) {
+    const core = CORE_STEPS.includes(cat)
+    const best = usable.find((r) => MODULE_CATEGORY[r.product.type] === cat && !picked.includes(r) && (core || fnsOf(r).some((f) => goalFns.has(f))))
+    if (best) picked.push(best)
+  }
+  if (answers.need !== 'basic')
+    for (const g of quiz.goals) {
+      const fns = MODULE_GOALS[g]?.functions ?? []
+      if (!fns.length || picked.some((r) => fnsOf(r).some((f) => fns.includes(f)))) continue
+      const extra = usable.find((r) => !picked.includes(r) && ['serum', 'treatment'].includes(MODULE_CATEGORY[r.product.type] ?? '') && fnsOf(r).some((f) => fns.includes(f)))
+      if (extra) picked.push(extra)
+    }
+  return picked
 }

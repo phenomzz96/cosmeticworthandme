@@ -33,7 +33,7 @@ Extension VS Code nên cài: ESLint, Prettier, Tailwind CSS IntelliSense.
 
 1. Tạo project tại [supabase.com](https://supabase.com) (gói Free). Chọn region gần Việt Nam (Singapore).
 2. **Organization → Team**: mời đủ 5 thành viên. Bộ gửi email mặc định của Supabase **chỉ gửi tới thành viên team**, tối đa 2 email/giờ.
-3. **SQL Editor**: lần lượt dán và **Run** 9 file trong [`supabase/migrations/`](supabase/migrations/) theo thứ tự tên file (bảng thứ tự ở [docs/DEPLOY.md](docs/DEPLOY.md#2-chạy-migration-tạo-bảng-quyền-hàm)). Mỗi file chỉ chạy một lần.
+3. **SQL Editor**: lần lượt dán và **Run** 10 file trong [`supabase/migrations/`](supabase/migrations/) theo thứ tự tên file (bảng thứ tự ở [docs/DEPLOY.md](docs/DEPLOY.md#2-chạy-migration-tạo-bảng-quyền-hàm)). Mỗi file chỉ chạy một lần.
    Tùy chọn: chạy thêm [`supabase/seed/demo_catalog.sql`](supabase/seed/demo_catalog.sql) để có sẵn 7 cửa hàng mẫu và 49 sản phẩm mẫu khi trình diễn (chạy lại nhiều lần không bị trùng).
 4. **Authentication → URL Configuration**:
    - Site URL: `https://worthandme.netlify.app`
@@ -123,7 +123,8 @@ Database kiểm tra toàn bộ: chỉ chủ shop sửa shop/sản phẩm/ảnh/�
 - **Tin nhắn**: khách bấm "Nhắn tin cho shop" ở trang sản phẩm/cửa hàng, hoặc gửi câu hỏi cho bộ phận hỗ trợ ở trang Liên hệ, Câu hỏi thường gặp. Khung chat nổi ở góc phải; hộp thư `/messages`, `/seller/messages`, `/admin/messages`.
 - **Nội dung trang do Admin sửa** (`/admin/pages`): Giới thiệu, Liên hệ, Câu hỏi thường gặp, Chính sách, Điều khoản, thanh thông báo, mô tả chân trang. Có xem trước và "Khôi phục mặc định".
 - **Danh mục**: Skincare, Makeup, Haircare, Body Care, Nước hoa, Nam giới, Beauty Tools; menu thả xuống theo loại sản phẩm và thương hiệu; trang Thương hiệu A–Z (`/brands`); thanh trượt khoảng giá.
-- **Beauty Finder**: hỏi dành cho nam/nữ, rồi câu hỏi đổi theo nhóm (da mặt, trang điểm, tóc, cơ thể, nước hoa); kết quả có % phù hợp, lý do và lưu ý. Loại da do người dùng tự chọn, không chẩn đoán.
+- **Skincare Architect 3D** (`/skincare-architect`): tính năng chuyên biệt của nhóm 3D (code giữ nguyên ở `modules/skincare-3d`), nối với dữ liệu sàn: sản phẩm, đơn đã mua, câu trả lời và bộ đề xuất của Beauty Finder; giao diện Worth & Me sáng/tối (xem [docs/SKINCARE-3D.md](docs/SKINCARE-3D.md)).
+- **Beauty Finder**: hỏi dành cho nam/nữ, rồi câu hỏi đổi theo nhóm (da mặt, trang điểm, tóc, cơ thể, nước hoa); kết quả có % phù hợp, lý do và lưu ý; da mặt dùng công dụng do cửa hàng khai báo và chuyển bộ đề xuất sang Skincare Architect 3D để xếp chu trình. Loại da do người dùng tự chọn, không chẩn đoán.
 
 ## 4. Thương hiệu
 
@@ -143,6 +144,9 @@ supabase/
 ├── migrations/               ★ SQL tạo bảng, RLS, hàm phía server (chạy theo thứ tự)
 ├── seed/demo_catalog.sql     Dữ liệu mẫu tùy chọn (7 shop, 49 sản phẩm)
 └── tests/                    Kiểm thử bảo mật trên Postgres local (xem supabase/README.md)
+modules/skincare-3d/          Tính năng chuyên biệt Skincare Architect 3D (gói của nhóm 3D, giữ nguyên)
+modules/skincare-3d-host/     Lớp nhúng của Worth & Me cho module 3D (giao diện, nhận lệnh từ website)
+scripts/copy-skincare-3d.mjs  Tự chép module 3D vào public/skincare-3d trước khi dev/build
 src/
 ├── app/App.tsx               Định tuyến các trang, chặn trang theo quyền
 ├── config/brand.ts           Giá trị thương hiệu mặc định & thông tin nhóm

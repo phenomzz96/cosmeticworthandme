@@ -14,7 +14,7 @@ import { mockShops } from '@/data/mock/shops'
 import { isSupabaseConfigured, supabase } from '@/lib/supabase'
 import { normalizeVi } from '@/lib/text'
 import { shopMediaUrl } from '@/services/media'
-import type { Category, CategoryId, Product, ProductQuery, ProductType, ProductVisual, Shop, SkinConcern, SkinType } from '@/types/catalog'
+import type { ApplyZone, Category, CategoryId, Product, ProductQuery, ProductType, ProductVisual, Shop, SkincareFunction, SkinConcern, SkinType } from '@/types/catalog'
 
 export const DEFAULT_VISUAL: ProductVisual = { shape: 'bottle', color: '#E9E4EE', cap: '#79628E' }
 const CATALOG_LIMIT = 1000
@@ -87,6 +87,9 @@ interface ProductRow {
   sold_count: number
   featured: boolean
   how_to_use?: string | null
+  skincare_functions?: string[] | null
+  use_period?: string | null
+  apply_zones?: string[] | null
   created_at: string
   product_images?: { path: string; sort_order: number }[]
 }
@@ -94,7 +97,7 @@ interface ProductRow {
 export const SHOP_COLUMNS =
   'id, slug, name, tagline, description, logo_path, cover_path, theme_color, contact_email, contact_phone, location, policy, rating, follower_count, verified, created_at'
 export const PRODUCT_COLUMNS =
-  'id, slug, shop_id, category, product_type, name, brand_name, description, price, sale_price, stock, size, skin_types, concerns, key_ingredients, texture, fragrance_free, placeholder_visual, rating, review_count, sold_count, featured, how_to_use, created_at, product_images(path, sort_order)'
+  'id, slug, shop_id, category, product_type, name, brand_name, description, price, sale_price, stock, size, skin_types, concerns, key_ingredients, texture, fragrance_free, placeholder_visual, rating, review_count, sold_count, featured, how_to_use, skincare_functions, use_period, apply_zones, created_at, product_images(path, sort_order)'
 
 export function shopFromRow(r: ShopRow): Shop {
   return {
@@ -144,6 +147,9 @@ export function productFromRow(r: ProductRow): Product {
     visual: r.placeholder_visual ?? DEFAULT_VISUAL,
     featured: r.featured,
     howToUse: r.how_to_use ?? undefined,
+    skincareFunctions: (r.skincare_functions ?? []) as SkincareFunction[],
+    usePeriod: (r.use_period as Product['usePeriod']) ?? null,
+    applyZones: (r.apply_zones ?? []) as ApplyZone[],
     isSample: !r.product_images?.length,
     createdAt: r.created_at,
   }

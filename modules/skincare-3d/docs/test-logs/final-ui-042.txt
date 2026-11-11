@@ -1,0 +1,19 @@
+✓ chưa lưu trước phiên bản đầu
+✓ lưu v1 → "đã lưu"
+✓ đổi quiz → "chưa lưu"
+✓ lưu v2
+✓ hai phiên bản, mã khác nhau
+✓ khôi phục v1: quiz trong form được nạp lại
+✓ khôi phục v1: không "chưa lưu"
+✓ timeline hôm nay: đang áp dụng v1
+✓ ngày quá khứ không có lịch sử → không đủ dữ liệu
+✓ sau reload: vẫn 2 phiên bản, v1 đang nạp, quiz đúng
+✓ User B: không có phiên bản của A
+✓ quay lại A: lịch sử còn nguyên
+✓ dữ liệu 0.2: chuyển đổi + thông báo + đánh dấu thiếu
+✓ dữ liệu 0.2: có bản sao lưu
+✓ dữ liệu 0.2: timeline báo không đủ dữ liệu áp dụng nhưng vẫn hiện nhật ký thật
+✓ 3D lỗi (CDN bị chặn) → chuyển 2D
+✓ không có lỗi JavaScript
+
+17 kiểm thử giao diện đạt.

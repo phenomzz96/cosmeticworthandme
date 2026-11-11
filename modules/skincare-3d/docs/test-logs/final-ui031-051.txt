@@ -1,0 +1,46 @@
+✓ XSS: không thực thi mã từ dữ liệu đã lưu
+✓ XSS: không có thuộc tính on* nào trong DOM
+✓ XSS: không tạo thẻ img/svg từ dữ liệu
+✓ XSS: không thêm thẻ script
+✓ XSS: ghi chú/thay đổi/bộ quy tắc phiên bản hiện thành chữ
+✓ XSS: ảnh chụp routine (timeline) + lý do sửa ngày (tab Phiên bản, 0.4.3) hiện thành chữ
+✓ XSS: nhật ký (ghi chú, điểm, khóa ngày lạ) hiện thành chữ
+✓ XSS: giao diện còn nguyên cấu trúc
+✓ XSS: nội dung nhập từ giao diện hiển thị lại an toàn sau reload
+✓ XSS: không có lỗi JavaScript
+✓ Ngày bắt đầu theo dõi tự đặt ở lần áp dụng đầu tiên
+✓ Khu "Tùy chỉnh mốc theo dõi" thu gọn mặc định
+✓ Test A: đổi ngày bắt đầu theo dõi → thông báo ngắn + lưu ý khác ngày áp dụng, không đổi lịch sử
+✓ Test A: mốc Tuần 2 = ngày bắt đầu + 14, số ngày tương đối đúng
+✓ Test A: ngày bắt đầu theo dõi trước ngày áp dụng thực tế → không có routine giả
+✓ Test B: sửa ngày áp dụng hiển thị bước xác nhận rõ ràng
+✓ Test B: hủy → lịch sử không đổi
+✓ Test B: xác nhận → ghi thêm bản ghi sửa, bản ghi gốc giữ nguyên
+✓ Test B: timeline tính lại theo ngày đã sửa
+✓ Bỏ ngày bắt đầu theo dõi: lịch sử giữ nguyên, có thông báo
+✓ Ngày bắt đầu theo dõi / sửa ngày: không có lỗi JavaScript
+✓ Storage bị chặn: trang tải được, có cảnh báo lưu tạm
+✓ Storage bị chặn: lưu routine báo "chỉ lưu tạm", không báo "Đã lưu"
+✓ Storage bị chặn: User B không thấy dữ liệu của A
+✓ Storage bị chặn: quay lại A, dữ liệu tạm của A còn (tách khỏi B)
+✓ Storage bị chặn: sau reload dữ liệu tạm mất (đúng như thông báo), trang vẫn chạy
+✓ Storage bị chặn: không có lỗi JavaScript
+✓ Quota: báo chưa lưu bền vững, có nút thử lại
+✓ Quota: dữ liệu trong trình duyệt vẫn là bản cũ
+✓ Quota: nhật ký cũng báo chưa lưu bền vững
+✓ Quota: thử lại khi vẫn đầy → vẫn báo lỗi
+✓ Quota: hết lỗi → thử lại lưu được, banner biến mất
+✓ Quota: sau reload có đủ 2 phiên bản + nhật ký
+✓ Quota: tải lại sau lần lưu thất bại → chỉ còn dữ liệu đã lưu bền vững
+✓ Quota: không có lỗi JavaScript
+✓ getItem lỗi: trang chạy, báo không đọc được
+✓ getItem lỗi: không ghi đè dữ liệu chưa đọc được
+✓ JSON hỏng: thông báo, sao lưu, không xóa dữ liệu gốc khi mở
+✓ JSON hỏng: không có lỗi JavaScript
+✓ 3D lỗi → thông báo + chuyển 2D
+✓ 2D: chọn vùng Trán → highlight + thông tin vùng
+✓ Bước routine chọn được bằng bàn phím, đồng bộ 2D
+✓ Giả lập lỗi 3D vẫn chuyển 2D
+✓ 3D/2D: không có lỗi JavaScript
+
+44 kiểm thử giao diện 0.3.1 đạt.

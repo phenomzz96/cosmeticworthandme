@@ -1,0 +1,22 @@
+✓ 1a. lưới đầu hợp lệ: không NaN, đủ đỉnh/tam giác, chỉ số trong phạm vi
+✓ 1b. tỷ lệ: rộng < cao < sâu*2, đối xứng trái–phải
+✓ 1c. nét mặt đúng thứ tự trên → dưới; mũi nhô xa nhất; hốc mắt lõm; cằm không lẹm quá mức
+✓ 1d. dải nét mặt + viền vùng nằm trên bề mặt (nâng nhẹ), hữu hạn
+✓ 2a. quy ước: má trái của người = +x (phải màn hình), khớp ZONES và 3 nơi dùng
+✓ 2b. các vùng không chồng nhau, chỉ ở mặt trước; vùng nằm trong phạm vi "toàn mặt"
+✓ 2c. chọn vùng từ trọng số: ngưỡng 0.5, mũi/mắt không thuộc vùng nào
+✓ 2d. highlight trên bề mặt: chỉ đổi màu vùng được chọn; toàn mặt phủ nhẹ; giá trị trong [0,1]
+✗ 2e. 2D sinh từ 3D: tâm vùng trên SVG khớp phép chiếu 3D (sai số ≤ 4 px), má trái ở bên phải — Cannot read properties of null (reading '1')
+✓ 3a. camera: vừa khung theo tỷ lệ màn hình, giới hạn zoom không vào trong mô hình, góc sẵn trong giới hạn
+✓ 3b. tween camera: đầu/cuối đúng, mượt, thời lượng 0 = tức thì (giảm chuyển động)
+✓ 3c. phân biệt nhấp/chạm với kéo/vuốt/chụm
+✓ 3d. đo hiệu năng: không kết luận từ một đợt đo; ≥ 3 cửa sổ chậm trong ≥ 2 đợt mới gợi ý
+✓ 4a. chọn bước toàn mặt → phủ toàn mặt + 4 vùng; bước có vùng riêng → đúng các vùng khai báo
+✓ 4b. chọn vùng → các bước có khai báo vùng đó hoặc toàn mặt; vùng lạ bị bỏ qua
+✓ 4c. thay sản phẩm → vùng của bước cập nhật; bỏ sản phẩm → bước đang chọn bị bỏ chọn (dropped)
+✓ 4d. bước không có dữ liệu vùng → không highlight, không suy đoán
+✓ 5a. icon/hình minh họa là SafeHtml hằng số, không có thuộc tính on*
+✓ 5b. viewer3d: dispose giải phóng đủ loại tài nguyên; tải Three.js động; không vòng lặp liên tục
+✓ 5c. index.html: Three.js vẫn 0.160.0 từ jsDelivr; không script ngoài khác
+
+19 đạt, 1 lỗi.

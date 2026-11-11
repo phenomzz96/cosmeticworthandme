@@ -1,0 +1,196 @@
+
+> skincare-prototype@0.5.0 test
+> node tests/engine.test.mjs && node tests/manager.test.mjs && node tests/v031.test.mjs && node tests/v04.test.mjs && node tests/v041.test.mjs && node tests/v042.test.mjs && node tests/v043.test.mjs && node tests/v05.test.mjs
+
+Kệ thử nghiệm: p01, p03, p04, p05, p07, p08, p10, p12, p13
+┌─────────┬──────────────────┬────────────┬───────────────────────────────┬───────────────────────────┐
+│ (index) │ mục tiêu         │ trạng thái │ sản phẩm trong routine        │ chưa xếp                  │
+├─────────┼──────────────────┼────────────┼───────────────────────────────┼───────────────────────────┤
+│ 0       │ 'hydrate'        │ 'ready'    │ 'p01,p03,p04,p08,p10'         │ 'p05,p07,p12,p13'         │
+│ 1       │ 'oil'            │ 'ready'    │ 'p01,p12,p08,p10,p07'         │ 'p03,p04,p05,p13'         │
+│ 2       │ 'acne'           │ 'ready'    │ 'p01,p08,p10,p07'             │ 'p03,p04,p05,p12,p13'     │
+│ 3       │ 'sensitive'      │ 'review'   │ 'p01,p13,p08,p10'             │ 'p03,p04,p05,p07,p12'     │
+│ 4       │ 'basic'          │ 'ready'    │ 'p01,p08,p10'                 │ 'p03,p04,p05,p07,p12,p13' │
+│ 5       │ 'hydrate+oil'    │ 'ready'    │ 'p01,p03,p12,p04,p08,p10,p07' │ 'p05,p13'                 │
+│ 6       │ 'acne+sensitive' │ 'review'   │ 'p01,p13,p08,p10'             │ 'p03,p04,p05,p07,p12'     │
+└─────────┴──────────────────┴────────────┴───────────────────────────────┴───────────────────────────┘
+✓ cùng danh sách, mục tiêu khác nhau → routine khác nhau
+✓ hai mục tiêu cho routine giống nhau → phải có giải thích
+✓ thứ tự trong cùng bước phụ thuộc mục tiêu
+✓ sản phẩm không khớp mục tiêu bị loại kèm lý do
+✓ mục tiêu da dễ kích ứng giữ sản phẩm xung đột ngoài routine và chuyển trạng thái review
+✓ mục tiêu cơ bản chỉ gồm các bước nền tảng
+✓ mục tiêu không thể đáp ứng → unmet + giải thích nguyên nhân
+✓ đáp ứng một phần → partial
+✓ thiếu bước cần thiết → incomplete, không tự thêm sản phẩm
+✓ sản phẩm thiếu dữ liệu không bị suy đoán
+✓ trùng cùng bước: chọn theo điểm mục tiêu và giải thích
+✓ trùng chức năng/hoạt chất giữa các nhóm khác nhau
+✓ toner + serum + kem cùng cấp ẩm không bị coi là trùng
+✓ tổ hợp thận trọng ảnh hưởng trạng thái và gắn vào bước
+✓ mục tiêu quyết định tổ hợp có nằm trong routine hay không
+✓ loại da tự đánh giá chỉ là tham chiếu, không chẩn đoán
+✓ chưa có quiz hoặc mục tiêu → insufficient, không dựng routine
+✓ xác định: cùng đầu vào (kể cả thứ tự chọn khác nhau) → cùng kết quả
+
+18 kiểm thử đạt.
+✓ 1. lưu routine: phiên bản có đủ trường
+✓ 2. đổi mục tiêu quiz → "chưa lưu" và routine thay đổi
+✓ 7a. timeline TRƯỚC khi lưu thay đổi: ngày 3 vẫn hiệu lực v1
+✓ 3. lưu phiên bản thứ hai: id riêng, mô tả thay đổi quiz
+✓ 7b. timeline SAU khi thay đổi: lịch sử trước đó không bị viết lại
+✓ 4–5. khôi phục v1: cả quiz và sản phẩm được khôi phục, không "chưa lưu"
+✓ 4b. khôi phục không sửa/xóa lịch sử cũ
+✓ 6. routine tính lại nhất quán với ảnh chụp lúc lưu và với Engine
+✓ 7c. timeline sau khôi phục: từng giai đoạn đúng phiên bản
+✓ 7d. khôi phục lại phiên bản đang áp dụng không tạo bản ghi trùng
+✓ 7e. ngày áp dụng không được sớm hơn lần áp dụng gần nhất; "chỉ lưu" không đổi lịch sử
+✓ 10. dữ liệu còn sau khi tải lại (instance mới, cùng storage)
+✓ 8. hai tài khoản không dùng chung lịch sử
+✓ 9. dữ liệu 0.2 được chuyển đổi đúng, không suy đoán trường thiếu
+✓ 9b. khôi phục phiên bản 0.2: giữ quiz hiện tại, báo rõ thiếu dữ liệu, không ghi là "đang áp dụng"
+✓ 9c. dữ liệu 0.2 thiếu/sai trường không làm hỏng ứng dụng; dữ liệu hỏng được sao lưu
+✓ A-bis. phiên bản tạo bằng bộ quy tắc khác → thông báo rõ khi khôi phục
+✓ A-ter. lỗi ghi localStorage → giữ thay đổi trong phiên, báo rõ chưa lưu bền vững
+
+18 kiểm thử đạt.
+✓ 1a. isDate: bảng kiểm thử bắt buộc
+✓ 1b. isDate: năm nhuận thế kỷ, ngày cuối tháng
+✓ 1c. isDate: sai kiểu, ký tự thừa, định dạng khác → false (không ném lỗi)
+✓ 1d. addDays/daysBetween: không lệch theo DST, đầu vào sai → null
+✓ 2A. đổi Ngày 0: số ngày tương đối cập nhật, lịch sử áp dụng không đổi
+✓ 2A-bis. Ngày 0 không hợp lệ bị từ chối; bỏ Ngày 0 không bị tự đặt lại
+✓ 2B. sửa ngày áp dụng: cần xác nhận; ghi thêm bản ghi sửa, không sửa bản ghi gốc
+✓ 2B-bis. sửa nhiều lần: lần sau cùng có hiệu lực; ngày áp dụng tối thiểu theo ngày đã sửa
+✓ 2C. khôi phục phiên bản cũ: chỉ thêm bản ghi "khôi phục", không đổi lịch sử/ngày đã sửa/Ngày 0
+✓ 2D. dữ liệu thiếu: không có Ngày 0 / applications → không tạo lịch sử giả
+✓ 3a. nhật ký: kiểm tra ngày/điểm; xóa đúng mục; khóa đặc biệt không bị nhầm
+✓ 4a. html``: giá trị trong văn bản và thuộc tính được escape
+✓ 4b. html``: chặn chèn ở ngữ cảnh nguy hiểm
+✓ 4c. URL ảnh chỉ cho phép blob:, số SVG chỉ nhận số hữu hạn
+✓ 4d. biểu đồ: khóa/giá trị lạ trong nhật ký không chèn được mã, không làm lỗi
+✓ 5a. localStorage bình thường: probe ghi được, lưu bền vững
+✓ 5b. truy cập localStorage bị chặn: không crash, dùng tạm, A và B vẫn tách riêng
+✓ 5c. getItem() ném lỗi: không bao giờ ghi đè dữ liệu chưa đọc được
+✓ 5d. setItem() ném lỗi / vượt dung lượng: giữ trong phiên, báo rõ, thử lại được
+✓ 5e. JSON hỏng: không xóa/ghi đè lúc mở; sao lưu đã xác minh; lần hỏng thứ hai không đè bản sao lưu đầu
+✓ 5f. JSON hỏng + không sao lưu được: không bao giờ ghi đè khóa chính
+✓ 5g. chuyển đổi 0.2 khi không sao lưu được: dữ liệu 0.2 gốc giữ nguyên, dùng bản chuyển đổi trong bộ nhớ
+✓ 5h. dữ liệu schema 3 sai cấu trúc: không crash, có sao lưu, Manager vẫn chạy
+✓ 5i. dữ liệu schema mới hơn: chỉ đọc, không ghi lại
+✓ 5j. lỗi trong lớp lưu trữ không thoát ra ngoài (store.save ném lỗi vẫn được bắt)
+✓ 6a. không có eval/new Function/setTimeout chuỗi/document.write/insertAdjacentHTML/outerHTML
+✓ 6b. innerHTML chỉ được gán trong html.js (setHtml) và viewer2d.js (SVG hằng số)
+✓ 6c. main.js không truy cập localStorage trực tiếp; không còn hàm esc cũ
+✓ 6d. không có bí mật/token, chỉ một nguồn mạng ngoài (jsDelivr cho Three.js)
+
+29 kiểm thử đạt.
+✓ 1a′. lưới đầu hợp lệ: không NaN, đủ đỉnh/tam giác, chỉ số trong phạm vi, pháp tuyến đơn vị
+✓ 1b′. tỷ lệ phần đầu: rộng < cao < sâu*2, đối xứng trái–phải (từng đỉnh có ảnh gương)
+✓ 1c′. nét mặt đúng thứ tự trên → dưới; mũi nhô xa nhất; hốc mắt lõm; cằm không lẹm quá mức
+✓ 1d′. bề mặt kín và đúng hướng: mỗi cạnh dùng bởi đúng 2 tam giác, không trùng cạnh có hướng, không tam giác suy biến, pháp tuyến hướng ra ngoài
+✓ 2a′. quy ước: má trái của người = +x (phải màn hình), khớp ZONES và 3 nơi dùng
+✓ 2b′. các vùng không chồng nhau, chỉ ở mặt trước; vùng nằm trong phạm vi "toàn mặt"
+✓ 2c′. chọn vùng: ngưỡng 0.5, mũi/mắt không thuộc vùng nào
+✓ 2d′. highlight trên bề mặt: chỉ đổi màu vùng được chọn; toàn mặt phủ nhẹ; giá trị trong [0,1]
+✓ 2e′. 2D sinh từ 3D: tâm/bán kính vùng trên SVG khớp phép chiếu 3D (sai số ≤ 4 px), má trái ở bên phải
+✓ 3a. camera: vừa khung theo tỷ lệ màn hình, giới hạn zoom không vào trong mô hình, góc sẵn trong giới hạn
+✓ 3b. tween camera: đầu/cuối đúng, mượt, thời lượng 0 = tức thì (giảm chuyển động)
+✓ 3c. phân biệt nhấp/chạm với kéo/vuốt/chụm
+✓ 3d. đo hiệu năng: không kết luận từ một đợt đo; ≥ 3 cửa sổ chậm trong ≥ 2 đợt mới gợi ý
+✓ 4a. chọn bước toàn mặt → phủ toàn mặt + 4 vùng; bước có vùng riêng → đúng các vùng khai báo
+✓ 4b. chọn vùng → các bước có khai báo vùng đó hoặc toàn mặt; vùng lạ bị bỏ qua
+✓ 4c. thay sản phẩm → vùng của bước cập nhật; bỏ sản phẩm → bước đang chọn bị bỏ chọn (dropped)
+✓ 4d. bước không có dữ liệu vùng → không highlight, không suy đoán
+✓ 5a. icon/hình minh họa là SafeHtml hằng số, không có thuộc tính on*
+✓ 5b. viewer3d: dispose giải phóng đủ loại tài nguyên; tải Three.js động; không vòng lặp liên tục
+✓ 5c. index.html: Three.js vẫn 0.160.0 từ jsDelivr; không script ngoài khác
+
+20 kiểm thử đạt.
+✓ A1. head.glb: GLB 2.0 hợp lệ, tự chứa (không URI ngoài, không texture), 3 mesh skin/eyes/cap, index uint16
+✓ A2. kích thước tải hợp lý: ≤ 1 MB, ≤ 25 000 đỉnh da, ≤ 60 000 tam giác tổng
+✓ A3. nguồn & giấy phép được ghi rõ: CC0 trong GLB, tệp LICENSE (commit, SHA-256, chủ sở hữu), chân trang
+✓ A4. viewer tải mô hình từ dự án (đường dẫn tương đối), không từ URL ngoài; js/face3d.js cũ đã gỡ
+✓ B1. chọn 3D khớp mốc: điểm neo mỗi vùng nằm trên mặt trước và zoneAt(điểm neo) trả đúng vùng
+✓ B2. vùng tránh mắt, mũi, môi: không đỉnh nào trong vùng nằm trong nhãn cầu/đầu mũi/khe môi
+✓ B3. hai má đối xứng: cùng số đỉnh và cùng diện tích chiếu
+✓ C1. một lớp phủ mềm: tối đa 55% về màu nhấn, hover yếu hơn chọn, không đỉnh ngoài vùng bị đổi màu
+✓ C2. viewer3d không còn viền vùng, glow hay vật liệu phát sáng; vật liệu da mờ (matte)
+✓ C3. 2D: vùng chưa chọn không có viền/nền; lớp "toàn mặt" là siêu elip FACE_SHAPE tại ngưỡng 0.5
+✓ D1. đúng 3 giai đoạn + khu phụ "Theo dõi & lịch sử"; mặc định chỉ Mục tiêu hiển thị
+✓ D2. công cụ developer (giả lập lỗi 3D, hiệu năng) chỉ nằm trong #devbar, ẩn mặc định; vẫn còn đủ chức năng
+✓ D3. điều khiển mặc định: 3D/2D + đặt lại góc nhìn; góc nghiêng, thu phóng, chọn vùng nằm trong menu đóng sẵn
+✓ D4. mọi data-act trong HTML/JS đều có hàm xử lý (không nút "chết")
+✓ D5. cảnh báo quan trọng vẫn nhận biết được ở trạng thái thu gọn (0.4.2: thay cho "mọi cảnh báo nằm ngoài phần mở rộng")
+✓ D6. mỗi giai đoạn chỉ có MỘT nút chính (primary)
+✓ D7. 3D chỉ khởi tạo khi vào bước Mô hình; rời bước thì dừng render
+✓ D8. không thêm script theo dõi/dịch vụ ngoài; vẫn chỉ 2 thẻ script, không handler inline
+
+18 kiểm thử đạt.
+✓ 0. Engine, quy tắc, dữ liệu, Manager, Storage, Timeline, 3D/2D, html.js, icons.js KHÔNG đổi so với 0.4.1 (băm SHA-256)
+✓ 1. hai cảnh báo trùng bản chất (cùng sản phẩm, sáng và tối) được gộp thành MỘT mục, vẫn giữ cả hai nguồn
+✓ 2a. cảnh báo khác đối tượng/nguyên nhân KHÔNG bị gộp: Retinol và BHA là hai mục; làm sạch và dưỡng ẩm là hai mục; thiếu bước và thiếu dữ liệu là hai mục
+✓ 2b. gộp chỉ khi tiêu đề (bỏ buổi), loại, phạm vi, sản phẩm VÀ lý do đều giống; khác một yếu tố → giữ riêng
+✓ 2c. mức độ từng mục lấy đúng từ loại cảnh báo gốc (không hạ mức); mức nhóm = mức cao nhất trong nhóm
+✓ 3. cảnh báo quan trọng vẫn nhận biết rõ ở trạng thái thu gọn: tên sản phẩm thận trọng/giữ ngoài nằm trong dòng tóm tắt, ngoài mọi <details>
+✓ 4. bản tóm tắt không đếm trùng: 8 cảnh báo gốc → 6 mục, 3 nhóm; mỗi cảnh báo gốc thuộc đúng một mục
+✓ 4b. đo độ dài: dòng tóm tắt ngắn hơn rõ rệt so với 8 thẻ cảnh báo 0.4.1 (tiêu đề + "Vì sao?")
+✓ 5. có thể mở toàn bộ giải thích: phần chi tiết chứa đủ nhóm, nhãn, nguồn gốc và cả lưu ý trên nhãn sản phẩm
+✓ 6. nội dung chi tiết chứa đầy đủ thông tin từ MỌI cảnh báo gốc (tiêu đề + lý do) trên nhiều tổ hợp người dùng/mục tiêu
+✓ 6b. loại cảnh báo lạ KHÔNG bị ẩn: vào nhóm "Lưu ý khác" và hiện ở dòng tóm tắt; chưa biết mức → hiển thị mức thông tin
+✓ 7. khi thay/bỏ sản phẩm, các nhóm cập nhật theo kết quả Engine mới
+✓ 8. chuyển tài khoản không rò cảnh báo người dùng trước: adapter không giữ trạng thái; tên sản phẩm của B không xuất hiện ở A
+✓ 9. CSS: dòng tóm tắt/chi tiết cho phép xuống dòng, không đặt chiều rộng cố định; có mẫu tránh tràn trên màn hình hẹp
+✓ 10. mở/đóng chi tiết bằng bàn phím: dùng <details>/<summary> gốc (Enter/Space), có nhãn chữ, tên và id để giữ trạng thái sau khi vẽ lại
+✓ 11. dữ liệu động được escape: tên sản phẩm/tiêu đề/lý do chứa HTML không tạo thẻ hay handler
+✓ 12. thẻ bước ở mô hình: chỉ cảnh báo của bước đang chọn, cùng thuật ngữ/nhóm với trang Routine
+✓ 12b. bước có lưu ý in trên nhãn sản phẩm (không do Engine tạo) vẫn có nhãn ngắn ở bước và đầy đủ ở phần chi tiết
+✓ S. mô-đun mới: không eval/innerHTML/script ngoài; không chèn giá trị vào ngữ cảnh nguy hiểm; chỉ import nội bộ
+
+19 kiểm thử đạt.
+✓ 0. Engine, quy tắc, Manager, Storage, Timeline (logic ngày), Journal, 3D/2D, html.js, icons.js và Smart Warning UX (warnings-view.js) KHÔNG đổi so với 0.4.2 (băm SHA-256)
+✓ 1a. đúng bốn mốc: Bắt đầu, Tuần 1, Tuần 2, Tuần 4 = +0, +7, +14, +28 ngày kể từ ngày bắt đầu theo dõi
+✓ 1b. chọn từng mốc → nút đúng được đánh dấu (aria-pressed), có nhãn chữ và ngày; không có ngày bắt đầu thì không bịa ngày
+✓ 1c. chọn ngày bất kỳ: ngày hợp lệ ưu tiên hơn mốc; ngày sai/rỗng bị bỏ qua; mốc trùng ngày đã chọn cũng được đánh dấu
+✓ 1d. định dạng ngày: dd/mm/yyyy, thứ đúng (không phụ thuộc múi giờ), giá trị lạ giữ nguyên; số ngày so với mốc không lệch một ngày
+✓ 2a. ngày quá khứ: hiển thị phiên bản có hiệu lực tại ngày đó; trước lần áp dụng đầu tiên → trống trung thực, không bịa routine
+✓ 2b. hôm nay: routine đang áp dụng (một bản duy nhất)
+✓ 2c. ngày tương lai: chỉ lịch ĐÃ ghi nhận (scheduled) hoặc bản tham khảo có điều kiện (reference); luôn ghi rõ không phải dữ liệu thực tế
+✓ 2d. không có lịch sử: trạng thái trống trung thực ở mọi loại ngày; không tạo số liệu
+✓ 2e. không có nhật ký: không bịa dữ liệu hay xu hướng; ngày tương lai ghi "chưa tới"; có nhật ký → hiển thị đúng số liệu người dùng ghi
+✓ 2f. bản nháp chưa lưu: chỉ một dòng ngắn khi liên quan (hôm nay/tương lai), không có thẻ routine thứ hai, không hiện ở ngày quá khứ
+✓ 3a. đổi/bỏ ngày bắt đầu theo dõi KHÔNG đổi applications, corrections, phiên bản, nhật ký; các mốc dịch theo; routine theo ngày không đổi
+✓ 3b. mốc theo dõi khác ngày áp dụng thực tế: lưu ý ngắn luôn hiện (không che), giải thích trong phần mở rộng; hai ngày không bị đồng bộ
+✓ 3c. "Tùy chỉnh mốc theo dõi": nhãn "Ngày bắt đầu theo dõi", câu giải thích ngắn, đoạn "Ngày 0…" dài đã bỏ; thu gọn mặc định; giữ id #startDate
+✓ 3d. màn hình chính không lộ trường kỹ thuật (seq, recordedAt, recordedFrom, correction, Ngày 0…) và không có đoạn hướng dẫn dài
+✓ 4a. sửa ngày áp dụng KHÔNG xảy ra nếu chưa xác nhận; xác nhận → chỉ GHI THÊM bản ghi sửa (append-only), không mất nhật ký/ảnh/phiên bản
+✓ 4b. giao diện: biểu mẫu sửa cần hai bước (mở rồi bấm "Xác nhận"); đúng MỘT nơi gọi correctApplication, kèm confirmed:true; hậu quả được nêu rõ
+✓ 4c. công cụ sửa lịch sử nằm ở tab Phiên bản (không còn trong Timeline); Timeline có đường dẫn tới đó; vẫn xem được toàn bộ lịch sử
+✓ 5. dữ liệu 0.2 (chưa có thời điểm áp dụng) / dữ liệu rỗng / ngày lạ: không lỗi, không routine giả
+✓ 6. dữ liệu độc hại (ghi chú nhật ký, bộ quy tắc, ngày bắt đầu, ngày áp dụng) được escape: không tạo thẻ/handler
+✓ 7a. bàn phím: mốc là <button> có aria-pressed + aria-label; ô ngày/summary là điều khiển gốc; vẽ lại trả tiêu điểm; không có handler inline
+✓ 7b. mobile (CSS): 4 mốc chia đều cột minmax(0,1fr) không tràn; khối ngày xếp cột tự động; khu tùy chỉnh không đặt chiều rộng cố định lớn
+✓ S. mô-đun mới: không eval/innerHTML/fetch/localStorage; chỉ import nội bộ; không script ngoài; không từ ngữ dự đoán hiệu quả
+
+23 kiểm thử đạt.
+✓ 0. Engine, quy tắc, dữ liệu, Manager, Storage, Timeline, Journal, selection, html, icons, Smart Warning (0.4.2), Timeline UX (0.4.3), viewer 2D KHÔNG đổi so với 0.4.3
+✓ 1a. head.glb: hình học (vị trí, pháp tuyến, chỉ số của skin/eyes/cap), mốc giải phẫu và bản quyền GIỐNG HỆT 0.4.3
+✓ 1b. AO theo đỉnh: có cho skin và eyes, đúng số đỉnh, trong [0,1], ghi rõ công cụ trong asset.extras; vẫn ≤ 1 MB, không texture/URI ngoài
+✓ 1c. AO hợp lý về giải phẫu: hốc mắt, cánh mũi/dưới mũi, khe môi tối hơn trán và má; đỉnh đầu gần như không bị che
+✓ 1d. công cụ bake tái lập được và an toàn: từ chối tệp đã bake (không ghi đè), không đụng tới hình học
+✓ 2a. màu nền: không có AO → giống hệt công thức 0.4.3; có AO → chỉ tối đi (không đổi sắc), mức tối có giới hạn
+✓ 2b. lòng trắng mắt dịu hơn 0.4.3 (không còn trắng gắt ở khóe), mống mắt/đồng tử giữ nguyên
+✓ 2c. lớp "toàn mặt": màu sáng hơn màu nhấn, ≤ 18% (nhẹ, không thành "mặt nạ"); mép rộng hơn nhưng ngưỡng 0.5 vẫn ở r = 0.94 (khớp sơ đồ 2D); phủ được thái dương
+✓ 2d. highlight từng vùng: bật cả 4 vùng cùng lúc vẫn chặn ở ≤ 55% (không cộng dồn); hover yếu hơn chọn
+✓ 3a. ánh sáng studio: nền bán cầu thấp hơn 0.4.3 (0.62) để hình khối rõ; đèn chính mạnh nhất và lệch bên; không bóng đổ/hậu xử lý
+✓ 3b. camera: giới hạn xoay/nghiêng/zoom hữu ích; khoảng gần nhất không xuyên vào đầu; preset nằm trong giới hạn
+✓ 3c. phân biệt nhấp/chạm với kéo: kéo vượt ngưỡng, chạm nhiều ngón, giữ quá lâu đều KHÔNG chọn vùng
+✓ 4. failCause: giữ nguyên nhân, bỏ URL/chi tiết kỹ thuật; mất mạng → gợi ý cần Internet
+✓ 5a. 3D↔2D: khởi tạo 3D xong muộn sau khi đã bấm 2D → không ghi đè chế độ (mã yêu cầu S.modeTok); lỗi cũ không bật thông báo
+✓ 5b. ảnh nhật ký: Timeline chỉ hiển thị ảnh nếu vẫn đúng tài khoản + NGÀY + lần tải mới nhất; xem ảnh ở Nhật ký chỉ hiện ảnh của lần bấm mới nhất
+✓ 6a. bước Mô hình có hành động tiếp theo rõ ràng, không thêm nút "Lưu" thứ hai, không thêm nút chính
+✓ 6b. dòng dưới mô hình nói rõ đang xem bước/vùng nào (phản hồi ngay, cả trên điện thoại); rê chuột vẫn ưu tiên tên vùng
+✓ 6c. lưu ý in trên nhãn sản phẩm hiện nguyên văn trong dòng bước (khôi phục 0.4.1), có trong nhãn trợ năng; nhãn tóm tắt 0.4.2 vẫn giữ
+✓ 6d. tổ design: CSS mới dùng biến màu sẵn có, không style inline mới trong main.js; không thêm thư viện/script/mạng ngoài
+
+19 kiểm thử đạt.

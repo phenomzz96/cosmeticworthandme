@@ -1,5 +1,5 @@
 /** Kiểu dữ liệu cho kênh người bán — khớp bảng shops, products, product_images (migration 003) */
-import type { CategoryId, ProductType, ProductVisual, SkinConcern, SkinType } from './catalog'
+import type { ApplyZone, CategoryId, ProductType, ProductVisual, SkincareFunction, SkinConcern, SkinType } from './catalog'
 
 export type ShopStatus = 'pending' | 'active' | 'rejected' | 'suspended'
 export type ProductStatus = 'draft' | 'active' | 'hidden' | 'discontinued'
@@ -49,6 +49,10 @@ export interface SellerProduct {
   key_ingredients: string[]
   /** Cách dùng (migration 008) */
   how_to_use?: string
+  /** Thông tin chu trình cho Skincare Architect 3D (migration 010) */
+  skincare_functions?: SkincareFunction[]
+  use_period?: 'am' | 'pm' | 'both' | null
+  apply_zones?: ApplyZone[]
   texture: string | null
   fragrance_free: boolean | null
   placeholder_visual: ProductVisual | null
@@ -80,6 +84,9 @@ export type ProductInput = Pick<
   | 'concerns'
   | 'key_ingredients'
   | 'how_to_use'
+  | 'skincare_functions'
+  | 'use_period'
+  | 'apply_zones'
   | 'texture'
   | 'fragrance_free'
 >

@@ -42,6 +42,7 @@ const MessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'MessagesPa
 const SellerMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'SellerMessagesPage')
 const AdminMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'AdminMessagesPage')
 const BrandsPage = lazyNamed(() => import('@/pages/BrandsPage'), 'BrandsPage')
+const SkincareArchitectPage = lazyNamed(() => import('@/pages/SkincareArchitectPage'), 'SkincareArchitectPage')
 const AboutPage = lazyNamed(() => import('@/pages/InfoPages'), 'AboutPage')
 const ContactPage = lazyNamed(() => import('@/pages/InfoPages'), 'ContactPage')
 const FaqPage = lazyNamed(() => import('@/pages/InfoPages'), 'FaqPage')
@@ -75,6 +76,7 @@ export function App() {
                   <Route path="cart" element={<CartPage />} />
                   <Route path="compare" element={<ComparePage />} />
                   <Route path="brands" element={<BrandsPage />} />
+                  <Route path="skincare-architect" element={<SkincareArchitectPage />} />
 
                   {/* Trang thông tin */}
                   <Route path="about" element={<AboutPage />} />

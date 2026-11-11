@@ -1,0 +1,21 @@
+{
+ "name": "skincare-prototype",
+ "version": "1.0.2",
+ "private": true,
+ "type": "module",
+ "scripts": {
+  "test": "node tests/engine.test.mjs && node tests/manager.test.mjs && node tests/v031.test.mjs && node tests/v04.test.mjs && node tests/v041.test.mjs && node tests/v042.test.mjs && node tests/v043.test.mjs && node tests/v05.test.mjs && node tests/v051.test.mjs",
+  "test:engine": "node tests/engine.test.mjs",
+  "test:manager": "node tests/manager.test.mjs",
+  "test:v031": "node tests/v031.test.mjs",
+  "test:v04": "node tests/v04.test.mjs",
+  "test:v041": "node tests/v041.test.mjs",
+  "build:head": "node tools/build-head.mjs",
+  "build:model": "node tools/build-model.mjs",
+  "gen:face2d": "node tools/gen-face2d.mjs",
+  "test:v042": "node tests/v042.test.mjs",
+  "test:v043": "node tests/v043.test.mjs",
+  "test:v05": "node tests/v05.test.mjs",
+  "test:v051": "node tests/v051.test.mjs"
+ }
+}
