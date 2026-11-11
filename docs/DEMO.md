@@ -21,7 +21,8 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 6. Thêm 3 sản phẩm của 2 shop vào giỏ → bỏ chọn 1 món → nhập mã shop + mã toàn sàn → giảm giá hiện ngay.
 7. **Đặt hàng** → chọn địa chỉ, COD → có mã đơn, giảm giá ghi trên đơn; món không chọn vẫn trong giỏ. Nhấn mạnh: giảm giá do database tính lại, bấm đặt 2 lần chỉ ra 1 đơn.
 8. Rê chuột menu **Nước hoa** → chọn "Nước hoa nam"; kéo **thanh trượt giá**. Mở **Beauty Finder** → Cho nam → Nước hoa → Gỗ ấm → xem % phù hợp và lý do.
-9. Trang sản phẩm → **Nhắn tin cho shop** → hỏi một câu. Trang **Liên hệ** → gửi câu hỏi cho bộ phận hỗ trợ.
+9. **Beauty Finder** → Da mặt → da dầu, mụn + thiếu nước, 4–5 bước → kết quả có "Công dụng khai báo" và khối **Xếp thành chu trình sáng – tối** → **Mở Skincare Architect 3D**: không phải trả lời lại, bộ đề xuất đã nằm trong chu trình sáng/tối; bấm bước **Mô hình 3D** xem vị trí thoa (mạng chặn thì tự chuyển 2D). Dưới khung: "Trong chu trình, bạn chưa mua" → thêm vào giỏ. Đổi sáng/tối trên website → module đổi theo. Nhấn mạnh: chỉ minh họa vị trí thoa, không chẩn đoán; dữ liệu công dụng do cửa hàng khai báo.
+10. Trang sản phẩm → **Nhắn tin cho shop** → hỏi một câu. Trang **Liên hệ** → gửi câu hỏi cho bộ phận hỗ trợ.
 
 ## 2. Người bán (4 phút)
 

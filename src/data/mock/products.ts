@@ -470,8 +470,40 @@ const seeds: Seed[] = [
   },
 ]
 
+/**
+ * Thông tin chu trình cho Skincare Architect 3D (dữ liệu mẫu, theo mô tả của chính sản phẩm mẫu ở trên).
+ * Sản phẩm thật: người bán tự khai báo trong form sản phẩm.
+ */
+type RoutineData = Pick<Product, 'skincareFunctions' | 'usePeriod' | 'applyZones'>
+const R = (skincareFunctions: Product['skincareFunctions'], usePeriod: Product['usePeriod'], applyZones: Product['applyZones'] = ['face']): RoutineData => ({
+  skincareFunctions,
+  usePeriod,
+  applyZones,
+})
+const routineData: Record<string, RoutineData> = {
+  'Gel rửa mặt dịu nhẹ pH 5.5': R(['cleanse'], 'both'),
+  'Sữa rửa mặt tạo bọt kiểm soát dầu': R(['cleanse', 'oil-control'], 'both'),
+  'Toner cấp ẩm hoa cúc': R(['hydrate', 'soothe'], 'both'),
+  'Toner BHA làm thông thoáng lỗ chân lông': R(['exfoliate', 'oil-control'], 'pm'),
+  'Serum Niacinamide 10% + Kẽm': R(['oil-control'], 'both'),
+  'Serum Vitamin C 15% sáng da': R(['antioxidant'], 'am'),
+  'Serum Hyaluronic Acid cấp nước': R(['hydrate'], 'both'),
+  'Serum Retinol 0.3% ban đêm': R(['renewal'], 'pm', ['forehead', 'cheekL', 'cheekR']),
+  'Kem dưỡng phục hồi Ceramide': R(['hydrate', 'soothe'], 'both'),
+  'Gel dưỡng ẩm kiềm dầu': R(['hydrate', 'oil-control'], 'both'),
+  'Kem chống nắng nâng tông nhẹ SPF50+ PA++++': R(['uv-protect'], 'am'),
+  'Kem chống nắng vật lý cho da nhạy cảm SPF50': R(['uv-protect', 'soothe'], 'am'),
+  'Mặt nạ đất sét làm sạch lỗ chân lông': R(['oil-control'], 'pm', ['forehead', 'chin']),
+  'Kem dưỡng vùng mắt Peptide': R(['hydrate'], 'both', []),
+  'Sữa rửa mặt nam than tre kiểm soát dầu': R(['cleanse', 'oil-control'], 'both'),
+  'Gel dưỡng ẩm nam mỏng nhẹ': R(['hydrate', 'oil-control'], 'both'),
+  'Kem dưỡng nam chống nắng SPF30': R(['hydrate', 'uv-protect'], 'am'),
+  'Dung dịch tẩy tế bào chết AHA/PHA dịu nhẹ': R(['exfoliate'], 'pm'),
+}
+
 export const mockProducts: Product[] = seeds.map((s, i) => ({
   ...s,
+  ...(routineData[s.name] ?? {}),
   id: `p-${String(i + 1).padStart(3, '0')}`,
   slug: slugify(s.name),
   images: [],

@@ -4,7 +4,7 @@
 -- Cửa hàng mẫu không có chủ (owner_id = null), do Admin quản lý.
 -- Sản phẩm mẫu dùng hình minh họa (placeholder_visual) thay cho ảnh thật.
 -- Chạy lại nhiều lần không bị trùng (on conflict do nothing): đã chạy bản cũ thì chạy lại file này để thêm sản phẩm mới.
--- Cần migration 009 trở lên (danh mục Nước hoa, Nam giới).
+-- Cần migration 010 trở lên (danh mục Nước hoa, Nam giới; thông tin chu trình skincare).
 -- File này được sinh tự động từ src/data/mock/*.ts
 -- =============================================================================
 
@@ -119,6 +119,62 @@ insert into public.products (shop_id, slug, name, brand_name, category, product_
   ('50000000-0000-0000-0000-000000000004', 'muoi-tam-tay-te-bao-chet-huong-cam', 'Muối tắm tẩy tế bào chết hương cam', 'Bloom & Co', 'body-care', 'body-scrub', 'Hạt muối mịn trộn dầu dưỡng giúp da cơ thể bớt sần và mềm hơn. Dùng 1–2 lần mỗi tuần.', 159000, null, 85, 'active', '300 g',
    '{"normal","oily","combination","dry"}', '{"dullness"}', '{"Muối biển","Tinh dầu cam","Dầu hạnh nhân"}', 'Hạt muối', null, '{"shape":"jar","color":"#F9D9B3","cap":"#D08A4E"}', 4.5, 106, 590, false, '2026-10-31T00:00:00.000Z')
 on conflict (slug) do nothing;
+
+-- Thông tin chu trình cho Skincare Architect 3D (cần migration 010). Chỉ điền cho sản phẩm mẫu chưa được khai báo.
+update public.products set skincare_functions = '{"cleanse"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'gel-rua-mat-diu-nhe-ph-5-5' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"cleanse","oil-control"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'sua-rua-mat-tao-bot-kiem-soat-dau' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"hydrate","soothe"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'toner-cap-am-hoa-cuc' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"exfoliate","oil-control"}', use_period = 'pm', apply_zones = '{"face"}'
+  where slug = 'toner-bha-lam-thong-thoang-lo-chan-long' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"oil-control"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'serum-niacinamide-10-kem' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"antioxidant"}', use_period = 'am', apply_zones = '{"face"}'
+  where slug = 'serum-vitamin-c-15-sang-da' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"hydrate"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'serum-hyaluronic-acid-cap-nuoc' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"renewal"}', use_period = 'pm', apply_zones = '{"forehead","cheekL","cheekR"}'
+  where slug = 'serum-retinol-0-3-ban-dem' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"hydrate","soothe"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'kem-duong-phuc-hoi-ceramide' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"hydrate","oil-control"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'gel-duong-am-kiem-dau' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"uv-protect"}', use_period = 'am', apply_zones = '{"face"}'
+  where slug = 'kem-chong-nang-nang-tong-nhe-spf50-pa' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"uv-protect","soothe"}', use_period = 'am', apply_zones = '{"face"}'
+  where slug = 'kem-chong-nang-vat-ly-cho-da-nhay-cam-spf50' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"oil-control"}', use_period = 'pm', apply_zones = '{"forehead","chin"}'
+  where slug = 'mat-na-dat-set-lam-sach-lo-chan-long' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"hydrate"}', use_period = 'both', apply_zones = '{}'
+  where slug = 'kem-duong-vung-mat-peptide' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"cleanse","oil-control"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'sua-rua-mat-nam-than-tre-kiem-soat-dau' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"hydrate","oil-control"}', use_period = 'both', apply_zones = '{"face"}'
+  where slug = 'gel-duong-am-nam-mong-nhe' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"hydrate","uv-protect"}', use_period = 'am', apply_zones = '{"face"}'
+  where slug = 'kem-duong-nam-chong-nang-spf30' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
+update public.products set skincare_functions = '{"exfoliate"}', use_period = 'pm', apply_zones = '{"face"}'
+  where slug = 'dung-dich-tay-te-bao-chet-aha-pha-diu-nhe' and use_period is null and skincare_functions = '{}'
+    and shop_id in (select id from public.shops where owner_id is null);
 
 -- Số liệu (điểm, lượt đánh giá, người theo dõi, lượt bán) luôn tính từ dữ liệu thật, không dùng số mẫu ở trên.
 select private.recompute_all_stats();

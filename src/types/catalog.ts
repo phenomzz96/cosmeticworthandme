@@ -119,6 +119,10 @@ export interface Product {
   featured?: boolean
   /** Cách dùng do cửa hàng nhập (có thể trống) */
   howToUse?: string
+  /** Thông tin chu trình cho Skincare Architect 3D (migration 010), người bán khai báo */
+  skincareFunctions?: SkincareFunction[]
+  usePeriod?: 'am' | 'pm' | 'both' | null
+  applyZones?: ApplyZone[]
   /** Sản phẩm mẫu (dữ liệu demo, dùng hình minh họa) — sản phẩm thật luôn có ảnh do cửa hàng tải lên */
   isSample?: boolean
   createdAt: string
@@ -164,3 +168,6 @@ export interface ProductQuery {
   inStock?: boolean
   sort?: ProductSort
 }
+
+export type SkincareFunction = 'cleanse' | 'hydrate' | 'oil-control' | 'exfoliate' | 'renewal' | 'antioxidant' | 'uv-protect' | 'soothe'
+export type ApplyZone = 'face' | 'forehead' | 'cheekL' | 'cheekR' | 'chin'

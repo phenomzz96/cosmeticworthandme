@@ -13,6 +13,7 @@ import { compareFields } from '@/features/compare/compareFields'
 import { ReviewsSection } from '@/features/reviews/ReviewsSection'
 import { routineStepOf } from '@/features/routine/routine'
 import { FavoriteButton } from '@/features/social/SocialButtons'
+import { isRoutineReady, routineRows } from '@/features/skincare-3d/routineFields'
 import { writeCheckoutSelection } from '@/lib/checkoutSelection'
 import { formatCompact, formatPrice } from '@/lib/format'
 import { COMPARE_KEY, COMPARE_MAX, pushFront, RECENTLY_VIEWED_KEY, removeItem, writeList } from '@/lib/localList'
@@ -77,7 +78,11 @@ function ProductDetail({ product: initial }: { product: Product }) {
 
   const inCart = quantityOf(product.id)
   const canAdd = Math.max(0, product.stock - inCart)
-  const rows = compareFields.map((f) => ({ ...f, text: f.value(product) })).filter((f) => !f.optional || f.text)
+  const rows = [
+    ...compareFields.map((f) => ({ ...f, text: f.value(product) })).filter((f) => !f.optional || f.text),
+    ...routineRows(product),
+  ]
+  const routineReady = isRoutineReady(product)
 
   const handleAdd = () => {
     add(product.id, Math.min(qty, canAdd))
@@ -311,6 +316,11 @@ function ProductDetail({ product: initial }: { product: Product }) {
               <li>Thông tin trên trang là mô tả của cửa hàng, không phải lời khuyên y khoa.</li>
               <li>Nếu da kích ứng kéo dài, hãy ngừng dùng và hỏi ý kiến bác sĩ da liễu.</li>
             </ul>
+            {routineReady && (
+              <Link to={`/skincare-architect?pick=${product.id}`} className={`${button('secondary', 'sm')} mt-4`}>
+                <Icon name="sparkle" size={14} /> Xếp vào chu trình Skincare Architect 3D
+              </Link>
+            )}
           </aside>
         </div>
       </section>

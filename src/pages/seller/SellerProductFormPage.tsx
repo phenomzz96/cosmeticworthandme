@@ -10,13 +10,14 @@ import { ProductImage } from '@/components/ui/ProductImage'
 import { Breadcrumbs, button, Price, Skeleton } from '@/components/ui/primitives'
 import { categories, concernLabels, productTypeLabels, skinTypeLabels, typesByCategory } from '@/data/taxonomy'
 import { useSeller } from '@/features/seller/SellerLayout'
+import { APPLY_ZONES, routineTypes, SKINCARE_FUNCTIONS, USE_PERIODS } from '@/features/skincare-3d/routineFields'
 import { friendlyError } from '@/lib/errors'
 import { formatPrice } from '@/lib/format'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { catalogService, DEFAULT_VISUAL } from '@/services/catalog'
 import { shopMediaUrl, uploadShopImage, validateShopImage } from '@/services/media'
 import { sellerService } from '@/services/seller'
-import type { CategoryId, ProductType, SkinConcern, SkinType } from '@/types/catalog'
+import type { ApplyZone, CategoryId, ProductType, SkincareFunction, SkinConcern, SkinType } from '@/types/catalog'
 import { MAX_PRODUCT_IMAGES, productStatusLabels, type ProductInput, type ProductStatus, type SellerProduct } from '@/types/seller'
 import { ProductStatusBadge } from './SellerProductsPage'
 
@@ -33,6 +34,9 @@ interface FormState {
   description: string
   key_ingredients: string
   how_to_use: string
+  skincare_functions: SkincareFunction[]
+  use_period: '' | 'am' | 'pm' | 'both'
+  apply_zones: ApplyZone[]
   texture: string
   fragrance_free: '' | 'yes' | 'no'
   skin_types: SkinType[]
@@ -52,6 +56,9 @@ const emptyForm: FormState = {
   description: '',
   key_ingredients: '',
   how_to_use: '',
+  skincare_functions: [],
+  use_period: '',
+  apply_zones: [],
   texture: '',
   fragrance_free: '',
   skin_types: [],
@@ -72,6 +79,9 @@ function toForm(p: SellerProduct): FormState {
     description: p.description,
     key_ingredients: p.key_ingredients.join(', '),
     how_to_use: p.how_to_use ?? '',
+    skincare_functions: p.skincare_functions ?? [],
+    use_period: p.use_period ?? '',
+    apply_zones: p.apply_zones ?? [],
     texture: p.texture ?? '',
     fragrance_free: p.fragrance_free == null ? '' : p.fragrance_free ? 'yes' : 'no',
     skin_types: p.skin_types,
@@ -117,6 +127,10 @@ function toInput(f: FormState): ProductInput {
     description: f.description.trim(),
     key_ingredients: f.key_ingredients.split(',').map((x) => x.trim()).filter(Boolean),
     how_to_use: f.how_to_use.trim(),
+    // Chỉ lưu thông tin chu trình cho loại sản phẩm dùng trong Skincare Architect 3D
+    skincare_functions: routineTypes.includes(f.product_type) ? f.skincare_functions : [],
+    use_period: routineTypes.includes(f.product_type) && f.use_period ? f.use_period : null,
+    apply_zones: routineTypes.includes(f.product_type) ? f.apply_zones : [],
     texture: f.texture.trim() || null,
     fragrance_free: f.fragrance_free === '' ? null : f.fragrance_free === 'yes',
     skin_types: f.skin_types,
@@ -345,6 +359,32 @@ export function SellerProductFormPage() {
                 onChange={(v) => set('concerns', v as SkinConcern[])}
               />
             </Section>
+
+            {routineTypes.includes(form.product_type) && (
+              <Section
+                title="Chu trình skincare (không bắt buộc)"
+                hint="Dùng cho Skincare Architect 3D: sản phẩm có công dụng và thời điểm dùng mới được xếp vào chu trình của khách. Hệ thống không tự đoán từ tên sản phẩm."
+              >
+                <CheckGroup
+                  legend="Công dụng"
+                  options={SKINCARE_FUNCTIONS}
+                  values={form.skincare_functions}
+                  onChange={(v) => set('skincare_functions', v as SkincareFunction[])}
+                />
+                <SelectField
+                  label="Thời điểm dùng"
+                  value={form.use_period}
+                  onChange={(v) => set('use_period', v as FormState['use_period'])}
+                  options={[{ value: '', label: 'Chưa khai báo' }, ...USE_PERIODS]}
+                />
+                <CheckGroup
+                  legend="Vùng thoa (minh họa trên mô hình khuôn mặt)"
+                  options={APPLY_ZONES}
+                  values={form.apply_zones}
+                  onChange={(v) => set('apply_zones', v as ApplyZone[])}
+                />
+              </Section>
+            )}
 
             {result && <Alert kind={result.kind}>{result.text}</Alert>}
 
