@@ -309,7 +309,7 @@ function ProductDetail({ product: initial }: { product: Product }) {
               </dl>
             )}
           </div>
-          <aside className="h-fit rounded-card border border-border bg-surface p-5 text-sm">
+          <aside className="h-fit min-w-0 rounded-card border border-border bg-surface p-5 text-sm">
             <h2 className="font-semibold">Lưu ý khi sử dụng</h2>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-muted">
               <li>Thử sản phẩm mới trên một vùng da nhỏ trước khi dùng toàn mặt.</li>
@@ -317,7 +317,7 @@ function ProductDetail({ product: initial }: { product: Product }) {
               <li>Nếu da kích ứng kéo dài, hãy ngừng dùng và hỏi ý kiến bác sĩ da liễu.</li>
             </ul>
             {routineReady && (
-              <Link to={`/skincare-architect?pick=${product.id}`} className={`${button('secondary', 'sm')} mt-4`}>
+              <Link to={`/skincare-architect?pick=${product.id}`} className={`${button('secondary', 'sm')} mt-4 w-full whitespace-normal text-center`}>
                 <Icon name="sparkle" size={14} /> Xếp vào chu trình Skincare Architect 3D
               </Link>
             )}
