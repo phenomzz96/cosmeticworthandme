@@ -16,7 +16,8 @@ export function CartPage() {
   useDocumentTitle('Giỏ hàng')
   const { settings } = useBrand()
   const navigate = useNavigate()
-  const { items, count, setQuantity, remove, clear, isAccountCart, syncing } = useCart()
+  const { items, count, setQuantity, remove, clear, isAccountCart, syncing, adjustments, dismissAdjustments } = useCart()
+  const notice = adjustments.length > 0 && <CartAdjustments notes={adjustments} onClose={dismissAdjustments} />
 
   // Sản phẩm được chọn để thanh toán (mặc định: tất cả). Lưu trong phiên để quay lại giỏ vẫn giữ.
   const [selected, setSelected] = useState<Set<string>>(() => {
@@ -65,6 +66,7 @@ export function CartPage() {
     return (
       <div className="container-page py-12">
         <h1 className="text-4xl">Giỏ hàng</h1>
+        {notice}
         <div className="mt-6">
           <EmptyState
             title="Giỏ hàng đang trống"
@@ -103,6 +105,8 @@ export function CartPage() {
           <DemoBadge>Giỏ hàng lưu trên trình duyệt này. Đăng nhập để lưu theo tài khoản</DemoBadge>
         )}
       </div>
+
+      {notice}
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-4">
@@ -222,6 +226,26 @@ export function CartPage() {
           </div>
         </aside>
       </div>
+    </div>
+  )
+}
+
+/** Báo khách những thay đổi giỏ do cửa hàng cập nhật (không âm thầm xóa) */
+function CartAdjustments({ notes, onClose }: { notes: string[]; onClose: () => void }) {
+  return (
+    <div className="mt-6 flex items-start gap-3 rounded-card border border-sale/30 bg-sale/5 px-4 py-3 text-sm" role="status">
+      <Icon name="info" size={18} className="mt-0.5 shrink-0 text-sale" />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold">Giỏ hàng vừa được cập nhật theo cửa hàng</p>
+        <ul className="mt-1 space-y-0.5 text-muted">
+          {notes.map((n) => (
+            <li key={n}>{n}</li>
+          ))}
+        </ul>
+      </div>
+      <button type="button" onClick={onClose} className="grid h-8 w-8 shrink-0 place-items-center rounded-full hover:bg-surface-2" aria-label="Đóng thông báo">
+        <Icon name="x" size={16} />
+      </button>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { concernLabels, productTypeLabels, skinTypeLabels, typesByCategory } from '@/data/taxonomy'
+import { concernLabels, productTypeLabels, typesByCategory } from '@/data/taxonomy'
 import type { ProductType, SkinConcern, SkinType } from '@/types/catalog'
 
 /**
@@ -81,14 +81,9 @@ export const focusOptions: Choice<Focus>[] = [
   { value: 'fragrance', label: 'Nước hoa', hint: 'Tìm mùi hương hợp với bạn' },
 ]
 
-export const skinTypeOptions: Choice<FinderAnswers['skinType']>[] = [
-  { value: 'oily', label: skinTypeLabels.oily, hint: 'Bóng dầu toàn mặt sau vài giờ' },
-  { value: 'dry', label: skinTypeLabels.dry, hint: 'Hay căng, bong tróc nhẹ' },
-  { value: 'combination', label: skinTypeLabels.combination, hint: 'Dầu vùng chữ T, khô hai má' },
-  { value: 'normal', label: skinTypeLabels.normal, hint: 'Ít khi quá dầu hay quá khô' },
-  { value: 'sensitive', label: skinTypeLabels.sensitive, hint: 'Dễ đỏ, châm chích khi đổi sản phẩm' },
-  { value: 'unsure', label: 'Mình chưa rõ', hint: 'Gợi ý sản phẩm hợp nhiều loại da' },
-]
+// Ở file riêng để trang chủ dùng mà không phải tải cả bộ câu hỏi
+export { skinTypeOptions } from './skinTypeOptions'
+import { skinTypeOptions } from './skinTypeOptions'
 
 export const concernOptions: Choice<SkinConcern>[] = (Object.keys(concernLabels) as SkinConcern[]).map((value) => ({
   value,

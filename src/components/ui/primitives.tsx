@@ -6,7 +6,7 @@ import { Icon } from './Icon'
 /** Class cho nút. Dùng: className={button('primary')} trên <button> hoặc <Link> */
 export function button(variant: 'primary' | 'secondary' | 'ghost' | 'accent' | 'dark' = 'primary', size: 'md' | 'lg' | 'sm' = 'md') {
   const base =
-    'inline-flex items-center justify-center gap-2 rounded-control font-medium whitespace-nowrap select-none transition-colors disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none'
+    'inline-flex items-center justify-center gap-2 rounded-control font-medium whitespace-nowrap select-none transition-[color,background-color,border-color,transform,filter] duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-none motion-reduce:active:scale-100'
   const sizes = { sm: 'h-9 px-4 text-sm', md: 'h-11 px-5 text-[15px]', lg: 'h-13 px-7 text-[15px]' }
   const variants = {
     primary: 'bg-primary text-on-primary hover:bg-primary-hover',

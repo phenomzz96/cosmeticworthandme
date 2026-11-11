@@ -10,3 +10,15 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Bộ nhớ đệm: file trong /assets có mã băm trong tên (đổi nội dung là đổi tên) nên trình duyệt giữ lâu, mở lại trang không tải lại
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Module Skincare Architect 3D: tên file không đổi theo nội dung, giữ 1 ngày rồi hỏi lại máy chủ
+[[headers]]
+  for = "/skincare-3d/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"

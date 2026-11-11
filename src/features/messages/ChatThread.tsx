@@ -58,7 +58,13 @@ export function ChatThread({
     const t = window.setInterval(() => {
       if (document.visibilityState === 'visible') void load()
     }, POLL_MS)
-    return () => window.clearInterval(t)
+    // Quay lại thẻ: tải tin mới ngay, không đợi lượt hỏi kế tiếp
+    const onVisible = () => document.visibilityState === 'visible' && void load()
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.clearInterval(t)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
   }, [load])
 
   // Sản phẩm được đính kèm trong tin nhắn

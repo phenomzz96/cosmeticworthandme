@@ -111,6 +111,9 @@ interface CartContextValue {
   removeOrdered: (productIds: string[]) => void
   clear: () => void
   quantityOf: (productId: string) => number
+  /** Thay đổi giỏ do cửa hàng cập nhật (ngừng bán, hết hàng, tồn kho giảm) để báo cho khách */
+  adjustments: string[]
+  dismissAdjustments: () => void
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
@@ -216,14 +219,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [replace])
 
   const catalogVersion = useCatalogVersion()
+  // Tên sản phẩm đã thấy trong giỏ: để vẫn báo được tên khi sản phẩm đã ngừng bán (không còn trong danh mục)
+  const names = useRef(new Map<string, string>())
+  const [adjustments, setAdjustments] = useState<string[]>([])
   useEffect(() => {
-    if (catalogService.isLoaded()) apply({ type: 'sanitize' })
+    if (!catalogService.isLoaded()) return
+    const prev = linesRef.current
+    const next = cartReducer(prev, { type: 'sanitize' })
+    if (next === prev) return
+    const notes: string[] = []
+    for (const l of prev) {
+      const after = next.find((n) => n.productId === l.productId)
+      const product = catalogService.getProductByIdSync(l.productId)
+      const name = product?.name ?? names.current.get(l.productId)
+      const label = name ? `"${name}"` : '1 sản phẩm'
+      if (!after) notes.push(product && product.stock <= 0 ? `${label} đã hết hàng nên được bỏ khỏi giỏ.` : `${label} đã ngừng bán nên được bỏ khỏi giỏ.`)
+      else if (after.quantity < l.quantity) notes.push(`${label} chỉ còn ${after.quantity} sản phẩm, số lượng trong giỏ đã giảm từ ${l.quantity} xuống ${after.quantity}.`)
+    }
+    if (notes.length) setAdjustments((a) => [...new Set([...a, ...notes])].slice(-6))
+    apply({ type: 'sanitize' })
   }, [catalogVersion, apply])
+  const dismissAdjustments = useCallback(() => setAdjustments([]), [])
 
   const items = useMemo<CartItem[]>(
     () =>
       lines.flatMap((l) => {
         const product = catalogService.getProductByIdSync(l.productId)
+        if (product) names.current.set(product.id, product.name)
         return product ? [{ ...l, product, lineTotal: product.price * l.quantity }] : []
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -250,8 +272,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeOrdered,
       clear,
       quantityOf,
+      adjustments,
+      dismissAdjustments,
     }),
-    [items, accountId, syncing, add, setQuantity, remove, removeOrdered, clear, quantityOf],
+    [items, accountId, syncing, add, setQuantity, remove, removeOrdered, clear, quantityOf, adjustments, dismissAdjustments],
   )
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
