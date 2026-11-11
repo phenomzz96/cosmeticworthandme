@@ -20,16 +20,24 @@ export function CartPage() {
   const notice = adjustments.length > 0 && <CartAdjustments notes={adjustments} onClose={dismissAdjustments} />
 
   // Sản phẩm được chọn để thanh toán (mặc định: tất cả). Lưu trong phiên để quay lại giỏ vẫn giữ.
-  const [selected, setSelected] = useState<Set<string>>(() => {
-    const saved = readCheckoutSelection().productIds
-    return new Set(saved ?? items.map((i) => i.productId))
+  // Lựa chọn của nút "Mua ngay" chỉ dành cho trang đặt hàng: giỏ hàng vẫn chọn tất cả.
+  const [saved] = useState(() => {
+    const s = readCheckoutSelection()
+    return s.buyNow ? { productIds: null, voucherCodes: [] as string[], knownIds: undefined } : s
   })
-  const [codes, setCodes] = useState<string[]>(() => readCheckoutSelection().voucherCodes)
+  const [selected, setSelected] = useState<Set<string>>(() => {
+    if (!saved.productIds) return new Set(items.map((i) => i.productId))
+    // Sản phẩm thêm vào giỏ sau lần chọn trước: chọn sẵn
+    const known = saved.knownIds ?? items.map((i) => i.productId)
+    return new Set([...saved.productIds, ...items.map((i) => i.productId).filter((id) => !known.includes(id))])
+  })
+  const [codes, setCodes] = useState<string[]>(() => saved.voucherCodes)
   const [preview, setPreview] = useState<VoucherPreview | null>(null)
 
   // Sản phẩm mới thêm vào giỏ: chọn sẵn; sản phẩm đã bỏ khỏi giỏ: bỏ chọn
   const idsKey = items.map((i) => i.productId).join(',')
-  const [knownIds, setKnownIds] = useState<string[]>(() => items.map((i) => i.productId))
+  // Giỏ chưa tải xong lúc mở trang: coi như chưa biết sản phẩm nào, tải xong thì chọn theo quy tắc trên
+  const [knownIds, setKnownIds] = useState<string[]>(() => (saved.productIds ? (saved.knownIds ?? items.map((i) => i.productId)) : items.map((i) => i.productId)))
   useEffect(() => {
     const ids = items.map((i) => i.productId)
     setSelected((cur) => new Set([...[...cur].filter((id) => ids.includes(id)), ...ids.filter((id) => !knownIds.includes(id))]))
@@ -58,7 +66,7 @@ export function CartPage() {
     })
 
   const goCheckout = () => {
-    writeCheckoutSelection({ productIds: [...selected], voucherCodes: codes })
+    writeCheckoutSelection({ productIds: [...selected], voucherCodes: codes, knownIds: items.map((i) => i.productId) })
     navigate('/checkout')
   }
 
