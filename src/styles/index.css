@@ -177,8 +177,14 @@
 }
 .art-flutter { transform-box: fill-box; transform-origin: center; animation: flutter 1.8s ease-in-out infinite; }
 .art-drift { animation: drift 7s ease-in-out infinite; }
+/* Vùng thoa sáng lần lượt (tranh Skincare Architect 3D) */
+@keyframes pulse-zone {
+  0%, 100% { transform: scale(0.75); opacity: 0.35; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+.art-pulse { transform-box: fill-box; transform-origin: center; animation: pulse-zone 2s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .art-flutter, .art-drift { animation: none; }
+  .art-flutter, .art-drift, .art-pulse { animation: none; }
 }
 
 /* Chuyển trang giới thiệu (hero) mượt */

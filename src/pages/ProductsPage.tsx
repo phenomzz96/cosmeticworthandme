@@ -1,3 +1,4 @@
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useMemo, useState, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
@@ -263,7 +264,7 @@ export function ProductsPage() {
       {category && !query.q && <p className="mt-2 max-w-2xl text-muted">{category.description}</p>}
 
       {/* Danh mục dạng thẻ */}
-      <div className="scrollbar-none -mx-4 mt-6 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:px-0" role="group" aria-label="Chọn danh mục">
+      <ScrollRow role="group" aria-label="Chọn danh mục" wrapClassName="-mx-4 mt-6 md:mx-0" className="flex gap-2 px-4 md:flex-wrap md:px-0">
         {[{ id: null as CategoryId | null, name: 'Tất cả' }, ...categories].map((c) => {
           const on = (query.category ?? null) === c.id
           return (
@@ -278,7 +279,7 @@ export function ProductsPage() {
             </button>
           )
         })}
-      </div>
+      </ScrollRow>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
         <div className="min-w-0">

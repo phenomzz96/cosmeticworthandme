@@ -1,4 +1,5 @@
 /** DANH SÁCH SẢN PHẨM CỦA SHOP — /seller/products */
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Alert } from '@/components/ui/Form'
@@ -100,7 +101,7 @@ export function SellerProductsPage() {
       </div>
 
       <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="scrollbar-none flex gap-2 overflow-x-auto" role="group" aria-label="Lọc theo trạng thái">
+        <ScrollRow role="group" aria-label="Lọc theo trạng thái" className="flex gap-2">
           {filters.map((f) => (
             <button
               key={f.value}
@@ -113,7 +114,7 @@ export function SellerProductsPage() {
               {state.status === 'ready' && f.value !== 'all' && ` (${state.list.filter((p) => p.status === f.value).length})`}
             </button>
           ))}
-        </div>
+        </ScrollRow>
         <input
           type="search"
           value={q}
@@ -174,7 +175,7 @@ function ProductRow({ product: p, canManage, onAction }: { product: SellerProduc
           <ProductImage product={{ name: p.name, images, visual: p.placeholder_visual ?? DEFAULT_VISUAL }} />
         </div>
         <div className="min-w-0">
-          <Link to={`/seller/products/${p.id}`} className="line-clamp-1 font-medium hover:text-primary">
+          <Link to={`/seller/products/${p.id}`} title={p.name} className="line-clamp-2 font-medium hover:text-primary">
             {p.name}
           </Link>
           <p className="truncate text-xs text-muted">

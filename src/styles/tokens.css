@@ -71,6 +71,7 @@
   --art-night-2: #3a3240;
   --art-steel: #9fb2c2;
   --art-moth: #d8c3a0;
+  --art-hair: #4a3654;
 }
 
 [data-theme='dark'] {
@@ -122,4 +123,5 @@
   --art-night-2: #241c2a;
   --art-steel: #a9bccb;
   --art-moth: #e2cfac;
+  --art-hair: #5b4568;
 }

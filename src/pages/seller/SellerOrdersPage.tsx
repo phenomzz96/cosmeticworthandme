@@ -3,6 +3,7 @@
  * Người bán xác nhận → chuẩn bị → giao → đã giao, hoặc từ chối/hủy kèm lý do.
  * Database (seller_update_shop_order) kiểm tra quyền, thứ tự bước, lý do, và chặn giao đơn QR chưa thanh toán.
  */
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Alert, TextAreaField } from '@/components/ui/Form'
@@ -80,7 +81,7 @@ export function SellerOrdersPage() {
       <p className="mt-1 text-sm text-muted">Đơn chờ xác nhận nằm đầu danh sách. Thông tin người nhận chỉ dùng để giao hàng, không chia sẻ cho bên khác.</p>
 
       <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="scrollbar-none flex gap-2 overflow-x-auto" role="group" aria-label="Lọc theo trạng thái đơn">
+        <ScrollRow role="group" aria-label="Lọc theo trạng thái đơn" className="flex gap-2">
           {tabs.map((t) => {
             const n = countOf(t)
             return (
@@ -96,7 +97,7 @@ export function SellerOrdersPage() {
               </button>
             )
           })}
-        </div>
+        </ScrollRow>
         <input
           type="search"
           value={searchInput}

@@ -1,6 +1,6 @@
 # Trạng thái tính năng
 
-Cập nhật: 11/11/2026, sau tích hợp Skincare Architect 3D (đồng bộ dữ liệu sàn, nối Beauty Finder). Phân loại A–E chi tiết: [AUDIT.md](AUDIT.md).
+Cập nhật: 11/11/2026, sau Đợt D (thanh tab không bị che chữ, quảng bá Skincare Architect 3D). Phân loại A–E chi tiết: [AUDIT.md](AUDIT.md).
 
 ## Quyết định đã chốt
 
@@ -32,6 +32,7 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 | 4 | Đặt hàng nhiều shop (giá, phí ship, tồn kho tính ở server, khóa dòng chống bán vượt); đơn của tôi; khách hủy; người bán xử lý đơn; Admin xem/hủy đơn; tổng quan Admin và người bán; Admin ẩn sản phẩm vi phạm | DB 75 · e2e đơn hàng 40 · thử 2 người mua cùng lúc món cuối |
 | 5 | COD tự "đã thanh toán" khi giao xong; QR mô phỏng (mã QR tự sinh, đã quét thử bằng OpenCV), Admin xác nhận/từ chối, chặn giao khi chưa thanh toán, hoàn tiền mô phỏng; banner trang chủ | DB (trong 75 ở trên) + 15 · e2e banner 12 |
 | 6 | Kiểm thử tổng, tách tải trang quản trị/người bán (trang chủ nhẹ hơn), tài liệu triển khai, kịch bản demo | Toàn bộ: DB 299/299, e2e 230/230 |
+| Đợt D | Thanh tab và nhóm lọc không còn bị che chữ: máy tính thấy đủ tab (xuống dòng khi cần), màn hình nhỏ có mũi tên + mờ mép và tự cuộn tới mục đang chọn (Admin, người bán, lọc đơn/sản phẩm/đánh giá/shop, tab trang sản phẩm, danh mục, cửa hàng nổi bật); thanh danh mục không làm trang kéo ngang ở 1024–1600px (màn hình 1024–1279px ẩn mục "Cửa hàng" trên thanh này, vẫn có ở chân trang và trang chủ); quảng bá Skincare Architect 3D: trang 2 của banner trang chủ (tranh khuôn mặt + vùng thoa tự vẽ), khối giới thiệu 3 bước trên trang chủ, mục "Skincare 3D" trên thanh danh mục | e2e DOTD_E2E · kiểm tra che chữ 42 trang × 5 độ rộng × sáng/tối: 0 lỗi |
 | Skincare Architect 3D | Nhúng module nhóm 3D (`/skincare-architect`) + lớp nhúng (màu/font Worth & Me, sáng/tối, ẩn cửa hàng mẫu); đồng bộ danh mục sàn, sản phẩm đã mua, mục tiêu từ Beauty Finder, bộ đề xuất; gợi ý mua cho bước còn thiếu / mục tiêu chưa đáp ứng; tách dữ liệu module theo tài khoản; người bán khai báo công dụng, thời điểm dùng, vùng thoa (migration 010); Beauty Finder dùng dữ liệu này để chấm điểm, bỏ chế độ "Theo các bước" (trùng chức năng), thêm bộ đề xuất cho chu trình; nút "Xếp vào chu trình" trên trang sản phẩm | DB 10 · e2e 45 · Finder 54 · toàn bộ: DB 529/529, e2e 535/535 |
 | Đợt C | Chân trang gọn (bỏ "Về dự án", dòng học tập); Admin sửa Giới thiệu, Liên hệ, Câu hỏi thường gặp, Chính sách, Điều khoản, thanh thông báo, mô tả chân trang (`/admin/pages`); tin nhắn khách ↔ cửa hàng, khách ↔ bộ phận hỗ trợ (`/messages`, `/seller/messages`, `/admin/messages`, khung chat nổi); danh mục Nước hoa, Nam giới + loại mới; menu danh mục thả xuống; Thương hiệu A–Z (`/brands`); thanh trượt khoảng giá; banner 3 slide hoa–bướm–mỹ phẩm tự vẽ (nàng, chàng, nước hoa); Beauty Finder cho cả nam và nữ, câu hỏi theo 5 nhóm sản phẩm | DB 75 · e2e 75 · Finder 33 · toàn bộ: DB 519/519, e2e 469/469 |
 | Đợt B | Giao diện mới (trang chủ, danh sách, chi tiết, giỏ, đặt hàng, shop); gợi ý + lịch sử tìm kiếm; lọc thương hiệu, điểm, còn hàng, thẻ bộ lọc; trang sản phẩm nhiều ảnh, tab Mô tả/Thành phần/Cách dùng/Thông tin, chia sẻ, so sánh (`/compare`), mua ngay, đã xem gần đây; mã giảm giá (`/vouchers`, `/seller/vouchers`, `/admin/vouchers`); chọn món trong giỏ; chống đặt trùng; tự hủy đơn QR quá 24 giờ; thông báo (`/notifications`); nhãn "Đã mua hàng", báo cáo đánh giá | DB 76 · e2e 79 · toàn bộ: DB 444/444, e2e 377/377 |
@@ -46,7 +47,7 @@ Kiểm thử giao diện: bản build chạy trong Chromium (Playwright) với c
 | Migration 007 (Đợt A) | Nhóm đã chạy |
 | Migration 008 (Đợt B) | Nhóm đã chạy |
 | Migration 009 (Đợt C) | Cần chạy trước khi merge Đợt C (Pull Request đã merge; nếu chưa chạy, chạy ngay) |
-| Migration 010 (Skincare Architect 3D) | **Chưa chạy**: chạy trong SQL Editor trước khi merge Pull Request Skincare Architect 3D, sau đó chạy lại `supabase/seed/demo_catalog.sql` |
+| Migration 010 (Skincare Architect 3D) | Nhóm đã chạy, dữ liệu mẫu đã chạy lại (18 sản phẩm có dữ liệu chu trình) |
 | `npm run build` với thư viện thật | GitHub Actions tự chạy trên mỗi Pull Request (file `.github/workflows/build.yml`) |
 | Vòng mua bán đầy đủ trên bản thật (20 bước trong [DEPLOY.md](DEPLOY.md) mục 7) | Nhóm đang kiểm tra |
 

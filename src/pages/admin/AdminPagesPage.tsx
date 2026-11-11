@@ -3,6 +3,7 @@
  * Admin sửa Giới thiệu, Liên hệ, Câu hỏi thường gặp, Chính sách, Điều khoản, thanh thông báo và mô tả chân trang.
  * Lưu trên Supabase (hàm admin_save_page kiểm tra quyền Admin và ghi nhật ký). Có xem trước trực tiếp.
  */
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Alert, TextAreaField, TextField } from '@/components/ui/Form'
@@ -29,7 +30,7 @@ export function AdminPagesPage() {
       <p className="mt-1 text-sm text-muted">Sửa chữ trên các trang thông tin mà không cần sửa mã nguồn. Thay đổi hiện ngay cho mọi người sau khi lưu.</p>
 
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
-        <nav aria-label="Chọn trang" className="scrollbar-none flex gap-2 overflow-x-auto lg:flex-col lg:gap-1">
+        <ScrollRow as="nav" aria-label="Chọn trang" className="flex gap-2 lg:flex-col lg:gap-1">
           {ORDER.map((s) => (
             <button
               key={s}
@@ -41,7 +42,7 @@ export function AdminPagesPage() {
               {PAGE_META[s].label}
             </button>
           ))}
-        </nav>
+        </ScrollRow>
         <PageEditor key={slug} slug={slug} />
       </div>
     </div>

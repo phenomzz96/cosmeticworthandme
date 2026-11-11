@@ -3,6 +3,7 @@
  * Admin ẩn đánh giá vi phạm (quảng cáo, thông tin cá nhân, ngôn từ xúc phạm...) kèm lý do, hoặc bỏ ẩn.
  * Đánh giá bị ẩn không tính vào điểm sản phẩm/shop. Mọi thao tác được ghi nhật ký.
  */
+import { ScrollRow } from '@/components/ui/ScrollRow'
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Alert, TextAreaField } from '@/components/ui/Form'
@@ -78,13 +79,13 @@ export function AdminReviewsPage() {
       </p>
 
       <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="scrollbar-none flex gap-2 overflow-x-auto" role="group" aria-label="Lọc đánh giá">
+        <ScrollRow role="group" aria-label="Lọc đánh giá" className="flex gap-2">
           {filters.map((f) => (
             <button key={f.id} type="button" aria-pressed={filter === f.id} className={chip(filter === f.id)} onClick={() => update({ f: f.id === 'all' ? null : f.id })}>
               {f.label}
             </button>
           ))}
-        </div>
+        </ScrollRow>
         <input
           type="search"
           value={searchInput}
