@@ -43,9 +43,12 @@ với một **client Supabase giả lập** mô phỏng các luật quyền chí
 | Beauty Finder (thuật toán chấm điểm: nam/nữ, 5 nhóm sản phẩm, điều cần tránh, nhóm hương, ngân sách, đường dẫn; công dụng khai báo, bộ đề xuất cho chu trình theo quy tắc module, chuyển câu trả lời → mục tiêu module) | 54/54 |
 | Đợt A: số liệu thật, trang thông tin, đánh giá (chưa mua → không được; nhận hàng → viết, sửa, xóa), người bán trả lời, Admin ẩn, theo dõi shop, yêu thích, nén ảnh WebP khi tải lên, mobile + tối | 68/68 |
 | Đợt B: giao diện mới, gợi ý + lịch sử tìm kiếm, lọc thương hiệu/điểm/còn hàng, trang sản phẩm (tab, so sánh, chia sẻ, mua ngay, đã xem gần đây), mã giảm giá (Admin, người bán, ví, giỏ, đặt hàng, lượt dùng), chọn món trong giỏ, thông báo, báo cáo đánh giá, "Cách dùng", mobile + tối | 79/79 |
-| Đợt C: chân trang, banner 3 slide, menu danh mục thả xuống, Nước hoa / Nam giới, Thương hiệu A–Z, thanh trượt giá, Beauty Finder mới, Câu hỏi thường gặp, Admin sửa nội dung trang, tin nhắn khách ↔ shop ↔ hỗ trợ (khung chat nổi), mobile + tối | 75/75 |
+| Đợt C: chân trang, banner nhiều slide, menu danh mục thả xuống, Nước hoa / Nam giới, Thương hiệu A–Z, thanh trượt giá, Beauty Finder mới, Câu hỏi thường gặp, Admin sửa nội dung trang, tin nhắn khách ↔ shop ↔ hỗ trợ (khung chat nổi), mobile + tối | 76/76 |
 | Skincare Architect 3D: handshake, đồng bộ danh mục sàn, sản phẩm đã mua (đơn hủy không tính), Beauty Finder → module không hỏi lại + bộ đề xuất vào chu trình, gợi ý mua + giỏ hàng, sáng/tối + tương phản, tách dữ liệu khi đổi tài khoản, form người bán, trang sản phẩm, mở module độc lập, tự chuyển 2D, desktop + điện thoại tối | 45/45 |
-| **Tổng** | **535/535**, không có lỗi JavaScript |
+| Đợt D: thanh tab Admin/người bán đủ chữ trên máy tính, mũi tên + tự cuộn tới tab đang chọn trên điện thoại, nhóm lọc, thanh danh mục 1024–1600px, quảng bá Skincare Architect 3D (banner, khối trang chủ, thanh danh mục, menu điện thoại), tương phản, sáng/tối | 31/31 |
+| **Tổng** | **567/567**, không có lỗi JavaScript |
+
+Kiểm tra che chữ tự động (Đợt D): 42 trang (khách, Admin, người bán) × 5 độ rộng (390, 768, 1024, 1280, 1440px) × sáng/tối: không có trang kéo ngang, không có hàng cuộn ngang thiếu mũi tên, không có chữ bị cắt mà không có dấu "…".
 
 Kiểm tra TypeScript bằng trình biên dịch thật với kiểu thư viện rút gọn: không lỗi. **Nhóm vẫn cần chạy `npm.cmd run build`** để kiểm tra với thư viện thật.
 
