@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
@@ -7,6 +8,7 @@ import { categories } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
 import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
 import { BannerCarousel } from '@/features/home/BannerCarousel'
+import { BloomArt, ButterflyMark, GroomArt, ScentArt } from '@/features/home/HeroArt'
 import { skinTypeOptions } from '@/features/beauty-finder/questions'
 import { Stars } from '@/features/reviews/ReviewsSection'
 import { ShopCard } from '@/features/shops/ShopCard'
@@ -23,6 +25,8 @@ const categoryVisual: Record<CategoryId, ProductVisual> = {
   makeup: { shape: 'lipstick', color: '#B4555A', cap: '#2B2126' },
   haircare: { shape: 'pump', color: '#E4E9D6', cap: '#7D8A55' },
   'body-care': { shape: 'jar', color: '#F3E3D3', cap: '#C08A5B' },
+  fragrance: { shape: 'perfume', color: '#F0D3DE', cap: '#B8924A' },
+  men: { shape: 'tube', color: '#3A3F44', cap: '#9DB4C0' },
   'beauty-tools': { shape: 'brush', color: '#E9DED3', cap: '#3E3846' },
 }
 
@@ -62,15 +66,16 @@ export function HomePage() {
   return (
     <>
       <Hero />
+      <CategoryMarquee />
       <TrustStrip />
       <BannerCarousel />
 
       {/* DANH MỤC */}
       <section className="container-page mt-20" aria-labelledby="cat-heading">
         <SectionHead eyebrow="Danh mục" title="Tìm sản phẩm cho bạn" id="cat-heading" link={{ to: '/products', label: 'Xem tất cả sản phẩm' }} />
-        <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-7">
           {categories.map((c, i) => (
-            <li key={c.id} className={i === 0 ? 'col-span-2 lg:col-span-1' : ''}>
+            <li key={c.id} className={i === 0 ? 'col-span-2 sm:col-span-1' : ''}>
               <Link
                 to={`/products?category=${c.id}`}
                 className="group relative block aspect-[4/3] overflow-hidden rounded-card bg-surface-2 lg:aspect-[3/4]"
@@ -151,6 +156,8 @@ export function HomePage() {
         </div>
       </section>
 
+      <ForHerForHim />
+
       <FinderShowcase />
 
       {/* ĐÁNH GIÁ THẬT CỦA KHÁCH */}
@@ -214,61 +221,199 @@ export function HomePage() {
   )
 }
 
+const heroSlides = [
+  {
+    key: 'nang',
+    eyebrow: 'Skincare · Makeup · Nước hoa',
+    title: 'Chọn đúng mỹ phẩm,',
+    accent: 'đẹp theo cách của bạn.',
+    text: (name: string) => `${name} gom skincare, makeup, nước hoa và đồ chăm sóc cho cả nàng lẫn chàng từ nhiều cửa hàng về một nơi.`,
+    primary: { to: '/products', label: 'Mua sắm ngay' },
+    secondary: { to: '/beauty-finder', label: 'Bắt đầu Beauty Finder' },
+    Art: BloomArt,
+  },
+  {
+    key: 'chang',
+    eyebrow: 'Dành cho phái mạnh',
+    title: 'Gọn gàng mỗi sáng,',
+    accent: 'tự tin cả ngày.',
+    text: () => 'Sữa rửa mặt, dưỡng ẩm, cạo râu và chăm sóc râu: chọn nhanh theo làn da và thói quen của bạn.',
+    primary: { to: '/products?category=men', label: 'Khám phá đồ nam' },
+    secondary: { to: '/beauty-finder?for=male', label: 'Beauty Finder cho nam' },
+    Art: GroomArt,
+  },
+  {
+    key: 'huong',
+    eyebrow: 'Nước hoa',
+    title: 'Mùi hương kể câu chuyện',
+    accent: 'của riêng bạn.',
+    text: () => 'Hoa cỏ, gỗ ấm, cam chanh tươi mát… Lọc theo nhóm hương và dịp dùng để tìm mùi hợp mình.',
+    primary: { to: '/products?category=fragrance', label: 'Xem nước hoa' },
+    secondary: { to: '/beauty-finder?focus=fragrance', label: 'Tìm mùi hợp mình' },
+    Art: ScentArt,
+  },
+]
+
+const HERO_INTERVAL = 7000
+
 function Hero() {
   const { settings } = useBrand()
-  const showcase = useAsync(async () => {
-    const list = await catalogService.getFeaturedProducts(12)
-    // Ưu tiên sản phẩm có ảnh thật do cửa hàng tải lên
-    return [...list.filter((p) => p.images.length), ...list.filter((p) => !p.images.length)].slice(0, 3)
-  }, [])
-  const items = showcase.status === 'success' ? showcase.data : []
+  const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const reduced = useMemo(() => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches, [])
+
+  useEffect(() => {
+    if (paused || reduced) return
+    const t = window.setTimeout(() => setIndex((i) => (i + 1) % heroSlides.length), HERO_INTERVAL)
+    return () => window.clearTimeout(t)
+  }, [index, paused, reduced])
+
+  const slide = heroSlides[index]
+  const go = (i: number) => setIndex((i + heroSlides.length) % heroSlides.length)
 
   return (
-    <section className="relative overflow-hidden">
+    <section
+      className="relative overflow-hidden"
+      aria-roledescription="carousel"
+      aria-label="Giới thiệu nổi bật"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
+      <h1 className="sr-only">{settings.name}: sàn mỹ phẩm nhiều cửa hàng cho cả nam và nữ</h1>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-32 top-0 h-[38rem] w-[38rem] rounded-full opacity-70 blur-3xl"
         style={{ background: 'radial-gradient(circle, var(--primary-soft) 0%, var(--accent-soft) 45%, transparent 70%)' }}
       />
-      <div className="container-page relative grid items-center gap-12 py-14 md:py-20 lg:grid-cols-[1.05fr_1fr] lg:py-24">
-        <div>
-          <p className="eyebrow">Sàn mỹ phẩm nhiều cửa hàng</p>
-          <h1 className="mt-5 max-w-xl text-[2.75rem] leading-[1.02] text-balance sm:text-6xl lg:text-7xl">
-            Chọn mỹ phẩm hợp với làn da của bạn, <em className="font-medium italic text-primary">từ nhiều cửa hàng uy tín.</em>
-          </h1>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted">
-            {settings.name} gom skincare, makeup, haircare và body care từ nhiều cửa hàng về một nơi. Trả lời vài câu hỏi để Beauty Finder lọc ra sản phẩm phù hợp.
-          </p>
+      <div className="container-page relative grid items-center gap-8 py-10 md:py-14 lg:grid-cols-[1fr_1fr] lg:gap-12 lg:py-16">
+        <div key={slide.key} className="hero-in" aria-roledescription="slide" aria-label={`${index + 1} / ${heroSlides.length}`}>
+          <p className="eyebrow">{slide.eyebrow}</p>
+          <h2 className="mt-5 max-w-xl font-display text-[2.6rem] font-semibold leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[4.4rem]">
+            {slide.title} <em className="font-medium italic text-primary">{slide.accent}</em>
+          </h2>
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted">{slide.text(settings.name)}</p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Link to="/products" className={button('dark', 'lg')}>
-              Mua sắm ngay <Icon name="arrowRight" size={18} />
+            <Link to={slide.primary.to} className={button('dark', 'lg')}>
+              {slide.primary.label} <Icon name="arrowRight" size={18} />
             </Link>
-            <Link to="/beauty-finder" className={button('secondary', 'lg')}>
-              <Icon name="sparkle" size={18} /> Bắt đầu Beauty Finder
+            <Link to={slide.secondary.to} className={button('secondary', 'lg')}>
+              <Icon name="sparkle" size={18} /> {slide.secondary.label}
             </Link>
+          </div>
+          <div className="mt-10 flex items-center gap-4">
+            <button type="button" onClick={() => go(index - 1)} className="grid h-10 w-10 place-items-center rounded-full border border-border hover:border-text" aria-label="Trang trước">
+              <Icon name="chevronLeft" size={18} />
+            </button>
+            <div className="flex items-center gap-2" role="group" aria-label="Chọn trang giới thiệu">
+              {heroSlides.map((s, i) => (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => go(i)}
+                  aria-label={`${i + 1}: ${s.eyebrow}`}
+                  aria-current={i === index ? 'true' : undefined}
+                  className={`h-2 rounded-full transition-all motion-reduce:transition-none ${i === index ? 'w-8 bg-ink' : 'w-2 bg-border hover:bg-muted'}`}
+                />
+              ))}
+            </div>
+            <button type="button" onClick={() => go(index + 1)} className="grid h-10 w-10 place-items-center rounded-full border border-border hover:border-text" aria-label="Trang sau">
+              <Icon name="chevronRight" size={18} />
+            </button>
           </div>
         </div>
 
-        {/* Bố cục 3 khung vòm: ảnh sản phẩm đang bán trên sàn */}
-        <div className="relative mx-auto grid w-full max-w-[540px] grid-cols-3 items-end gap-3 sm:gap-4" aria-hidden={items.length === 0}>
-          {[0, 1, 2].map((i) => {
-            const p: Product | undefined = items[i]
-            return (
-              <div
-                key={i}
-                className={`overflow-hidden rounded-t-full rounded-b-[24px] bg-surface-2 shadow-pop ${i === 1 ? 'aspect-[3/5]' : 'aspect-[3/4.4]'} ${i === 1 ? '' : 'mb-6'}`}
-              >
-                {p ? (
-                  <Link to={`/products/${p.slug}`} className="block h-full" tabIndex={-1} aria-label={p.name}>
-                    <ProductImage product={p} eager />
-                  </Link>
-                ) : (
-                  <div className="h-full animate-pulse motion-reduce:animate-none" />
-                )}
-              </div>
-            )
-          })}
+        <div key={`art-${slide.key}`} className="hero-in relative mx-auto w-full max-w-[560px]">
+          <slide.Art className="h-auto w-full drop-shadow-sm" />
         </div>
+      </div>
+    </section>
+  )
+}
+
+/** Dải chữ chạy: các nhóm sản phẩm (trang trí; liên kết thật nằm ở menu danh mục) */
+function CategoryMarquee() {
+  const words = categories.map((c) => c.name.toUpperCase())
+  const row = [...words, ...words]
+  return (
+    <div className="overflow-hidden border-y border-border bg-ink py-4 text-on-ink" aria-hidden="true">
+      <div className="marquee-track flex w-max items-center gap-8 whitespace-nowrap font-display text-2xl italic sm:text-3xl">
+        {[...row, ...row].map((w, i) => (
+          <span key={i} className="inline-flex items-center gap-8">
+            {w}
+            <span className="text-base not-italic text-on-ink/60">✦</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** Hai lối vào: cho nàng / cho chàng */
+function ForHerForHim() {
+  const tiles = [
+    {
+      key: 'her',
+      eyebrow: 'Cho nàng',
+      title: 'Dịu dàng hay cá tính, đều có lựa chọn.',
+      links: [
+        { to: '/products?category=skincare', label: 'Skincare' },
+        { to: '/products?category=makeup', label: 'Makeup' },
+        { to: '/products?category=fragrance&types=perfume-women,body-mist', label: 'Nước hoa nữ' },
+        { to: '/products?category=body-care', label: 'Body care' },
+      ],
+      cta: { to: '/beauty-finder?for=female', label: 'Beauty Finder cho nàng' },
+      dark: false,
+    },
+    {
+      key: 'him',
+      eyebrow: 'Cho chàng',
+      title: 'Ít bước, đúng sản phẩm, gọn gàng.',
+      links: [
+        { to: '/products?category=men', label: 'Chăm sóc da nam' },
+        { to: '/products?category=men&types=shaving,beard-care', label: 'Cạo & chăm sóc râu' },
+        { to: '/products?category=fragrance&types=perfume-men,perfume-unisex', label: 'Nước hoa nam' },
+        { to: '/products?category=haircare&types=hair-styling', label: 'Tạo kiểu tóc' },
+      ],
+      cta: { to: '/beauty-finder?for=male', label: 'Beauty Finder cho chàng' },
+      dark: true,
+    },
+  ]
+  return (
+    <section className="container-page mt-20" aria-label="Mua sắm theo phong cách">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {tiles.map((t) => (
+          <div
+            key={t.key}
+            className="relative overflow-hidden rounded-[28px] p-7 sm:p-10"
+            style={{ background: t.dark ? 'linear-gradient(140deg, var(--art-night-2), var(--art-night-1))' : 'linear-gradient(140deg, var(--art-sky-1), var(--art-sky-2))' }}
+          >
+            <ButterflyMark id={`ff-${t.key}`} className="pointer-events-none absolute -right-4 -top-2 h-32 w-40 opacity-80 sm:h-40 sm:w-48" />
+            <p className={`eyebrow ${t.dark ? '!text-[var(--art-moth)]' : ''}`}>{t.eyebrow}</p>
+            <h2 className={`mt-3 max-w-sm font-display text-3xl font-semibold leading-tight sm:text-4xl ${t.dark ? 'text-[var(--art-petal-4)]' : ''}`}>{t.title}</h2>
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {t.links.map((l) => (
+                <li key={l.to}>
+                  <Link
+                    to={l.to}
+                    className={`inline-flex rounded-full border px-4 py-2 text-sm transition-colors motion-reduce:transition-none ${
+                      t.dark ? 'border-white/25 text-[var(--art-petal-4)] hover:bg-white/10' : 'border-border bg-surface/70 hover:border-text'
+                    }`}
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Link
+              to={t.cta.to}
+              className={`mt-7 inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline ${t.dark ? 'text-[var(--art-moth)]' : 'text-primary'}`}
+            >
+              <Icon name="sparkle" size={16} /> {t.cta.label}
+            </Link>
+          </div>
+        ))}
       </div>
     </section>
   )
@@ -322,7 +467,7 @@ function FinderShowcase() {
             Chưa biết bắt đầu từ đâu?
           </h2>
           <p className="mt-4 max-w-md leading-relaxed text-muted">
-            Năm câu hỏi ngắn, kết quả lấy từ chính các sản phẩm đang bán trên sàn. Mỗi gợi ý đều kèm lý do vì sao sản phẩm hợp với bạn.
+            Vài câu hỏi ngắn cho cả nam và nữ: da mặt, trang điểm, tóc, cơ thể hay nước hoa. Kết quả lấy từ sản phẩm đang bán trên sàn, kèm lý do vì sao sản phẩm hợp với bạn.
           </p>
           <Link to="/beauty-finder" className={`${button('dark', 'lg')} mt-8`}>
             Tìm sản phẩm cho tôi <Icon name="arrowRight" size={18} />
@@ -332,7 +477,7 @@ function FinderShowcase() {
           </p>
         </div>
         <div>
-          <p className="text-sm font-medium">Câu 1/5 · Da của bạn thuộc loại nào?</p>
+          <p className="text-sm font-medium">Bắt đầu nhanh với chăm sóc da · Da của bạn thuộc loại nào?</p>
           <ul className="mt-4 grid grid-cols-2 gap-3">
             {skinTypeOptions.map((o) => (
               <li key={o.value}>
@@ -346,6 +491,20 @@ function FinderShowcase() {
               </li>
             ))}
           </ul>
+          <p className="mt-5 flex flex-wrap gap-2 text-sm">
+            <span className="text-muted">Hoặc:</span>
+            <Link to="/beauty-finder?for=male" className="font-medium text-primary underline-offset-4 hover:underline">
+              Gợi ý cho nam
+            </Link>
+            <span className="text-muted">·</span>
+            <Link to="/beauty-finder?focus=fragrance" className="font-medium text-primary underline-offset-4 hover:underline">
+              Tìm nước hoa
+            </Link>
+            <span className="text-muted">·</span>
+            <Link to="/beauty-finder?focus=haircare" className="font-medium text-primary underline-offset-4 hover:underline">
+              Chăm sóc tóc
+            </Link>
+          </p>
         </div>
       </div>
     </section>

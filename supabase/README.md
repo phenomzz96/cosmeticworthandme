@@ -14,6 +14,7 @@ Mỗi file chỉ chạy một lần. Đã chạy rồi thì không sửa file đ
 | `20261028000001_orders_payments.sql` | Đơn cha/đơn con, `place_order` (giá, phí ship, tồn kho tính ở server), hủy/xử lý đơn, COD và QR mô phỏng (báo chuyển, Admin xác nhận, hoàn tiền), danh sách đơn cho người bán/Admin, số liệu tổng quan, Admin ẩn sản phẩm vi phạm |
 | `20261029000001_banners.sql` | Banner trang chủ (chỉ Admin, chỉ liên kết nội bộ, hẹn giờ, nhật ký); cho phép thư mục `banner/` trong bucket `brand` |
 | `20261104000001_reviews_follows_favorites.sql` | Đánh giá sản phẩm (chỉ khách đã nhận hàng; người bán trả lời; Admin ẩn có lý do + nhật ký), theo dõi shop, yêu thích sản phẩm; điểm, lượt đánh giá, người theo dõi, lượt bán do database tự tính (số liệu mẫu cũ được đưa về số thật); loại sản phẩm "Tạo kiểu tóc" và tự chuyển sáp/gôm đang xếp nhầm vào "Dầu gội" |
+| `20261112000001_pages_messages_categories.sql` | Nội dung trang do Admin sửa (`site_pages`, `admin_save_page`, `admin_reset_page`, có nhật ký); tin nhắn khách ↔ cửa hàng và khách ↔ bộ phận hỗ trợ (`conversations`, `messages`, `start_conversation`, `send_message`, `inbox`, chống spam 20 tin/phút, thông báo khi có tin mới; Admin không đọc tin giữa khách và cửa hàng); danh mục Nước hoa, Nam giới và các loại sản phẩm mới |
 | `20261111000001_vouchers_notifications_reports.sql` | Mã giảm giá của sàn và của shop (tính ở server trong `place_order`, chia giảm giá sàn theo tỷ lệ cho từng đơn con, trả lượt khi hủy), ví voucher; chống đặt trùng (`client_request_id`); tự hủy đơn QR chưa thanh toán sau 24 giờ và trả hàng về kho; thông báo trong website (đơn, đánh giá, shop, sản phẩm bị ẩn); khách báo cáo đánh giá, Admin lọc đánh giá bị báo cáo; `search_products` lọc thương hiệu/điểm/còn hàng; cột "Cách dùng" |
 
 ### Dữ liệu mẫu (tùy chọn)
@@ -33,6 +34,7 @@ Chạy **sau** các migration (cần migration 007 trở lên: dòng cuối file
 - `04_search_addresses_cart_test.sql`: 47 tình huống: tìm kiếm không lộ hàng nháp/shop chưa duyệt, đọc/sửa/xóa địa chỉ và giỏ của người khác, tài khoản bị khóa, giới hạn số lượng.
 - `05_orders_payments_test.sql`: 75 tình huống: gian lận giá, đặt quá tồn kho, mua hàng của shop mình, dùng địa chỉ người khác, ghi thẳng vào bảng đơn, xem đơn của người khác, người bán xử lý đơn shop khác, nhảy cóc trạng thái, tự xác nhận thanh toán, giao đơn QR chưa trả tiền, hoàn tiền 2 lần, Admin ẩn sản phẩm.
 - `06_banners_test.sql`: 15 tình huống: liên kết ra ngoài website, khách thêm/sửa/xóa banner, tải ảnh banner trái phép, hẹn giờ.
+- `09_pages_messages_categories_test.sql`: 75 tình huống: danh mục/loại không hợp lệ, tìm không dấu theo danh mục mới; khách, người bán, Admin bị khóa sửa nội dung trang; chèn/sửa thẳng bảng nội dung; thanh thông báo nhiều dòng/quá dài; khách vãng lai nhắn tin; nhắn cửa hàng tạm ngưng hoặc cửa hàng của chính mình; đính kèm sản phẩm của shop khác; chèn thẳng tin nhắn giả làm cửa hàng; chủ shop khác, khách khác đọc trộm; chủ shop chen vào cuộc trò chuyện hỗ trợ; Admin đọc hoặc gửi tin vào cuộc trò chuyện của cửa hàng; gửi quá 20 tin/phút; tài khoản bị khóa đọc tin cũ; gọi hàm nội bộ.
 - `08_vouchers_notifications_reports_test.sql`: 76 tình huống: người bán tạo mã toàn sàn hoặc mã cho shop khác, shop chưa duyệt tạo mã, chèn/sửa thẳng bảng voucher và lượt dùng, mã không tồn tại/hết hạn/đang tắt, chưa đủ đơn tối thiểu, mã shop áp cho sản phẩm shop khác, dùng quá lượt mỗi người hoặc hết tổng lượt, xem ví của người khác, đặt hàng 2 lần cùng mã yêu cầu (chỉ 1 đơn, trừ kho 1 lần), trả lượt khi hủy, tự hủy đơn QR quá 24 giờ và trả kho, đọc/tự chèn thông báo của người khác, báo cáo đánh giá của chính mình, đọc thẳng bảng báo cáo, người bán xem danh sách kiểm duyệt, lọc thương hiệu/điểm/còn hàng.
 - `07_reviews_follows_favorites_test.sql`: 69 tình huống: đánh giá khi chưa mua / chưa nhận hàng, chèn thẳng vào bảng đánh giá, đọc user_id/email người đánh giá, sửa điểm hay số người theo dõi, người bán shop khác trả lời, khách ẩn đánh giá, đánh giá bị ẩn vẫn tính điểm, theo dõi shop chưa duyệt, tự theo dõi shop mình, đọc danh sách yêu thích của người khác, tài khoản bị khóa.
 
@@ -43,7 +45,7 @@ Cách chạy (cần PostgreSQL 15+ và `psql`):
 createdb wm_test
 psql -d wm_test -v ON_ERROR_STOP=1 -f supabase/tests/00_local_supabase_stub.sql
 for f in supabase/migrations/*.sql; do psql -d wm_test -v ON_ERROR_STOP=1 -f "$f"; done
-psql -d wm_test -f supabase/tests/01_foundation_test.sql   # hoặc 02_ … 08_
+psql -d wm_test -f supabase/tests/01_foundation_test.sql   # hoặc 02_ … 09_
 ```
 
 Kết quả cuối phải là `truot = 0`.

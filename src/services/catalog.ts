@@ -373,6 +373,14 @@ export const catalogService = {
     }
   },
 
+  /** Giá thấp nhất / cao nhất (làm tròn) của sản phẩm đang bán, cho thanh trượt khoảng giá */
+  getPriceBoundsSync(category?: CategoryId): { min: number; max: number } {
+    const prices = products.filter((p) => !category || p.categoryId === category).map((p) => p.price)
+    if (!prices.length) return { min: 0, max: 1_000_000 }
+    const step = 50_000
+    return { min: 0, max: Math.max(step * 4, Math.ceil(Math.max(...prices) / step) * step) }
+  },
+
   /** Danh sách thương hiệu (kèm số sản phẩm) cho bộ lọc, theo danh mục nếu có */
   getBrandsSync(category?: CategoryId): { name: string; count: number }[] {
     const map = new Map<string, { name: string; count: number }>()

@@ -12,7 +12,7 @@
  *  Giá trị `null` = nhóm CHƯA cung cấp. Website sẽ tự dùng bản dự phòng:
  *   - logo null    -> logo chữ tự sinh từ `brand.name`, tự đổi màu theo theme
  *   - slogan null  -> không hiển thị slogan
- *   - team.name null -> hiển thị nhãn "Tên nhóm: chưa cập nhật" ở footer
+ *   - team.name null -> chưa có tên nhóm (chân trang không còn hiện thông tin nhóm; nội dung trang Giới thiệu do Admin sửa ở /admin/pages)
  *
  *  ĐỔI LOGO (không cần sửa file code nào khác):
  *   1. Chép file vào public/brand/, ví dụ public/brand/logo.png

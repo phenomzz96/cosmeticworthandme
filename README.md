@@ -33,8 +33,8 @@ Extension VS Code nên cài: ESLint, Prettier, Tailwind CSS IntelliSense.
 
 1. Tạo project tại [supabase.com](https://supabase.com) (gói Free). Chọn region gần Việt Nam (Singapore).
 2. **Organization → Team**: mời đủ 5 thành viên. Bộ gửi email mặc định của Supabase **chỉ gửi tới thành viên team**, tối đa 2 email/giờ.
-3. **SQL Editor**: lần lượt dán và **Run** 6 file trong [`supabase/migrations/`](supabase/migrations/) theo thứ tự tên file (bảng thứ tự ở [docs/DEPLOY.md](docs/DEPLOY.md#2-chạy-migration-tạo-bảng-quyền-hàm)). Mỗi file chỉ chạy một lần.
-   Tùy chọn: chạy thêm [`supabase/seed/demo_catalog.sql`](supabase/seed/demo_catalog.sql) để có sẵn 5 cửa hàng mẫu và 29 sản phẩm mẫu khi trình diễn (chạy lại nhiều lần không bị trùng).
+3. **SQL Editor**: lần lượt dán và **Run** 9 file trong [`supabase/migrations/`](supabase/migrations/) theo thứ tự tên file (bảng thứ tự ở [docs/DEPLOY.md](docs/DEPLOY.md#2-chạy-migration-tạo-bảng-quyền-hàm)). Mỗi file chỉ chạy một lần.
+   Tùy chọn: chạy thêm [`supabase/seed/demo_catalog.sql`](supabase/seed/demo_catalog.sql) để có sẵn 7 cửa hàng mẫu và 49 sản phẩm mẫu khi trình diễn (chạy lại nhiều lần không bị trùng).
 4. **Authentication → URL Configuration**:
    - Site URL: `https://worthandme.netlify.app`
    - Redirect URLs: thêm `http://localhost:5173/**` và `https://worthandme.netlify.app/**`
@@ -120,6 +120,10 @@ Database kiểm tra toàn bộ: chỉ chủ shop sửa shop/sản phẩm/ảnh/�
 - **Giỏ hàng**: chọn từng món/từng shop để đặt, món không chọn vẫn ở lại giỏ. Bấm đặt hàng nhiều lần chỉ tạo 1 đơn.
 - **Thông báo** (`/notifications`, chuông ở đầu trang): đơn mới, đổi trạng thái đơn, đánh giá mới, người bán trả lời, shop được duyệt.
 - **Báo cáo đánh giá**: khách báo cáo đánh giá không phù hợp, Admin lọc "Bị khách báo cáo" ở `/admin/reviews`.
+- **Tin nhắn**: khách bấm "Nhắn tin cho shop" ở trang sản phẩm/cửa hàng, hoặc gửi câu hỏi cho bộ phận hỗ trợ ở trang Liên hệ, Câu hỏi thường gặp. Khung chat nổi ở góc phải; hộp thư `/messages`, `/seller/messages`, `/admin/messages`.
+- **Nội dung trang do Admin sửa** (`/admin/pages`): Giới thiệu, Liên hệ, Câu hỏi thường gặp, Chính sách, Điều khoản, thanh thông báo, mô tả chân trang. Có xem trước và "Khôi phục mặc định".
+- **Danh mục**: Skincare, Makeup, Haircare, Body Care, Nước hoa, Nam giới, Beauty Tools; menu thả xuống theo loại sản phẩm và thương hiệu; trang Thương hiệu A–Z (`/brands`); thanh trượt khoảng giá.
+- **Beauty Finder**: hỏi dành cho nam/nữ, rồi câu hỏi đổi theo nhóm (da mặt, trang điểm, tóc, cơ thể, nước hoa); kết quả có % phù hợp, lý do và lưu ý. Loại da do người dùng tự chọn, không chẩn đoán.
 
 ## 4. Thương hiệu
 
@@ -137,7 +141,7 @@ Chưa có logo thì website dùng **logo chữ dự phòng** sinh từ tên thư
 ```
 supabase/
 ├── migrations/               ★ SQL tạo bảng, RLS, hàm phía server (chạy theo thứ tự)
-├── seed/demo_catalog.sql     Dữ liệu mẫu tùy chọn (5 shop, 29 sản phẩm)
+├── seed/demo_catalog.sql     Dữ liệu mẫu tùy chọn (7 shop, 49 sản phẩm)
 └── tests/                    Kiểm thử bảo mật trên Postgres local (xem supabase/README.md)
 src/
 ├── app/App.tsx               Định tuyến các trang, chặn trang theo quyền

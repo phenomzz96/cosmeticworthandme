@@ -37,6 +37,11 @@ const VouchersPage = lazyNamed(() => import('@/pages/VouchersPage'), 'VouchersPa
 const NotificationsPage = lazyNamed(() => import('@/pages/NotificationsPage'), 'NotificationsPage')
 const SellerVouchersPage = lazyNamed(() => import('@/pages/seller/SellerVouchersPage'), 'SellerVouchersPage')
 const AdminVouchersPage = lazyNamed(() => import('@/pages/admin/AdminVouchersPage'), 'AdminVouchersPage')
+const AdminPagesPage = lazyNamed(() => import('@/pages/admin/AdminPagesPage'), 'AdminPagesPage')
+const MessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'MessagesPage')
+const SellerMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'SellerMessagesPage')
+const AdminMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'AdminMessagesPage')
+const BrandsPage = lazyNamed(() => import('@/pages/BrandsPage'), 'BrandsPage')
 const AboutPage = lazyNamed(() => import('@/pages/InfoPages'), 'AboutPage')
 const ContactPage = lazyNamed(() => import('@/pages/InfoPages'), 'ContactPage')
 const FaqPage = lazyNamed(() => import('@/pages/InfoPages'), 'FaqPage')
@@ -69,6 +74,7 @@ export function App() {
                   <Route path="beauty-finder" element={<BeautyFinderPage />} />
                   <Route path="cart" element={<CartPage />} />
                   <Route path="compare" element={<ComparePage />} />
+                  <Route path="brands" element={<BrandsPage />} />
 
                   {/* Trang thông tin */}
                   <Route path="about" element={<AboutPage />} />
@@ -95,6 +101,14 @@ export function App() {
                     element={
                       <RequireAuth>
                         <VouchersPage />
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="messages"
+                    element={
+                      <RequireAuth>
+                        <MessagesPage />
                       </RequireAuth>
                     }
                   />
@@ -130,6 +144,8 @@ export function App() {
                     <Route path="products" element={<AdminProductsPage />} />
                     <Route path="reviews" element={<AdminReviewsPage />} />
                     <Route path="vouchers" element={<AdminVouchersPage />} />
+                    <Route path="messages" element={<AdminMessagesPage />} />
+                    <Route path="pages" element={<AdminPagesPage />} />
                     <Route path="orders" element={<AdminOrdersPage />} />
                     <Route path="audit" element={<AdminAuditPage />} />
                     <Route path="brand" element={<AdminBrandPage />} />
@@ -177,6 +193,7 @@ export function App() {
                     <Route path="orders" element={<SellerOrdersPage />} />
                     <Route path="reviews" element={<SellerReviewsPage />} />
                     <Route path="vouchers" element={<SellerVouchersPage />} />
+                    <Route path="messages" element={<SellerMessagesPage />} />
                     <Route path="shop" element={<SellerShopSettingsPage />} />
                   </Route>
                   <Route path="*" element={<NotFoundPage />} />

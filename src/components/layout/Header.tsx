@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { categories } from '@/data/taxonomy'
@@ -14,6 +14,7 @@ import { useLocalList } from '@/lib/useLocalList'
 import { catalogService } from '@/services/catalog'
 import { notificationService } from '@/services/notifications'
 import { Logo } from './Logo'
+import { MegaMenu } from './MegaMenu'
 
 /** Ô tìm kiếm: gợi ý sản phẩm/thương hiệu khi gõ, lịch sử tìm kiếm khi ô trống (lưu trên trình duyệt này) */
 function SearchForm({ id, autoFocus = false }: { id: string; autoFocus?: boolean }) {
@@ -227,9 +228,6 @@ function NotificationBell() {
   )
 }
 
-const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `relative whitespace-nowrap py-1 text-[15px] transition-colors motion-reduce:transition-none ${isActive ? 'text-primary' : 'text-text/80 hover:text-text'}`
-
 export function Header() {
   const { count } = useCart()
   const { status, profile, user, isAdmin } = useAuth()
@@ -238,8 +236,6 @@ export function Header() {
   const accountTo = signedIn ? '/account' : '/login'
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
-  const [params] = useSearchParams()
-  const activeCategory = location.pathname === '/products' ? params.get('category') : null
 
   // Đóng menu mobile khi chuyển trang
   useEffect(() => setMenuOpen(false), [location.pathname, location.search])
@@ -304,26 +300,8 @@ export function Header() {
         <SearchForm id="search-mobile" />
       </div>
 
-      {/* Thanh danh mục trên desktop */}
-      <div className="hidden border-t border-border lg:block">
-        <nav className="container-page flex h-12 items-center justify-center gap-9" aria-label="Danh mục">
-          <NavLink to="/products" end className={({ isActive }) => navLinkClass({ isActive: isActive && !activeCategory })}>
-            Tất cả sản phẩm
-          </NavLink>
-          {categories.map((c) => (
-            <Link key={c.id} to={`/products?category=${c.id}`} className={navLinkClass({ isActive: activeCategory === c.id })}>
-              {c.name}
-            </Link>
-          ))}
-          <NavLink to="/shops" className={navLinkClass}>
-            Cửa hàng
-          </NavLink>
-          <NavLink to="/beauty-finder" className={({ isActive }) => `${navLinkClass({ isActive })} inline-flex items-center gap-1.5 !text-primary`}>
-            <Icon name="sparkle" size={16} />
-            Beauty Finder
-          </NavLink>
-        </nav>
-      </div>
+      {/* Thanh danh mục trên desktop (menu thả xuống) */}
+      <MegaMenu />
 
       {/* Menu mobile */}
       {menuOpen && (
@@ -338,11 +316,14 @@ export function Header() {
             {categories.map((c) => (
               <Link key={c.id} to={`/products?category=${c.id}`} className="flex items-center justify-between rounded-xl px-3 py-3 hover:bg-surface-2">
                 <span>
-                  {c.name} <span className="text-sm text-muted">· {c.label}</span>
+                  {c.name} {c.name !== c.label && <span className="text-sm text-muted">· {c.label}</span>}
                 </span>
                 <Icon name="chevronRight" size={16} className="text-muted" />
               </Link>
             ))}
+            <Link to="/brands" className="rounded-xl px-3 py-3 hover:bg-surface-2">
+              Thương hiệu A–Z
+            </Link>
             <Link to="/shops" className="rounded-xl px-3 py-3 hover:bg-surface-2">
               Tất cả cửa hàng
             </Link>
@@ -357,6 +338,9 @@ export function Header() {
                 </Link>
                 <Link to="/notifications" className="rounded-xl px-3 py-3 hover:bg-surface-2">
                   Thông báo
+                </Link>
+                <Link to="/messages" className="rounded-xl px-3 py-3 hover:bg-surface-2">
+                  Tin nhắn
                 </Link>
                 <Link to="/vouchers" className="rounded-xl px-3 py-3 hover:bg-surface-2">
                   Ví voucher

@@ -1,14 +1,26 @@
 import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Skeleton } from '@/components/ui/primitives'
-import { useBrand } from '@/features/brand/BrandProvider'
+import { useSitePage } from '@/features/content/useSitePage'
+import { ChatWidget } from '@/features/messages/ChatWidget'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import { Footer } from './Footer'
 import { Header } from './Header'
 
+/** Thanh thông báo trên cùng: Admin soạn ở /admin/pages, để trống thì ẩn */
+function AnnouncementBar() {
+  const page = useSitePage('announcement')
+  const text = isSupabaseConfigured ? (page.ready ? page.body : '') : 'Đang dùng dữ liệu mẫu (chưa kết nối Supabase): chưa đặt hàng được.'
+  if (!text) return null
+  return (
+    <div className="bg-ink text-on-ink">
+      <p className="container-page py-2 text-center text-xs tracking-wide">{text}</p>
+    </div>
+  )
+}
+
 export function AppLayout() {
   const { pathname } = useLocation()
-  const { settings } = useBrand()
 
   // Về đầu trang khi chuyển trang
   useEffect(() => {
@@ -23,12 +35,7 @@ export function AppLayout() {
       >
         Bỏ qua, đến nội dung chính
       </a>
-      <div className="bg-ink text-on-ink">
-        <p className="container-page py-2 text-center text-xs tracking-wide">
-          {settings.name} đang phát triển:{' '}
-          {isSupabaseConfigured ? 'website học tập, đơn hàng và thanh toán là mô phỏng, không có giao dịch thật.' : 'đang dùng dữ liệu mẫu (chưa kết nối Supabase), chưa có đặt hàng và thanh toán thật.'}
-        </p>
-      </div>
+      <AnnouncementBar />
       <Header />
       <main id="main" className="flex-1">
         <Suspense
@@ -42,6 +49,7 @@ export function AppLayout() {
         </Suspense>
       </main>
       <Footer />
+      <ChatWidget />
     </div>
   )
 }

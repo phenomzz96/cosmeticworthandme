@@ -6,7 +6,7 @@ import { isSupabaseConfigured, requireSupabase, supabase } from '@/lib/supabase'
 
 export interface AppNotification {
   id: number
-  kind: 'order' | 'payment' | 'refund' | 'review' | 'shop' | 'product' | 'system'
+  kind: 'order' | 'payment' | 'refund' | 'review' | 'shop' | 'product' | 'system' | 'message'
   title: string
   body: string
   link: string | null

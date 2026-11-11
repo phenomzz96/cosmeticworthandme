@@ -56,6 +56,9 @@ export function AccountPage() {
           <Link to="/notifications" className={button('secondary', 'sm')}>
             Thông báo
           </Link>
+          <Link to="/messages" className={button('secondary', 'sm')}>
+            Tin nhắn
+          </Link>
           <Link to="/seller" className={button('secondary', 'sm')}>
             {profile.role === 'seller' ? 'Kênh người bán' : 'Cửa hàng của tôi'}
           </Link>

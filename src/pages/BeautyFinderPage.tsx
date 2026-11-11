@@ -1,21 +1,36 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { button, EmptyState, ErrorState, Price, Skeleton } from '@/components/ui/primitives'
 import { concernLabels, productTypeLabels, skinTypeLabels } from '@/data/taxonomy'
-import { relaxSuggestions, scoreProducts, type FinderResult } from '@/features/beauty-finder/engine'
+import { ingredientHints, relaxSuggestions, scoreProducts, type FinderResult } from '@/features/beauty-finder/engine'
 import {
   answersFromParams,
   answersToParams,
+  audienceOptions,
+  avoidOptions,
+  bodyOptions,
   budgetOptions,
   concernOptions,
-  defaultAnswers,
+  finishOptions,
+  focusOptions,
+  hairOptions,
+  intensityOptions,
+  makeupTypeOptions,
   MAX_CONCERNS,
+  MAX_SCENTS,
   needOptions,
+  occasionOptions,
+  presetFromParams,
+  scentOptions,
   skinTypeOptions,
-  typeOptions,
+  stepLabels,
+  stepsFor,
+  textureOptions,
+  type Choice,
   type FinderAnswers,
+  type StepKey,
 } from '@/features/beauty-finder/questions'
 import { useCart } from '@/features/cart/CartProvider'
 import { routineStepOf, sortByRoutine } from '@/features/routine/routine'
@@ -23,25 +38,19 @@ import { useAsync } from '@/lib/useAsync'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { catalogService } from '@/services/catalog'
 
-const STEPS = ['Loại da', 'Mối quan tâm', 'Nhu cầu', 'Ngân sách', 'Loại sản phẩm'] as const
-
 export function BeautyFinderPage() {
   useDocumentTitle('Beauty Finder')
   const [params, setParams] = useSearchParams()
   const submitted = useMemo(() => answersFromParams(params), [params])
+  const preset = useMemo(() => presetFromParams(params), []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ?start=oily từ trang chủ: chọn sẵn loại da, vào thẳng câu 2
-  const start = params.get('start')
-  const startSkin = skinTypeOptions.find((o) => o.value === start)?.value
-
-  const [answers, setAnswers] = useState<FinderAnswers>(() =>
-    submitted ?? (startSkin ? { ...defaultAnswers, skinType: startSkin } : defaultAnswers),
-  )
-  const [step, setStep] = useState(startSkin && !submitted ? 1 : 0)
+  const [answers, setAnswers] = useState<FinderAnswers>(() => submitted ?? preset.answers)
+  const [step, setStep] = useState(submitted ? 0 : preset.step)
 
   const submit = (a: FinderAnswers) => {
     setAnswers(a)
     setParams(answersToParams(a))
+    window.scrollTo({ top: 0 })
   }
   const editAnswers = () => {
     setStep(0)
@@ -51,14 +60,14 @@ export function BeautyFinderPage() {
   return (
     <div className="container-page py-8 md:py-10">
       <header className="max-w-2xl">
-        <p className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-          <Icon name="sparkle" size={16} /> Beauty Finder
+        <p className="eyebrow inline-flex items-center gap-1.5">
+          <Icon name="sparkle" size={14} /> Beauty Finder
         </p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl">
-          {submitted ? 'Sản phẩm gợi ý cho bạn' : 'Tìm sản phẩm hợp với làn da của bạn'}
-        </h1>
+        <h1 className="mt-3 text-4xl md:text-5xl">{submitted ? 'Sản phẩm gợi ý cho bạn' : 'Tìm sản phẩm hợp với bạn'}</h1>
         {!submitted && (
-          <p className="mt-2 text-muted">5 câu hỏi ngắn. Kết quả lấy từ các sản phẩm đang bán trên sàn, kèm lý do gợi ý.</p>
+          <p className="mt-3 text-muted">
+            Vài câu hỏi ngắn cho cả nam và nữ: da mặt, trang điểm, tóc, cơ thể hoặc nước hoa. Câu hỏi đổi theo lựa chọn của bạn; kết quả lấy từ sản phẩm đang bán, kèm lý do gợi ý.
+          </p>
         )}
       </header>
 
@@ -69,9 +78,9 @@ export function BeautyFinderPage() {
       )}
 
       <p className="mt-10 max-w-3xl rounded-2xl border border-border bg-surface p-4 text-xs leading-relaxed text-muted">
-        <strong className="text-text">Lưu ý:</strong> Beauty Finder chỉ gợi ý sản phẩm dựa trên thông tin cửa hàng cung cấp (loại da phù hợp,
-        thành phần, công dụng). Đây không phải chẩn đoán y khoa và không thay thế tư vấn của bác sĩ da liễu. Với các vấn đề như mụn viêm nặng,
-        dị ứng hoặc tổn thương da kéo dài, hãy đi khám chuyên khoa.
+        <strong className="text-text">Lưu ý:</strong> Beauty Finder chỉ gợi ý sản phẩm dựa trên thông tin cửa hàng cung cấp (loại da phù hợp, thành phần, công dụng,
+        nốt hương). Loại da do bạn tự chọn; đây không phải chẩn đoán y khoa và không thay thế tư vấn của bác sĩ da liễu. Với các vấn đề như mụn viêm nặng, dị ứng
+        hoặc tổn thương da kéo dài, hãy đi khám chuyên khoa.
       </p>
     </div>
   )
@@ -87,21 +96,85 @@ interface WizardProps {
   onFinish: () => void
 }
 
-function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
-  const set = (patch: Partial<FinderAnswers>) => setAnswers({ ...answers, ...patch })
-  const isLast = step === STEPS.length - 1
+const toggle = <T,>(list: T[], v: T, max = Infinity) => (list.includes(v) ? list.filter((x) => x !== v) : list.length >= max ? list : [...list, v])
 
-  const toggle = <T,>(list: T[], v: T, max = Infinity) =>
-    list.includes(v) ? list.filter((x) => x !== v) : list.length >= max ? list : [...list, v]
+function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
+  const steps = stepsFor(answers.focus)
+  const current: StepKey = steps[Math.min(step, steps.length - 1)]
+  const isLast = step >= steps.length - 1
+  const set = (patch: Partial<FinderAnswers>) => setAnswers({ ...answers, ...patch })
+  const advance = useRef<number>(0)
+  const headingRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => () => window.clearTimeout(advance.current), [])
+  const mounted = useRef(false)
+  useEffect(() => {
+    // Chuyển câu: đưa con trỏ bàn phím / trình đọc màn hình tới câu hỏi mới (không làm ở lần mở trang đầu tiên)
+    if (mounted.current) headingRef.current?.querySelector('legend')?.focus({ preventScroll: false })
+    mounted.current = true
+  }, [step])
+
+  const next = () => (isLast ? onFinish() : setStep(step + 1))
+  /** Câu chọn 1 đáp án: chọn xong tự sang câu tiếp (người dùng không phải bấm thêm) */
+  const pickAndGo = (patch: Partial<FinderAnswers>) => {
+    const nextAnswers = { ...answers, ...patch }
+    setAnswers(nextAnswers)
+    window.clearTimeout(advance.current)
+    advance.current = window.setTimeout(() => {
+      const last = step >= stepsFor(nextAnswers.focus).length - 1
+      if (last) return
+      setStep(step + 1)
+    }, 260)
+  }
+
+  const single = <T extends string>(opts: Choice<T>[], value: T, field: keyof FinderAnswers) => (
+    <OptionGrid>
+      {opts.map((o) => (
+        <Option key={o.value} selected={value === o.value} onSelect={() => pickAndGo({ [field]: o.value } as Partial<FinderAnswers>)} hint={o.hint} type="radio">
+          {o.label}
+        </Option>
+      ))}
+    </OptionGrid>
+  )
+  const multi = <T extends string>(opts: Choice<T>[], value: T[], field: keyof FinderAnswers, max = Infinity) => (
+    <OptionGrid>
+      {opts.map((o) => {
+        const selected = value.includes(o.value)
+        return (
+          <Option
+            key={o.value}
+            selected={selected}
+            disabled={!selected && value.length >= max}
+            onSelect={() => set({ [field]: toggle(value, o.value, max) } as Partial<FinderAnswers>)}
+            hint={o.hint}
+            type="checkbox"
+          >
+            {o.label}
+          </Option>
+        )
+      })}
+    </OptionGrid>
+  )
 
   let body: ReactNode
-  switch (step) {
-    case 0:
+  let optional = false
+  let selectedCount = 0
+  switch (current) {
+    case 'audience':
+      body = <Question title="Bạn đang tìm sản phẩm cho ai?">{single(audienceOptions, answers.audience, 'audience')}</Question>
+      break
+    case 'focus':
       body = (
-        <Question title="Da của bạn thuộc loại nào?">
+        <Question title="Bạn muốn tìm nhóm sản phẩm nào?" subtitle="Câu hỏi tiếp theo sẽ đổi theo nhóm bạn chọn.">
           <OptionGrid>
-            {skinTypeOptions.map((o) => (
-              <Option key={o.value} selected={answers.skinType === o.value} onSelect={() => set({ skinType: o.value })} hint={o.hint} type="radio">
+            {focusOptions.map((o) => (
+              <Option
+                key={o.value}
+                selected={answers.focus === o.value}
+                onSelect={() => pickAndGo({ focus: o.value, types: [] })}
+                hint={o.hint}
+                type="radio"
+              >
                 {o.label}
               </Option>
             ))}
@@ -109,35 +182,33 @@ function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
         </Question>
       )
       break
-    case 1:
+    case 'skin':
+      body = (
+        <Question title="Da của bạn thuộc loại nào?" subtitle="Bạn tự chọn theo cảm nhận; chưa chắc thì chọn “Mình chưa rõ”.">
+          {single(skinTypeOptions, answers.skinType, 'skinType')}
+        </Question>
+      )
+      break
+    case 'concerns':
+      optional = true
+      selectedCount = answers.concerns.length
       body = (
         <Question title="Bạn quan tâm điều gì nhất?" subtitle={`Chọn tối đa ${MAX_CONCERNS}. Có thể bỏ qua.`}>
-          <OptionGrid>
-            {concernOptions.map((o) => {
-              const selected = answers.concerns.includes(o.value)
-              const disabled = !selected && answers.concerns.length >= MAX_CONCERNS
-              return (
-                <Option
-                  key={o.value}
-                  selected={selected}
-                  disabled={disabled}
-                  onSelect={() => set({ concerns: toggle(answers.concerns, o.value, MAX_CONCERNS) })}
-                  type="checkbox"
-                >
-                  {o.label}
-                </Option>
-              )
-            })}
-          </OptionGrid>
+          {multi(concernOptions, answers.concerns, 'concerns', MAX_CONCERNS)}
         </Question>
       )
       break
-    case 2:
+    case 'prefs':
+      optional = true
+      selectedCount = answers.avoid.length + (answers.texture !== 'any' ? 1 : 0)
       body = (
-        <Question title="Bạn đang cần gì?">
+        <Question title="Bạn muốn tránh gì, thích kết cấu nào?" subtitle="Có thể bỏ qua. Sản phẩm có hoạt chất mạnh sẽ bị loại nếu bạn chọn tránh.">
+          <p className="mb-2 text-sm font-semibold">Muốn tránh</p>
+          {multi(avoidOptions, answers.avoid, 'avoid')}
+          <p className="mb-2 mt-6 text-sm font-semibold">Kết cấu ưa thích</p>
           <OptionGrid>
-            {needOptions.map((o) => (
-              <Option key={o.value} selected={answers.need === o.value} onSelect={() => set({ need: o.value })} hint={o.hint} type="radio">
+            {textureOptions.map((o) => (
+              <Option key={o.value} selected={answers.texture === o.value} onSelect={() => set({ texture: o.value })} hint={o.hint} type="radio">
                 {o.label}
               </Option>
             ))}
@@ -145,7 +216,64 @@ function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
         </Question>
       )
       break
-    case 3:
+    case 'need':
+      body = <Question title="Bạn muốn chăm sóc da mấy bước?">{single(needOptions, answers.need, 'need')}</Question>
+      break
+    case 'finish':
+      body = <Question title="Bạn thích lớp trang điểm thế nào?">{single(finishOptions, answers.finish, 'finish')}</Question>
+      break
+    case 'makeupTypes':
+      optional = true
+      selectedCount = answers.types.length
+      body = (
+        <Question title="Bạn đang tìm sản phẩm nào?" subtitle="Có thể chọn nhiều. Không chọn = gợi ý mọi loại trang điểm.">
+          {multi(makeupTypeOptions, answers.types, 'types')}
+        </Question>
+      )
+      break
+    case 'hair':
+      optional = true
+      selectedCount = answers.hair.length
+      body = (
+        <Question title="Tóc và da đầu của bạn đang thế nào?" subtitle="Chọn những ý đúng với bạn. Có thể bỏ qua.">
+          {multi(hairOptions, answers.hair, 'hair')}
+        </Question>
+      )
+      break
+    case 'body':
+      optional = true
+      selectedCount = answers.body.length
+      body = (
+        <Question title="Bạn cần gì cho cơ thể?" subtitle="Có thể chọn nhiều.">
+          {multi(bodyOptions, answers.body, 'body')}
+        </Question>
+      )
+      break
+    case 'avoid':
+      optional = true
+      selectedCount = answers.avoid.length
+      body = (
+        <Question title="Bạn muốn tránh gì?" subtitle="Có thể bỏ qua.">
+          {multi(avoidOptions, answers.avoid, 'avoid')}
+        </Question>
+      )
+      break
+    case 'scents':
+      optional = true
+      selectedCount = answers.scents.length
+      body = (
+        <Question title="Bạn thích nhóm hương nào?" subtitle={`Chọn tối đa ${MAX_SCENTS}. Chưa biết thì bỏ qua, hệ thống gợi ý nhiều nhóm.`}>
+          {multi(scentOptions, answers.scents, 'scents', MAX_SCENTS)}
+        </Question>
+      )
+      break
+    case 'occasion':
+      body = <Question title="Bạn dùng vào dịp nào nhiều nhất?">{single(occasionOptions, answers.occasion, 'occasion')}</Question>
+      break
+    case 'intensity':
+      body = <Question title="Bạn thích mùi đậm hay nhẹ?">{single(intensityOptions, answers.intensity, 'intensity')}</Question>
+      break
+    case 'budget':
       body = (
         <Question title="Ngân sách cho mỗi sản phẩm?">
           <OptionGrid>
@@ -158,58 +286,37 @@ function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
         </Question>
       )
       break
-    default:
-      body = (
-        <Question title="Bạn muốn tìm loại sản phẩm nào?" subtitle="Có thể chọn nhiều. Không chọn = gợi ý mọi loại phù hợp.">
-          <OptionGrid>
-            {typeOptions.map((o) => (
-              <Option key={o.value} selected={answers.types.includes(o.value)} onSelect={() => set({ types: toggle(answers.types, o.value) })} type="checkbox">
-                {o.label}
-              </Option>
-            ))}
-          </OptionGrid>
-          <label className="mt-5 flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-surface p-4">
-            <input
-              type="checkbox"
-              checked={answers.fragranceFree}
-              onChange={(e) => set({ fragranceFree: e.target.checked })}
-              className="h-5 w-5 accent-[var(--primary)]"
-            />
-            <span>
-              <span className="block font-medium">Ưu tiên sản phẩm không hương liệu</span>
-              <span className="text-sm text-muted">Phù hợp nếu da bạn dễ kích ứng với mùi hương.</span>
-            </span>
-          </label>
-        </Question>
-      )
   }
+
+  const pct = Math.round(((step + 1) / steps.length) * 100)
 
   return (
     <div className="mt-8 max-w-3xl">
-      {/* Thanh tiến trình */}
       <div className="flex items-center justify-between text-sm">
         <span className="font-semibold">
-          Câu {step + 1}/{STEPS.length}: {STEPS[step]}
+          Câu {step + 1}/{steps.length}: {stepLabels[current]}
         </span>
-        <span className="text-muted">{Math.round(((step + 1) / STEPS.length) * 100)}%</span>
+        <span className="text-muted">{pct}%</span>
       </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={step + 1} aria-label="Tiến trình">
-        <div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} />
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={step + 1} aria-label="Tiến trình">
+        <div className="h-full rounded-full bg-ink transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${pct}%` }} />
       </div>
 
-      <div className="mt-7">{body}</div>
+      <div className="mt-7" ref={headingRef}>
+        {body}
+      </div>
 
       <div className="mt-8 flex items-center justify-between gap-3">
         <button type="button" className={button('ghost')} onClick={() => setStep(step - 1)} disabled={step === 0}>
           <Icon name="chevronLeft" size={18} /> Quay lại
         </button>
         {isLast ? (
-          <button type="button" className={button('primary', 'lg')} onClick={onFinish}>
+          <button type="button" className={button('dark', 'lg')} onClick={onFinish}>
             <Icon name="sparkle" size={18} /> Xem gợi ý
           </button>
         ) : (
-          <button type="button" className={button('primary', 'lg')} onClick={() => setStep(step + 1)}>
-            {step === 1 && answers.concerns.length === 0 ? 'Bỏ qua' : 'Tiếp tục'} <Icon name="chevronRight" size={18} />
+          <button type="button" className={button('dark', 'lg')} onClick={next}>
+            {optional && selectedCount === 0 ? 'Bỏ qua' : 'Tiếp tục'} <Icon name="chevronRight" size={18} />
           </button>
         )}
       </div>
@@ -220,8 +327,10 @@ function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
 function Question({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
     <fieldset>
-      <legend className="text-xl font-bold md:text-2xl">{title}</legend>
-      {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
+      <legend tabIndex={-1} className="font-display text-3xl font-semibold leading-tight outline-none md:text-4xl">
+        {title}
+      </legend>
+      {subtitle && <p className="mt-2 text-sm text-muted">{subtitle}</p>}
       <div className="mt-5">{children}</div>
     </fieldset>
   )
@@ -253,7 +362,7 @@ function Option({
       aria-checked={selected}
       disabled={disabled}
       onClick={onSelect}
-      className={`flex items-start gap-3 rounded-2xl border p-4 text-left disabled:cursor-not-allowed disabled:opacity-45 ${
+      className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none ${
         selected ? 'border-primary bg-primary-soft' : 'border-border bg-surface hover:border-primary'
       }`}
     >
@@ -277,6 +386,61 @@ function Option({
 
 const RESULT_LIMIT = 12
 
+function summaryOf(a: FinderAnswers): string[] {
+  const lab = <T extends string>(opts: Choice<T>[], v: T) => opts.find((o) => o.value === v)?.label
+  return [
+    lab(audienceOptions, a.audience),
+    lab(focusOptions, a.focus),
+    a.focus === 'fragrance' || a.focus === 'haircare' ? null : a.skinType === 'unsure' ? 'Chưa rõ loại da' : skinTypeLabels[a.skinType],
+    ...a.concerns.map((c) => concernLabels[c]),
+    a.focus === 'skincare' ? lab(needOptions, a.need) : null,
+    ...a.avoid.map((x) => `Tránh ${lab(avoidOptions, x)?.toLowerCase()}`),
+    a.texture !== 'any' ? `Kết cấu ${lab(textureOptions, a.texture)?.toLowerCase()}` : null,
+    a.finish !== 'any' ? `Lớp nền ${lab(finishOptions, a.finish)?.toLowerCase()}` : null,
+    ...a.hair.map((h) => lab(hairOptions, h)),
+    ...a.body.map((b) => lab(bodyOptions, b)),
+    ...a.scents.map((s) => `Hương ${lab(scentOptions, s)?.toLowerCase()}`),
+    a.occasion !== 'any' ? lab(occasionOptions, a.occasion) : null,
+    a.intensity !== 'any' ? `Mùi ${lab(intensityOptions, a.intensity)?.toLowerCase()}` : null,
+    lab(budgetOptions, a.budget),
+    ...a.types.map((t) => productTypeLabels[t]),
+  ].filter(Boolean) as string[]
+}
+
+/** Phân tích ngắn dựa trên câu trả lời (thông tin tham khảo khi đọc bảng thành phần) */
+function Insights({ answers }: { answers: FinderAnswers }) {
+  const items: { title: string; text: string }[] = []
+  if (answers.focus === 'skincare') {
+    for (const c of answers.concerns) items.push({ title: concernLabels[c], text: `Thành phần thường thấy trong sản phẩm hướng tới mối quan tâm này: ${ingredientHints[c]}.` })
+    if (answers.skinType === 'sensitive' || answers.avoid.includes('strong-actives'))
+      items.push({ title: 'Da nhạy cảm', text: 'Ưu tiên sản phẩm không hương liệu, ít thành phần; thử sản phẩm mới trên vùng da nhỏ trước khi dùng toàn mặt.' })
+    if (answers.concerns.includes('dark-spots') || answers.concerns.includes('dullness'))
+      items.push({ title: 'Ban ngày', text: 'Sản phẩm làm sáng da nên đi kèm kem chống nắng mỗi sáng.' })
+  }
+  if (answers.focus === 'fragrance') {
+    items.push({ title: 'Thử mùi', text: 'Xịt lên cổ tay, chờ 15–30 phút để ngửi tầng hương giữa và cuối; mùi trên da mỗi người có thể khác nhau.' })
+    if (answers.intensity === 'strong') items.push({ title: 'Mùi đậm', text: 'Chỉ cần 1–2 lần xịt; ở văn phòng hoặc nơi đông người nên dùng nhẹ tay hơn.' })
+  }
+  if (answers.focus === 'haircare' && answers.hair.includes('dry-damaged')) items.push({ title: 'Tóc khô xơ', text: 'Dầu xả, kem ủ và dầu dưỡng tập trung ở phần ngọn tóc, tránh chân tóc để không bết.' })
+  if (answers.audience === 'male' && answers.focus === 'skincare') items.push({ title: 'Cho nam', text: 'Kết quả ưu tiên sản phẩm nam và sản phẩm dùng chung; bao gồm cả đồ cạo râu, chăm sóc râu khi bạn chọn nhiều bước.' })
+  if (!items.length) return null
+  return (
+    <section className="mt-6 rounded-card border border-border bg-primary-soft p-5" aria-labelledby="insight-heading">
+      <h2 id="insight-heading" className="flex items-center gap-2 font-semibold">
+        <Icon name="leaf" size={18} className="text-primary" /> Gợi ý khi chọn sản phẩm
+      </h2>
+      <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+        {items.slice(0, 4).map((it) => (
+          <li key={it.title} className="text-sm">
+            <span className="font-semibold">{it.title}: </span>
+            <span className="text-muted">{it.text}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit: () => void; onApply: (a: FinderAnswers) => void }) {
   const products = useAsync(() => catalogService.getAllActiveProducts(), [])
   const [order, setOrder] = useState<'match' | 'routine'>('match')
@@ -285,22 +449,14 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
     () => (products.status === 'success' ? scoreProducts(products.data, answers).slice(0, RESULT_LIMIT) : []),
     [products, answers],
   )
-  const shown = order === 'routine' ? sortByRoutine(results.map((r) => ({ ...r, type: r.product.type }))) : results
-
-  const summary = [
-    answers.skinType === 'unsure' ? 'Chưa rõ loại da' : skinTypeLabels[answers.skinType],
-    ...answers.concerns.map((c) => concernLabels[c]),
-    needOptions.find((n) => n.value === answers.need)?.label,
-    budgetOptions.find((b) => b.value === answers.budget)?.label,
-    ...answers.types.map((t) => productTypeLabels[t]),
-    answers.fragranceFree ? 'Không hương liệu' : null,
-  ].filter(Boolean) as string[]
+  const routineOrder = answers.focus === 'skincare' && order === 'routine'
+  const shown = routineOrder ? sortByRoutine(results.map((r) => ({ ...r, type: r.product.type }))) : results
 
   return (
     <div className="mt-6">
       <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-4 md:flex-row md:items-center md:justify-between">
         <ul className="flex flex-wrap gap-2" aria-label="Câu trả lời của bạn">
-          {summary.map((s) => (
+          {summaryOf(answers).map((s) => (
             <li key={s} className="rounded-full bg-surface-2 px-3 py-1 text-sm">
               {s}
             </li>
@@ -311,6 +467,8 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
         </button>
       </div>
 
+      <Insights answers={answers} />
+
       {products.status === 'loading' && (
         <div className="mt-6 space-y-4">
           {[0, 1, 2].map((i) => (
@@ -318,7 +476,11 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
           ))}
         </div>
       )}
-      {products.status === 'error' && <div className="mt-6"><ErrorState /></div>}
+      {products.status === 'error' && (
+        <div className="mt-6">
+          <ErrorState />
+        </div>
+      )}
 
       {products.status === 'success' && results.length === 0 && (
         <div className="mt-6">
@@ -346,21 +508,23 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
         <>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted">
-              {results.length} sản phẩm phù hợp nhất, sắp theo {order === 'match' ? 'mức độ phù hợp' : 'thứ tự các bước chăm sóc da'}.
+              {results.length} sản phẩm phù hợp nhất, sắp theo {routineOrder ? 'thứ tự các bước chăm sóc da' : 'mức độ phù hợp'}.
             </p>
-            <div className="inline-flex rounded-full border border-border bg-surface p-1 text-sm" role="group" aria-label="Thứ tự hiển thị">
-              {(['match', 'routine'] as const).map((o) => (
-                <button
-                  key={o}
-                  type="button"
-                  aria-pressed={order === o}
-                  onClick={() => setOrder(o)}
-                  className={`rounded-full px-3 py-1.5 ${order === o ? 'bg-primary text-on-primary' : 'text-muted hover:text-text'}`}
-                >
-                  {o === 'match' ? 'Phù hợp nhất' : 'Theo chu trình'}
-                </button>
-              ))}
-            </div>
+            {answers.focus === 'skincare' && (
+              <div className="inline-flex rounded-full border border-border bg-surface p-1 text-sm" role="group" aria-label="Thứ tự hiển thị">
+                {(['match', 'routine'] as const).map((o) => (
+                  <button
+                    key={o}
+                    type="button"
+                    aria-pressed={order === o}
+                    onClick={() => setOrder(o)}
+                    className={`rounded-full px-3 py-1.5 ${order === o ? 'bg-ink text-on-ink' : 'text-muted hover:text-text'}`}
+                  >
+                    {o === 'match' ? 'Phù hợp nhất' : 'Theo các bước'}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <ol className="mt-4 grid gap-4 lg:grid-cols-2">
             {shown.map((r) => (
@@ -391,7 +555,7 @@ function ResultCard({ result }: { result: FinderResult }) {
         <div className="flex items-start justify-between gap-2">
           <p className="text-xs font-medium text-primary">
             {product.brandName}
-            {step && <span className="text-muted"> · Bước {step.order}: {step.label}</span>}
+            {step ? <span className="text-muted"> · Bước {step.order}: {step.label}</span> : <span className="text-muted"> · {productTypeLabels[product.type]}</span>}
           </p>
           <span className="shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-xs font-bold text-primary" title="Mức độ phù hợp với câu trả lời">
             {match}% phù hợp
@@ -428,7 +592,7 @@ function ResultCard({ result }: { result: FinderResult }) {
         <div className="mt-auto flex flex-wrap gap-2 pt-4">
           <button
             type="button"
-            className={button('primary', 'sm')}
+            className={button('dark', 'sm')}
             disabled={atLimit}
             onClick={() => {
               add(product.id)

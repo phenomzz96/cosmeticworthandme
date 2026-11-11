@@ -1,9 +1,10 @@
 -- =============================================================================
--- DỮ LIỆU MẪU (DEMO): 5 cửa hàng và 29 sản phẩm mỹ phẩm hư cấu.
+-- DỮ LIỆU MẪU (DEMO): 7 cửa hàng và 49 sản phẩm mỹ phẩm hư cấu.
 -- Tùy chọn: chạy SAU các migration nếu muốn website có sẵn sản phẩm để trình diễn.
 -- Cửa hàng mẫu không có chủ (owner_id = null), do Admin quản lý.
 -- Sản phẩm mẫu dùng hình minh họa (placeholder_visual) thay cho ảnh thật.
--- Chạy lại nhiều lần không bị trùng (on conflict do nothing).
+-- Chạy lại nhiều lần không bị trùng (on conflict do nothing): đã chạy bản cũ thì chạy lại file này để thêm sản phẩm mới.
+-- Cần migration 009 trở lên (danh mục Nước hoa, Nam giới).
 -- File này được sinh tự động từ src/data/mock/*.ts
 -- =============================================================================
 
@@ -12,7 +13,9 @@ insert into public.shops (id, owner_id, slug, name, tagline, description, theme_
   ('50000000-0000-0000-0000-000000000002', null, 'may-makeup-studio', 'Mây Makeup Studio', 'Trang điểm tự nhiên, màu hợp da châu Á', 'Son, nền, má hồng với bảng màu được chọn cho tông da Việt. Có hướng dẫn chọn màu theo tông da trên từng sản phẩm.', '#C25B7A', 'Hà Nội', 'active', true, 4.7, 20310, '2024-11-02'),
   ('50000000-0000-0000-0000-000000000003', null, 'toc-muot-house', 'Tóc Mượt House', 'Chăm sóc tóc từ thảo mộc', 'Dầu gội, dầu xả và dầu dưỡng chiết xuất bưởi, bồ kết, hà thủ ô. Phù hợp tóc nhuộm và tóc dễ gãy rụng.', '#7A6A3A', 'Đà Nẵng', 'active', false, 4.6, 8420, '2025-06-20'),
   ('50000000-0000-0000-0000-000000000004', null, 'body-bloom', 'Body Bloom', 'Dưỡng thể mềm mịn mỗi ngày', 'Sữa tắm, dưỡng thể và kem tay với hương thơm nhẹ, kết cấu thấm nhanh, hợp khí hậu nóng ẩm.', '#D08A4E', 'TP. Hồ Chí Minh', 'active', true, 4.7, 9650, '2025-01-08'),
-  ('50000000-0000-0000-0000-000000000005', null, 'co-cu-beauty-tools', 'Cọ & Cụ', 'Dụng cụ làm đẹp bền, dễ vệ sinh', 'Cọ trang điểm lông tổng hợp, mút tán nền và thiết bị chăm sóc da cầm tay. Bảo hành 6 tháng cho thiết bị.', '#4E5F9C', 'Cần Thơ', 'active', false, 4.5, 5120, '2025-08-15')
+  ('50000000-0000-0000-0000-000000000005', null, 'co-cu-beauty-tools', 'Cọ & Cụ', 'Dụng cụ làm đẹp bền, dễ vệ sinh', 'Cọ trang điểm lông tổng hợp, mút tán nền và thiết bị chăm sóc da cầm tay. Bảo hành 6 tháng cho thiết bị.', '#4E5F9C', 'Cần Thơ', 'active', false, 4.5, 5120, '2025-08-15'),
+  ('50000000-0000-0000-0000-000000000006', null, 'huong-lo-perfumery', 'Hương Lộ Perfumery', 'Nước hoa và hương thơm cá nhân', 'Nước hoa nữ, nam và unisex chia theo nhóm hương. Mỗi sản phẩm ghi rõ các nốt hương chính để dễ chọn mùi hợp mình.', '#8A5A7A', 'TP. Hồ Chí Minh', 'active', false, 4.7, 6830, '2025-09-02'),
+  ('50000000-0000-0000-0000-000000000007', null, 'gent-grooming', 'Gent Grooming', 'Chăm sóc gọn gàng cho phái mạnh', 'Sữa rửa mặt, dưỡng ẩm, cạo râu và chăm sóc râu với kết cấu nhẹ, mùi hương vừa phải, dùng nhanh mỗi sáng.', '#3E4C59', 'Hà Nội', 'active', false, 4.6, 4210, '2025-10-10')
 on conflict (slug) do nothing;
 
 insert into public.products (shop_id, slug, name, brand_name, category, product_type, description, price, sale_price, stock, status, size,
@@ -74,9 +77,48 @@ insert into public.products (shop_id, slug, name, brand_name, category, product_
   ('50000000-0000-0000-0000-000000000005', 'mut-tan-nen-giot-nuoc-2-cai', 'Mút tán nền giọt nước (2 cái)', 'Silk Touch', 'beauty-tools', 'sponge', 'Mút mềm, nở khi ướt, tán nền mỏng mịn và không ăn nhiều sản phẩm.', 79000, null, 300, 'active', '2 cái',
    '{}', '{}', '{}', null, null, '{"shape":"compact","color":"#F4C5D2","cap":"#E58BA6"}', 4.6, 938, 5210, false, '2026-09-03T00:00:00.000Z'),
   ('50000000-0000-0000-0000-000000000005', 'may-rua-mat-silicone-song-am', 'Máy rửa mặt silicone sóng âm', 'Silk Touch', 'beauty-tools', 'facial-device', 'Đầu silicone mềm, 3 mức rung, chống nước, sạc USB-C. Hỗ trợ bước làm sạch hằng ngày.', 549000, null, 25, 'active', '1 máy',
-   '{"normal","oily","combination"}', '{"pores","dullness"}', '{}', null, null, '{"shape":"device","color":"#D9DFF2","cap":"#4E5F9C"}', 4.4, 130, 720, false, '2026-09-02T00:00:00.000Z')
+   '{"normal","oily","combination"}', '{"pores","dullness"}', '{}', null, null, '{"shape":"device","color":"#D9DFF2","cap":"#4E5F9C"}', 4.4, 130, 720, false, '2026-09-02T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000006', 'nuoc-hoa-hoa-nhai-som-mai', 'Nước hoa Hoa Nhài Sớm Mai', 'Lộ Hương', 'fragrance', 'perfume-women', 'Nhóm hương hoa cỏ tươi sáng: mở đầu bằng cam bergamot, giữa là hoa nhài, kết thúc bằng xạ hương trắng. Hợp đi học, đi làm hằng ngày.', 790000, 690000, 35, 'active', '50 ml',
+   '{}', '{}', '{"Cam bergamot","Hoa nhài","Xạ hương trắng"}', 'Eau de Parfum', null, '{"shape":"perfume","color":"#F3D9E4","cap":"#C9A14A"}', 4.7, 74, 410, true, '2026-11-10T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000006', 'nuoc-hoa-hong-nhung-velvet', 'Nước hoa Hồng Nhung Velvet', 'Lộ Hương', 'fragrance', 'perfume-women', 'Hương hoa hồng ấm và ngọt với vani, hạnh nhân. Mùi đậm vừa, hợp buổi tối, hẹn hò hoặc tiệc.', 750000, null, 28, 'active', '50 ml',
+   '{}', '{}', '{"Hoa hồng","Vani","Hạnh nhân"}', 'Eau de Parfum', null, '{"shape":"perfume","color":"#E7A9B6","cap":"#7A2E45"}', 4.6, 47, 260, false, '2026-11-09T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000006', 'nuoc-hoa-go-tuyet-tung-dem', 'Nước hoa Gỗ Tuyết Tùng Đêm', 'Lộ Hương', 'fragrance', 'perfume-men', 'Nhóm hương gỗ ấm: tiêu đen ở tầng đầu, gỗ tuyết tùng ở giữa và hổ phách ở cuối. Mùi trầm, nam tính, hợp buổi tối và sự kiện.', 820000, null, 22, 'active', '100 ml',
+   '{}', '{}', '{"Tiêu đen","Gỗ tuyết tùng","Hổ phách"}', 'Eau de Parfum', null, '{"shape":"perfume","color":"#B9A389","cap":"#2E2A28"}', 4.8, 68, 380, true, '2026-11-08T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000006', 'nuoc-hoa-bien-xanh-citrus', 'Nước hoa Biển Xanh Citrus', 'Lộ Hương', 'fragrance', 'perfume-men', 'Hương tươi mát kiểu cam chanh và gió biển, nhẹ nhàng, dễ dùng hằng ngày, hợp thời tiết nóng và đi làm.', 590000, null, 40, 'active', '100 ml',
+   '{}', '{}', '{"Chanh vàng","Hương biển","Cỏ hương bài"}', 'Eau de Toilette', null, '{"shape":"perfume","color":"#BFDDEA","cap":"#25506B"}', 4.5, 94, 520, false, '2026-11-07T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000006', 'nuoc-hoa-tra-xanh-moc', 'Nước hoa Trà Xanh Mộc', 'Lộ Hương', 'fragrance', 'perfume-unisex', 'Hương trà xanh, gừng và xạ hương sạch sẽ, tươi mát; dùng được cho cả nam và nữ, hợp đi làm hằng ngày.', 650000, null, 30, 'active', '50 ml',
+   '{}', '{}', '{"Trà xanh","Gừng","Xạ hương"}', 'Eau de Parfum', null, '{"shape":"perfume","color":"#D5E6C8","cap":"#4F6B3A"}', 4.6, 54, 300, false, '2026-11-06T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000006', 'nuoc-hoa-tram-huong-am', 'Nước hoa Trầm Hương Ấm', 'Lộ Hương', 'fragrance', 'perfume-unisex', 'Hương gỗ trầm, hoắc hương và hổ phách đậm, lưu hương lâu hơn trên quần áo. Hợp mùa lạnh, buổi tối và tiệc.', 880000, null, 15, 'active', '50 ml',
+   '{}', '{}', '{"Trầm hương","Hoắc hương","Hổ phách"}', 'Extrait de Parfum', null, '{"shape":"perfume","color":"#C9A27E","cap":"#4A2F1E"}', 4.7, 27, 150, false, '2026-11-05T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000006', 'xit-thom-toan-than-dao-hong', 'Xịt thơm toàn thân Đào Hồng', 'Lộ Hương', 'fragrance', 'body-mist', 'Hương trái cây ngọt nhẹ từ đào, lê và chút vani. Mùi nhẹ, xịt lại nhiều lần trong ngày.', 189000, null, 80, 'active', '150 ml',
+   '{}', '{}', '{"Đào","Lê","Vani"}', 'Dạng xịt', null, '{"shape":"bottle","color":"#F8CDBF","cap":"#E07A6A"}', 4.5, 124, 690, false, '2026-11-04T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000007', 'sua-rua-mat-nam-than-tre-kiem-soat-dau', 'Sữa rửa mặt nam than tre kiểm soát dầu', 'Gent Lab', 'men', 'men-cleanser', 'Bọt dày làm sạch dầu thừa và bụi bẩn sau một ngày dài, để lại cảm giác mát nhẹ. Hợp da dầu, da hỗn hợp.', 165000, null, 90, 'active', '120 ml',
+   '{"oily","combination"}', '{"acne","pores"}', '{"Than tre","Salicylic Acid 0.5%","Bạc hà"}', 'Kem tạo bọt', null, '{"shape":"tube","color":"#3A3F44","cap":"#9DB4C0"}', 4.6, 151, 840, true, '2026-11-10T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000007', 'gel-duong-am-nam-mong-nhe', 'Gel dưỡng ẩm nam mỏng nhẹ', 'Gent Lab', 'men', 'men-moisturizer', 'Gel thấm nhanh, cấp ẩm mà không bóng nhờn, dùng sau khi rửa mặt hoặc sau cạo râu.', 235000, null, 70, 'active', '50 ml',
+   '{"oily","combination","normal"}', '{"dehydration","pores"}', '{"Niacinamide","Lô hội","Panthenol"}', 'Gel', true, '{"shape":"jar","color":"#D3DCE3","cap":"#2F3A44"}', 4.5, 101, 560, false, '2026-11-09T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000007', 'kem-duong-nam-chong-nang-spf30', 'Kem dưỡng nam chống nắng SPF30', 'Gent Lab', 'men', 'men-moisturizer', 'Dưỡng ẩm và chống nắng trong một bước cho buổi sáng bận rộn, kết cấu ráo, không để lại vệt trắng.', 279000, null, 55, 'active', '50 ml',
+   '{"normal","combination","dry"}', '{"sun-protection","dullness"}', '{"Bộ lọc UVA/UVB","Vitamin E"}', 'Kem lỏng', null, '{"shape":"pump","color":"#E2E6EA","cap":"#3E4C59"}', 4.4, 59, 330, false, '2026-11-08T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000007', 'gel-cao-rau-trong-suot-cho-da-nhay-cam', 'Gel cạo râu trong suốt cho da nhạy cảm', 'Gent Lab', 'men', 'shaving', 'Gel trong giúp nhìn rõ đường cạo, lưỡi dao trượt êm, hạn chế cảm giác rát. Không hương liệu.', 129000, null, 100, 'active', '150 ml',
+   '{"sensitive","normal","combination","dry"}', '{"redness"}', '{"Lô hội","Rau má"}', 'Gel', true, '{"shape":"tube","color":"#CFE3E8","cap":"#2F5C6B"}', 4.6, 110, 610, false, '2026-11-07T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000007', 'dau-duong-rau-huong-go', 'Dầu dưỡng râu hương gỗ', 'Gent Lab', 'men', 'beard-care', 'Vài giọt giúp râu mềm, dễ vào nếp và da dưới râu bớt khô. Mùi gỗ nhẹ.', 245000, null, 45, 'active', '30 ml',
+   '{}', '{}', '{"Dầu jojoba","Dầu argan","Tinh dầu tuyết tùng"}', 'Dầu', null, '{"shape":"dropper","color":"#C8A47A","cap":"#2E2A28"}', 4.7, 52, 290, false, '2026-11-06T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000007', 'lan-khu-mui-khoang-khong-con', 'Lăn khử mùi khoáng không cồn', 'Gent Lab', 'body-care', 'deodorant', 'Lăn khử mùi khô nhanh, không cồn, không hương liệu, dùng được cho cả nam và nữ.', 119000, null, 120, 'active', '50 ml',
+   '{"sensitive","normal","dry","oily","combination"}', '{}', '{"Khoáng phèn","Lô hội"}', 'Lăn', true, '{"shape":"bottle","color":"#E8ECEF","cap":"#5C6B78"}', 4.4, 130, 720, false, '2026-11-05T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000001', 'dung-dich-tay-te-bao-chet-aha-pha-diu-nhe', 'Dung dịch tẩy tế bào chết AHA/PHA dịu nhẹ', 'Clear Note', 'skincare', 'exfoliant', 'Tẩy tế bào chết hóa học nồng độ nhẹ giúp bề mặt da trông mịn và sáng hơn. Dùng buổi tối 2–3 lần mỗi tuần, ban ngày dùng kem chống nắng.', 285000, null, 48, 'active', '100 ml',
+   '{"normal","combination","oily"}', '{"dullness","pores"}', '{"PHA 3%","AHA 2%","Panthenol"}', 'Lỏng', true, '{"shape":"bottle","color":"#F1E7D9","cap":"#8C6E4F"}', 4.5, 74, 410, false, '2026-11-03T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000001', 'son-duong-moi-bo-hat-mo', 'Son dưỡng môi bơ hạt mỡ', 'Dịu Lab', 'skincare', 'lip-care', 'Son dưỡng không màu giúp môi mềm, giảm khô nẻ. Dùng được cho cả nam và nữ.', 69000, null, 200, 'active', '4 g',
+   '{}', '{"dehydration"}', '{"Bơ hạt mỡ","Vitamin E"}', 'Sáp mềm', true, '{"shape":"lipstick","color":"#F2D7C9","cap":"#5B8C7A"}', 4.7, 236, 1310, false, '2026-11-02T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000002', 'kem-che-khuyet-diem-mong-nhe', 'Kem che khuyết điểm mỏng nhẹ', 'Mây Cosmetics', 'makeup', 'concealer', 'Che thâm và quầng mắt ở mức vừa, lớp mỏng, ít lộ vân. Có 3 tông màu.', 179000, null, 75, 'active', '6 ml',
+   '{"normal","combination","oily"}', '{"dark-spots"}', '{"Bột khoáng"}', 'Kem lỏng', null, '{"shape":"tube","color":"#EAC9B0","cap":"#3B2A22"}', 4.5, 115, 640, false, '2026-11-03T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000002', 'bang-phan-mat-9-o-tong-nau-dat', 'Bảng phấn mắt 9 ô tông nâu đất', 'Rosé Atelier', 'makeup', 'eyeshadow', 'Gồm ô lì và ô nhũ tông nâu, cam đất, dễ phối cho trang điểm đi làm lẫn đi tiệc.', 259000, null, 40, 'active', '9 ô',
+   '{}', '{}', '{"Mica","Dầu jojoba"}', 'Phấn mịn', null, '{"shape":"compact","color":"#C99A7A","cap":"#5A3A2A"}', 4.6, 68, 380, false, '2026-11-02T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000002', 'but-ke-mat-nuoc-chong-troi', 'Bút kẻ mắt nước chống trôi', 'Mây Cosmetics', 'makeup', 'eyeliner', 'Đầu bút mảnh dễ kẻ đường mảnh hoặc sắc, khô nhanh, ít lem khi trời ẩm.', 149000, null, 90, 'active', '0.6 ml',
+   '{}', '{}', '{}', 'Mực lỏng', null, '{"shape":"tube","color":"#2B2430","cap":"#B9746A"}', 4.4, 94, 520, false, '2026-11-01T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000003', 'kem-u-toc-phuc-hoi-buoi-va-keratin', 'Kem ủ tóc phục hồi bưởi và keratin', 'Tóc Thơm', 'haircare', 'hair-mask', 'Kem ủ cho tóc khô xơ, tóc nhuộm và uốn, giúp sợi tóc mềm và bóng hơn sau 5–10 phút ủ.', 219000, null, 60, 'active', '250 ml',
+   '{}', '{}', '{"Keratin thủy phân","Tinh dầu bưởi"}', 'Kem đặc', null, '{"shape":"jar","color":"#EFE3B8","cap":"#7A6A3A"}', 4.6, 85, 470, false, '2026-11-01T00:00:00.000Z'),
+  ('50000000-0000-0000-0000-000000000004', 'muoi-tam-tay-te-bao-chet-huong-cam', 'Muối tắm tẩy tế bào chết hương cam', 'Bloom & Co', 'body-care', 'body-scrub', 'Hạt muối mịn trộn dầu dưỡng giúp da cơ thể bớt sần và mềm hơn. Dùng 1–2 lần mỗi tuần.', 159000, null, 85, 'active', '300 g',
+   '{"normal","oily","combination","dry"}', '{"dullness"}', '{"Muối biển","Tinh dầu cam","Dầu hạnh nhân"}', 'Hạt muối', null, '{"shape":"jar","color":"#F9D9B3","cap":"#D08A4E"}', 4.5, 106, 590, false, '2026-10-31T00:00:00.000Z')
 on conflict (slug) do nothing;
 
 -- Số liệu (điểm, lượt đánh giá, người theo dõi, lượt bán) luôn tính từ dữ liệu thật, không dùng số mẫu ở trên.
--- Cần migration 007 trở lên.
 select private.recompute_all_stats();

@@ -49,6 +49,28 @@
 
   --ring: #79628e;
   --shadow-color: 20 20% 25%;
+
+  /* Màu cho tranh minh họa trang chủ (hoa, bướm, chai lọ) — vẽ bằng SVG, đổi màu theo chế độ sáng/tối */
+  --art-sky-1: #f4ecf6;
+  --art-sky-2: #fbf1ea;
+  --art-petal-1: #c9b3dd;
+  --art-petal-2: #eab3c0;
+  --art-petal-3: #f6cfae;
+  --art-petal-4: #ffffff;
+  --art-heart: #c79a4b;
+  --art-leaf: #9db58e;
+  --art-leaf-2: #6f8f68;
+  --art-wing-1: #8e73b0;
+  --art-wing-2: #e59aa9;
+  --art-wing-line: #4a3654;
+  --art-glass: #fdf9fb;
+  --art-liquid-1: #d7c3ea;
+  --art-liquid-2: #f2c4cf;
+  --art-gold: #c9a14a;
+  --art-night-1: #232a33;
+  --art-night-2: #3a3240;
+  --art-steel: #9fb2c2;
+  --art-moth: #d8c3a0;
 }
 
 [data-theme='dark'] {
@@ -79,4 +101,25 @@
 
   --ring: #d5c5e7;
   --shadow-color: 330 30% 2%;
+
+  --art-sky-1: #241c29;
+  --art-sky-2: #2b2025;
+  --art-petal-1: #8f76aa;
+  --art-petal-2: #b9798a;
+  --art-petal-3: #c79a7b;
+  --art-petal-4: #e9dfe8;
+  --art-heart: #d9b97f;
+  --art-leaf: #6d8466;
+  --art-leaf-2: #50654c;
+  --art-wing-1: #b39ad6;
+  --art-wing-2: #e3a1b1;
+  --art-wing-line: #f3ece7;
+  --art-glass: #3a2f39;
+  --art-liquid-1: #7f6a9a;
+  --art-liquid-2: #a56a7c;
+  --art-gold: #d9b97f;
+  --art-night-1: #0e1216;
+  --art-night-2: #241c2a;
+  --art-steel: #a9bccb;
+  --art-moth: #e2cfac;
 }

@@ -33,15 +33,16 @@ Nếu `npm run build` báo lỗi TypeScript, gửi nguyên văn lỗi cho ngư�
 | 6 | `supabase/migrations/20261029000001_banners.sql` | Banner trang chủ |
 | 7 | `supabase/migrations/20261104000001_reviews_follows_favorites.sql` | Đánh giá sản phẩm, theo dõi shop, yêu thích; số liệu thật; loại "Tạo kiểu tóc" |
 | 8 | `supabase/migrations/20261111000001_vouchers_notifications_reports.sql` | Mã giảm giá (sàn + shop), chống đặt trùng, tự hủy đơn QR quá 24 giờ, thông báo, báo cáo đánh giá, lọc thương hiệu/điểm/còn hàng, "Cách dùng" sản phẩm |
+| 9 | `supabase/migrations/20261112000001_pages_messages_categories.sql` | Nội dung trang do Admin sửa, tin nhắn khách ↔ cửa hàng / bộ phận hỗ trợ, danh mục Nước hoa và Nam giới, thêm loại sản phẩm |
 
 Mỗi file chạy **một lần**. Báo "Success. No rows returned" là đúng.
 Nếu một file báo lỗi giữa chừng: chụp màn hình lỗi, **không** chạy tiếp file sau, không sửa file migration; báo người phụ trách database.
 
-Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 8 migration) để có 5 cửa hàng mẫu và 29 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng.
+Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 9 migration) để có 7 cửa hàng mẫu và 49 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng: project đã chạy bản cũ thì chạy lại file này để thêm 2 cửa hàng và 20 sản phẩm mới (nước hoa, đồ nam...).
 
-**Project đã chạy 7 migration trước đó** (bản đang chạy trên Netlify): chỉ cần chạy thêm file số 8, một lần, **trước khi** merge Pull Request Đợt B. Không chạy lại các file 1–7. File 8 không xóa dữ liệu cũ: đơn cũ có giảm giá = 0, sản phẩm cũ để trống "Cách dùng".
+**Project đã chạy 8 migration trước đó** (bản đang chạy trên Netlify): chỉ cần chạy thêm file số 9, một lần, **trước khi** merge Pull Request Đợt C. Không chạy lại các file 1–8. File 9 không xóa dữ liệu cũ; các trang thông tin dùng nội dung mặc định cho tới khi Admin sửa ở `/admin/pages`.
 
-(Lịch sử: project chạy 6 file trước Đợt A thì chạy file 7 rồi tới file 8.)
+(Lịch sử: Đợt A thêm file 7, Đợt B thêm file 8, Đợt C thêm file 9.)
 
 Kiểm tra nhanh trong SQL Editor:
 
@@ -51,6 +52,8 @@ select shipping_fee from public.site_settings;    -- 30000
 select count(*) from public.products where rating > 0;  -- 0 ngay sau migration 7 (chưa có đánh giá thật)
 select count(*) from public.vouchers;                    -- 0 ngay sau migration 8 (Admin/người bán tự tạo mã)
 select public.expire_overdue_orders();                   -- trả về số đơn QR quá 24 giờ vừa tự hủy (thường là 0)
+select count(*) from public.site_pages;                  -- 0 ngay sau migration 9 (website dùng nội dung mặc định)
+select count(*) from public.conversations;               -- 0 ngay sau migration 9
 ```
 
 ## 3. Cấu hình đăng nhập
@@ -125,6 +128,10 @@ Muốn người ngoài nhóm (giảng viên) đăng ký được: cấu hình SM
 | 24 | Sau bước 22: chủ shop mở chuông thông báo; xác nhận đơn; khách mở chuông | Chủ shop có "Đơn mới …", khách có "Đơn … đã được xác nhận" |
 | 25 | Khách báo cáo một đánh giá của người khác | Admin thấy ở `/admin/reviews` → "Bị khách báo cáo" kèm lý do |
 | 26 | Lọc sản phẩm theo thương hiệu, "Chỉ hiện còn hàng"; gõ tên trong ô tìm kiếm | Bộ lọc hiện thành thẻ, "Xóa tất cả" bỏ hết; ô tìm kiếm gợi ý sản phẩm, thương hiệu, lịch sử tìm |
+| 27 | Admin vào `/admin/pages` sửa thanh thông báo và một câu trong Câu hỏi thường gặp → Lưu | Trang chủ và `/faq` đổi ngay (tải lại trang); nhật ký có `page.update`; "Khôi phục mặc định" trả lại nội dung cũ |
+| 28 | Khách bấm "Nhắn tin cho shop" ở trang sản phẩm, gửi câu hỏi | Chủ shop có thông báo, thấy tin ở `/seller/messages` (thấy tên khách, không thấy email); trả lời → khách có thông báo |
+| 29 | Khách gửi câu hỏi ở trang Liên hệ | Admin thấy ở `/admin/messages`; Admin không thấy tin giữa khách và cửa hàng |
+| 30 | Người bán tạo sản phẩm danh mục "Nước hoa" hoặc "Nam giới"; rê chuột menu danh mục; kéo thanh trượt giá | Sản phẩm hiện đúng danh mục; menu thả xuống có loại sản phẩm và thương hiệu; danh sách lọc theo khoảng giá |
 
 Kiểm tra bảo mật nhanh (DevTools → Console, khi đang đăng nhập tài khoản thường, chạy ở `npm run dev`):
 

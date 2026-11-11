@@ -12,6 +12,8 @@ const tabs = [
   { to: '/admin/products', label: 'Sản phẩm' },
   { to: '/admin/reviews', label: 'Đánh giá' },
   { to: '/admin/vouchers', label: 'Mã giảm giá' },
+  { to: '/admin/messages', label: 'Hỗ trợ' },
+  { to: '/admin/pages', label: 'Nội dung trang' },
   { to: '/admin/audit', label: 'Nhật ký' },
   { to: '/admin/banners', label: 'Banner' },
   { to: '/admin/brand', label: 'Thương hiệu' },
