@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { brand, copyrightYear } from '@/config/brand'
-import { categories } from '@/data/taxonomy'
+import { Icon } from '@/components/ui/Icon'
+import { specialFeatures } from '@/config/features'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useBrand } from '@/features/brand/BrandProvider'
 import { useSitePage } from '@/features/content/useSitePage'
@@ -28,12 +29,13 @@ export function Footer() {
       <div className="container-page grid grid-cols-2 gap-10 py-12 md:grid-cols-4">
 
         <div>
-          <h2 className="eyebrow !text-muted">Danh mục</h2>
+          <h2 className="eyebrow !text-muted">Chỉ có ở {settings.name}</h2>
           <ul className="mt-4 space-y-2.5 text-sm text-text/85">
-            {categories.map((c) => (
-              <li key={c.id}>
-                <Link to={`/products?category=${c.id}`} className={linkClass}>
-                  {c.label}
+            {specialFeatures.map((f) => (
+              <li key={f.to}>
+                <Link to={f.to} className={`inline-flex items-center gap-2 ${linkClass}`}>
+                  <Icon name={f.icon} size={15} className="shrink-0 text-primary" />
+                  {f.fullName}
                 </Link>
               </li>
             ))}
@@ -43,13 +45,11 @@ export function Footer() {
         <div>
           <h2 className="eyebrow !text-muted">Mua sắm</h2>
           <ul className="mt-4 space-y-2.5 text-sm text-text/85">
+            <li><Link to="/products" className={linkClass}>Tất cả sản phẩm</Link></li>
             <li><Link to="/products?sort=newest" className={linkClass}>Hàng mới về</Link></li>
-            <li><Link to="/products?sort=popular" className={linkClass}>Bán chạy</Link></li>
             <li><Link to="/brands" className={linkClass}>Thương hiệu A–Z</Link></li>
             <li><Link to="/shops" className={linkClass}>Cửa hàng</Link></li>
-            <li><Link to="/vouchers" className={linkClass}>Ví voucher</Link></li>
-            <li><Link to="/beauty-finder" className={linkClass}>Beauty Finder</Link></li>
-            <li><Link to="/skincare-architect" className={linkClass}>Skincare Architect 3D</Link></li>
+            <li><Link to="/vouchers" className={linkClass}>Ưu đãi và ví voucher</Link></li>
           </ul>
         </div>
 

@@ -5,6 +5,7 @@ import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { button, ErrorState } from '@/components/ui/primitives'
 import { brand } from '@/config/brand'
+import { specialFeatures } from '@/config/features'
 import { useBrand } from '@/features/brand/BrandProvider'
 import { categories } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
@@ -70,6 +71,7 @@ export function HomePage() {
       <Hero />
       <CategoryMarquee />
       <TrustStrip />
+      <FeatureStrip />
       <BannerCarousel />
 
       {/* DANH MỤC */}
@@ -526,6 +528,37 @@ function TrustStrip() {
               <span className="block text-sm font-semibold">{it.title}</span>
               <span className="mt-0.5 block text-xs leading-snug text-muted">{it.text}</span>
             </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+/** Lối vào các tính năng chỉ có ở sàn (danh sách trong src/config/features.ts) */
+function FeatureStrip() {
+  const { settings } = useBrand()
+  return (
+    <section className="defer-render container-page mt-10" aria-labelledby="features-heading">
+      <h2 id="features-heading" className="eyebrow">
+        Chỉ có ở {settings.name}
+      </h2>
+      <ul className={`mt-4 grid gap-3 sm:grid-cols-2 sm:gap-4 ${specialFeatures.length > 2 ? 'lg:grid-cols-4' : ''}`}>
+        {specialFeatures.map((f) => (
+          <li key={f.to}>
+            <Link
+              to={f.to}
+              className="group flex h-full items-center gap-4 rounded-card border border-border bg-surface p-4 transition-colors hover:border-primary motion-reduce:transition-none"
+            >
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary-soft text-primary">
+                <Icon name={f.icon} size={22} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold group-hover:text-primary">{f.fullName}</span>
+                <span className="mt-0.5 block text-sm leading-snug text-muted">{f.blurb}</span>
+              </span>
+              <Icon name="arrowRight" size={18} className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-primary motion-reduce:transition-none" />
+            </Link>
           </li>
         ))}
       </ul>

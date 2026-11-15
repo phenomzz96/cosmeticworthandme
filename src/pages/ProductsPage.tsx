@@ -124,8 +124,8 @@ export function ProductsPage() {
 
   const renderFilters = (idPrefix: string) => (
     <div className="space-y-7">
-      {/* Trên máy tính, danh mục đã có ở hàng thẻ phía trên; bảng lọc trên điện thoại vẫn có */}
-      <fieldset className={idPrefix === 'd' ? 'hidden' : undefined}>
+      {/* Danh mục nằm trong bộ lọc (như các sàn lớn), không lặp thêm hàng nút phía trên */}
+      <fieldset>
         <legend className="text-sm font-semibold">Danh mục</legend>
         <div className="mt-3 flex flex-col gap-1">
           <FilterRadio name={`${idPrefix}-category`} checked={!query.category} onChange={() => update({ category: null, types: null })}>
@@ -263,23 +263,25 @@ export function ProductsPage() {
       <h1 className="mt-2 text-4xl md:text-5xl">{title}</h1>
       {category && !query.q && <p className="mt-2 max-w-2xl text-muted">{category.description}</p>}
 
-      {/* Danh mục dạng thẻ */}
-      <ScrollRow role="group" aria-label="Chọn danh mục" wrapClassName="-mx-4 mt-6 md:mx-0" className="flex gap-2 px-4 md:flex-wrap md:px-0">
-        {[{ id: null as CategoryId | null, name: 'Tất cả' }, ...categories].map((c) => {
-          const on = (query.category ?? null) === c.id
-          return (
-            <button
-              key={c.id ?? 'all'}
-              type="button"
-              aria-pressed={on}
-              onClick={() => update({ category: c.id, types: null, brand: null })}
-              className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-colors motion-reduce:transition-none ${on ? 'border-ink bg-ink text-on-ink' : 'border-border bg-surface hover:border-text'}`}
-            >
-              {c.name}
-            </button>
-          )
-        })}
-      </ScrollRow>
+      {/* Điện thoại: lối tắt tới loại sản phẩm của danh mục đang xem (máy tính đã có ở cột bộ lọc) */}
+      {availableTypes.length > 0 && (
+        <ScrollRow role="group" aria-label="Loại sản phẩm" wrapClassName="-mx-4 mt-5 lg:hidden" className="flex gap-2 px-4">
+          {availableTypes.map((t) => {
+            const on = query.types?.includes(t)
+            return (
+              <button
+                key={t}
+                type="button"
+                aria-pressed={on}
+                onClick={() => toggleType(t)}
+                className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm ${on ? 'border-primary bg-primary-soft text-primary' : 'border-border bg-surface'}`}
+              >
+                {productTypeLabels[t]}
+              </button>
+            )
+          })}
+        </ScrollRow>
+      )}
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
         <div className="min-w-0">
