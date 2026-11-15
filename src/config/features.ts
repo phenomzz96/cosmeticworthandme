@@ -15,6 +15,9 @@ export interface SpecialFeature {
   icon: IconName
 }
 
+/** Trò chơi Beauty Quest của nhóm phụ trách (website riêng, tài khoản riêng; trang đó chặn nhúng nên mở ở tab mới) */
+export const BEAUTY_QUEST_URL = 'https://beautyquest.netlify.app'
+
 export const specialFeatures: SpecialFeature[] = [
   {
     to: '/beauty-finder',
@@ -29,5 +32,12 @@ export const specialFeatures: SpecialFeature[] = [
     fullName: 'Skincare Architect 3D',
     blurb: 'Xếp chu trình chăm da theo từng bước, xem trực quan.',
     icon: 'cube',
+  },
+  {
+    to: '/beauty-quest',
+    name: 'Beauty Quest',
+    fullName: 'Beauty Quest – Hộp quà',
+    blurb: 'Chăm da mỗi ngày, mở hộp quà nhận voucher và quà tặng.',
+    icon: 'gift',
   },
 ]
