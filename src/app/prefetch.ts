@@ -19,6 +19,7 @@ export const loaders = {
   checkout: () => import('@/pages/CheckoutPage'),
   architect: () => import('@/pages/SkincareArchitectPage'),
   beautyQuest: () => import('@/pages/BeautyQuestPage'),
+  megaSale: () => import('@/pages/MegaSalePage'),
   brands: () => import('@/pages/BrandsPage'),
 }
 type Key = keyof typeof loaders
@@ -50,6 +51,8 @@ function keyFor(path: string): Key | null {
       return 'architect'
     case 'beauty-quest':
       return 'beautyQuest'
+    case 'mega-sale':
+      return 'megaSale'
     case 'brands':
       return 'brands'
     default:

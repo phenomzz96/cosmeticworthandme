@@ -13,6 +13,7 @@ const tabs = [
   { to: '/admin/products', label: 'Sản phẩm' },
   { to: '/admin/reviews', label: 'Đánh giá' },
   { to: '/admin/vouchers', label: 'Mã giảm giá' },
+  { to: '/admin/mega-sale', label: 'Mega Sale' },
   { to: '/admin/rewards', label: 'Hộp quà' },
   { to: '/admin/messages', label: 'Hỗ trợ' },
   { to: '/admin/pages', label: 'Nội dung trang' },

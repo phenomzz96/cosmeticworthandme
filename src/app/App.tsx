@@ -40,6 +40,8 @@ const ComparePage = lazyNamed(() => import('@/pages/ComparePage'), 'ComparePage'
 const VouchersPage = lazyNamed(() => import('@/pages/VouchersPage'), 'VouchersPage')
 const NotificationsPage = lazyNamed(() => import('@/pages/NotificationsPage'), 'NotificationsPage')
 const SellerVouchersPage = lazyNamed(() => import('@/pages/seller/SellerVouchersPage'), 'SellerVouchersPage')
+const SellerMegaSalePage = lazyNamed(() => import('@/pages/seller/SellerMegaSalePage'), 'SellerMegaSalePage')
+const AdminMegaSalePage = lazyNamed(() => import('@/pages/admin/AdminMegaSalePage'), 'AdminMegaSalePage')
 const AdminVouchersPage = lazyNamed(() => import('@/pages/admin/AdminVouchersPage'), 'AdminVouchersPage')
 const AdminRewardsPage = lazyNamed(() => import('@/pages/admin/AdminRewardsPage'), 'AdminRewardsPage')
 const AdminPagesPage = lazyNamed(() => import('@/pages/admin/AdminPagesPage'), 'AdminPagesPage')
@@ -49,6 +51,7 @@ const AdminMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'Admin
 const BrandsPage = lazyNamed(loaders.brands, 'BrandsPage')
 const SkincareArchitectPage = lazyNamed(loaders.architect, 'SkincareArchitectPage')
 const BeautyQuestPage = lazyNamed(loaders.beautyQuest, 'BeautyQuestPage')
+const MegaSalePage = lazyNamed(loaders.megaSale, 'MegaSalePage')
 const AboutPage = lazyNamed(() => import('@/pages/InfoPages'), 'AboutPage')
 const ContactPage = lazyNamed(() => import('@/pages/InfoPages'), 'ContactPage')
 const FaqPage = lazyNamed(() => import('@/pages/InfoPages'), 'FaqPage')
@@ -90,6 +93,7 @@ export function App() {
                   <Route path="brands" element={<BrandsPage />} />
                   <Route path="skincare-architect" element={<SkincareArchitectPage />} />
                   <Route path="beauty-quest" element={<BeautyQuestPage />} />
+                  <Route path="mega-sale" element={<MegaSalePage />} />
 
                   {/* Trang thông tin */}
                   <Route path="about" element={<AboutPage />} />
@@ -160,6 +164,7 @@ export function App() {
                     <Route path="reviews" element={<AdminReviewsPage />} />
                     <Route path="vouchers" element={<AdminVouchersPage />} />
                     <Route path="rewards" element={<AdminRewardsPage />} />
+                    <Route path="mega-sale" element={<AdminMegaSalePage />} />
                     <Route path="messages" element={<AdminMessagesPage />} />
                     <Route path="pages" element={<AdminPagesPage />} />
                     <Route path="orders" element={<AdminOrdersPage />} />
@@ -209,6 +214,7 @@ export function App() {
                     <Route path="orders" element={<SellerOrdersPage />} />
                     <Route path="reviews" element={<SellerReviewsPage />} />
                     <Route path="vouchers" element={<SellerVouchersPage />} />
+                    <Route path="mega-sale" element={<SellerMegaSalePage />} />
                     <Route path="messages" element={<SellerMessagesPage />} />
                     <Route path="shop" element={<SellerShopSettingsPage />} />
                   </Route>

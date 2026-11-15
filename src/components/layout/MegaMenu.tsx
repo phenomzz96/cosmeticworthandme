@@ -6,6 +6,7 @@ import { ScrollRow } from '@/components/ui/ScrollRow'
 import { specialFeatures } from '@/config/features'
 import { categories, productTypeLabels, typesByCategory } from '@/data/taxonomy'
 import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
+import { useOpenMegaSale } from '@/features/mega-sale/useOpenMegaSale'
 import { catalogService } from '@/services/catalog'
 import type { CategoryId, ProductVisual } from '@/types/catalog'
 
@@ -34,6 +35,7 @@ const itemClass = (active: boolean) =>
  */
 export function MegaMenu() {
   useCatalogVersion()
+  const megaSale = useOpenMegaSale()
   const location = useLocation()
   const [params] = useSearchParams()
   const currentCategory = (location.pathname === '/products' ? params.get('category') : null) as CategoryId | null
@@ -109,6 +111,12 @@ export function MegaMenu() {
         <span className="h-5 w-px shrink-0 bg-border" aria-hidden="true" />
 
         <ScrollRow as="nav" aria-label="Tính năng nổi bật" wrapClassName="min-w-0 flex-1" className="flex items-center gap-5 xl:gap-7">
+          {megaSale && (
+            <NavLink to="/mega-sale" className={({ isActive }) => `${itemClass(isActive)} !text-sale font-semibold after:!bg-sale`} onMouseEnter={hide}>
+              <Icon name="bolt" size={15} />
+              Mega Sale
+            </NavLink>
+          )}
           {specialFeatures.map((f) => (
             <NavLink key={f.to} to={f.to} className={({ isActive }) => `${itemClass(isActive)} !text-primary font-medium`} onMouseEnter={hide}>
               <Icon name={f.icon} size={15} />

@@ -6,6 +6,9 @@ import { ProductImage } from '@/components/ui/ProductImage'
 import { button, ErrorState } from '@/components/ui/primitives'
 import { brand } from '@/config/brand'
 import { specialFeatures } from '@/config/features'
+import { useOpenMegaSale } from '@/features/mega-sale/useOpenMegaSale'
+import { useCountdown } from '@/lib/useCountdown'
+import { saleState } from '@/services/megaSale'
 import { useBrand } from '@/features/brand/BrandProvider'
 import { categories } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
@@ -71,6 +74,7 @@ export function HomePage() {
       <Hero />
       <CategoryMarquee />
       <TrustStrip />
+      <MegaSaleStrip />
       <FeatureStrip />
       <BannerCarousel />
 
@@ -531,6 +535,31 @@ function TrustStrip() {
           </li>
         ))}
       </ul>
+    </section>
+  )
+}
+
+/** Dải Mega Sale: chỉ hiện khi Admin đang mở đợt sale (đang chạy hoặc sắp mở) */
+function MegaSaleStrip() {
+  const sale = useOpenMegaSale()
+  const upcoming = sale ? saleState(sale) === 'upcoming' : false
+  const cd = useCountdown(sale ? (upcoming ? sale.starts_at : sale.ends_at) : null, 30_000)
+  if (!sale) return null
+  return (
+    <section className="container-page mt-6" aria-label="Mega Sale">
+      <Link to="/mega-sale" className="group flex flex-wrap items-center gap-x-5 gap-y-2 rounded-card bg-ink px-5 py-4 text-on-ink sm:px-7">
+        <span className="flex min-w-0 items-center gap-2.5">
+          <Icon name="bolt" size={22} className="shrink-0" />
+          <span className="min-w-0">
+            <span className="block text-xs font-semibold uppercase tracking-[0.22em] opacity-80">Mega Sale</span>
+            <span className="block truncate font-display text-xl font-semibold sm:text-2xl">{sale.title}</span>
+          </span>
+        </span>
+        <span className="text-sm opacity-85">{upcoming ? `Bắt đầu sau ${cd.label}` : `Kết thúc sau ${cd.label}`}</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 text-sm font-semibold">
+          Xem deal <Icon name="arrowRight" size={16} className="transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
+        </span>
+      </Link>
     </section>
   )
 }
