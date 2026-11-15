@@ -5,7 +5,7 @@
 Bộ kiểm thử trong `supabase/tests/` chạy migration thật trên PostgreSQL 15+ với một file giả lập phần có sẵn của Supabase
 (`00_local_supabase_stub.sql`: role `anon`/`authenticated`, `auth.users`, `auth.uid()`, `storage`). Cách chạy: [supabase/README.md](../supabase/README.md).
 
-Kết quả lần chạy gần nhất (11/11/2026, PostgreSQL 16, mỗi file một database mới, đủ 10 migration):
+Kết quả lần chạy gần nhất (11/11/2026, PostgreSQL 16, mỗi file một database mới, đủ 11 migration):
 
 | File | Nội dung chính | Đạt |
 |---|---|---|
@@ -19,7 +19,8 @@ Kết quả lần chạy gần nhất (11/11/2026, PostgreSQL 16, mỗi file m�
 | `08_vouchers_notifications_reports_test.sql` | Mã giảm giá, chống đặt trùng, tự hủy đơn QR quá hạn, thông báo, báo cáo đánh giá, bộ lọc mới | 76/76 |
 | `09_pages_messages_categories_test.sql` | Nội dung trang do Admin sửa, tin nhắn khách ↔ cửa hàng / hỗ trợ, danh mục mới | 75/75 |
 | `10_skincare_routine_fields_test.sql` | Công dụng, thời điểm dùng, vùng thoa (Skincare Architect 3D): giá trị sai, shop khác, khách, khách vãng lai | 10/10 |
-| **Tổng** | | **529/529** |
+| `11_brand_palette_test.sql` | Màu chủ đạo theo logo: chỉ đổi màu mặc định cũ, lưu lịch sử, nhật ký, chạy lại an toàn, giữ màu Admin đã chọn | 7/7 |
+| **Tổng** | | **536/536** |
 
 Kiểm thử thêm (chạy tay):
 - Dữ liệu mẫu `supabase/seed/demo_catalog.sql` chạy được sau cả 10 migration và chạy lại lần 2 không trùng: 7 cửa hàng, 49 sản phẩm (18 có dữ liệu chu trình); số liệu mẫu được đưa về 0.
@@ -47,7 +48,8 @@ với một **client Supabase giả lập** mô phỏng các luật quyền chí
 | Skincare Architect 3D: handshake, đồng bộ danh mục sàn, sản phẩm đã mua (đơn hủy không tính), Beauty Finder → module không hỏi lại + bộ đề xuất vào chu trình, gợi ý mua + giỏ hàng, sáng/tối + tương phản, tách dữ liệu khi đổi tài khoản, form người bán, trang sản phẩm, mở module độc lập, tự chuyển 2D, desktop + điện thoại tối | 45/45 |
 | Đợt D: thanh tab Admin/người bán đủ chữ trên máy tính, mũi tên + tự cuộn tới tab đang chọn trên điện thoại, nhóm lọc, thanh danh mục 1024–1600px, quảng bá Skincare Architect 3D (banner, khối trang chủ, thanh danh mục, menu điện thoại), tương phản, sáng/tối | 31/31 |
 | Đợt E: tải sẵn trang khi rảnh / khi rê chuột liên kết, banner không đổi chiều cao và dừng khi khuất màn hình, Quay lại về đúng chỗ đang xem, Tiến tới / mở trang mới về đầu trang, đổi sắp xếp giữ chỗ đang xem, mở thẳng 4 trang không nhảy bố cục (CLS < 0.1), nút có hiệu ứng nhấn, trang hiện dần, giỏ báo sản phẩm ngừng bán / hết hàng / giảm số lượng (điện thoại + máy tính, sáng/tối) | 33/33 |
-| **Tổng** | **600/600** (gồm thuật toán Beauty Finder 54), không có lỗi JavaScript |
+| Đợt F: logo của nhóm (biểu tượng ở đầu trang / đăng nhập, logo đầy đủ ở chân trang, đúng bản sáng/tối, ảnh tải được, có sẵn kích thước), logo Admin tải lên thay ở chân trang, favicon + biểu tượng điện thoại, font có dấu tiếng Việt, màu theo logo, tương phản 10 cặp màu ≥ 4.5, ảnh banner tràn mép phải / gọn trên điện thoại, ảnh câu chuyện, nút "Thêm vào giỏ" trên thẻ, không kéo ngang, CLS < 0.1 (máy tính + điện thoại, sáng + tối) | 58/58 |
+| **Tổng** | **658/658** (gồm thuật toán Beauty Finder 54), không có lỗi JavaScript |
 
 Kiểm tra che chữ tự động (Đợt D): 42 trang (khách, Admin, người bán) × 5 độ rộng (390, 768, 1024, 1280, 1440px) × sáng/tối: không có trang kéo ngang, không có hàng cuộn ngang thiếu mũi tên, không có chữ bị cắt mà không có dấu "…".
 

@@ -25,6 +25,8 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-on-accent: var(--on-accent);
+  --color-blush: var(--blush);
+  --color-on-blush: var(--on-blush);
   --color-sale: var(--sale);
   --color-success: var(--success);
   --color-danger: var(--danger);
@@ -96,8 +98,8 @@
 /* Nhãn nhỏ in hoa phía trên tiêu đề mục ("DANH MỤC", "MỚI VỀ"...) */
 @utility eyebrow {
   font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
+  font-weight: 600;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--primary);
 }
@@ -108,9 +110,9 @@
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.08;
-  font-size: 2rem;
+  font-size: 2.125rem;
   @media (width >= 48rem) {
-    font-size: 2.75rem;
+    font-size: 2.875rem;
   }
 }
 
@@ -198,6 +200,15 @@
   to { opacity: 1; transform: none; }
 }
 .hero-in { animation: hero-in 600ms ease both; }
+
+/* Ảnh banner trang 1 trên máy tính: mờ dần sang trái để chữ luôn dễ đọc; chế độ tối giảm sáng */
+@media (width >= 64rem) {
+  .hero-photo {
+    -webkit-mask-image: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.25) 22%, rgb(0 0 0 / 0.8) 42%, #000 58%);
+    mask-image: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.25) 22%, rgb(0 0 0 / 0.8) 42%, #000 58%);
+  }
+}
+[data-theme='dark'] .hero-photo { filter: brightness(0.62) saturate(0.9); }
 
 /* Chuyển trang: nội dung mới hiện dần (chỉ đổi độ mờ, không dùng transform để không ảnh hưởng phần tử cố định) */
 @keyframes page-in {

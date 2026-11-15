@@ -258,7 +258,7 @@ export function Header() {
           <Icon name={menuOpen ? 'x' : 'menu'} />
         </button>
 
-        <Logo height={34} />
+        <Logo variant="mark" height={40} compactName />
 
         <div className="hidden flex-1 md:block md:max-w-lg">
           <SearchForm id="search-desktop" />

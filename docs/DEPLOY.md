@@ -35,17 +35,20 @@ Nếu `npm run build` báo lỗi TypeScript, gửi nguyên văn lỗi cho ngư�
 | 8 | `supabase/migrations/20261111000001_vouchers_notifications_reports.sql` | Mã giảm giá (sàn + shop), chống đặt trùng, tự hủy đơn QR quá 24 giờ, thông báo, báo cáo đánh giá, lọc thương hiệu/điểm/còn hàng, "Cách dùng" sản phẩm |
 | 9 | `supabase/migrations/20261112000001_pages_messages_categories.sql` | Nội dung trang do Admin sửa, tin nhắn khách ↔ cửa hàng / bộ phận hỗ trợ, danh mục Nước hoa và Nam giới, thêm loại sản phẩm |
 | 10 | `supabase/migrations/20261113000001_skincare_routine_fields.sql` | Công dụng, thời điểm dùng, vùng thoa của sản phẩm (dữ liệu chung cho Beauty Finder và Skincare Architect 3D) |
+| 11 | `supabase/migrations/20261116000001_brand_palette.sql` | Màu chủ đạo mặc định theo logo (đỏ rượu vang `#7d2232`); chỉ đổi khi Admin chưa từng chọn màu, lưu lịch sử + nhật ký |
 
 Mỗi file chạy **một lần**. Báo "Success. No rows returned" là đúng.
 Nếu một file báo lỗi giữa chừng: chụp màn hình lỗi, **không** chạy tiếp file sau, không sửa file migration; báo người phụ trách database.
 
-Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 10 migration) để có 7 cửa hàng mẫu và 49 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng: project đã chạy bản cũ thì chạy lại file này để thêm 2 cửa hàng và 20 sản phẩm mới (nước hoa, đồ nam...).
+Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 11 migration) để có 7 cửa hàng mẫu và 49 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng: project đã chạy bản cũ thì chạy lại file này để thêm 2 cửa hàng và 20 sản phẩm mới (nước hoa, đồ nam...).
 
 **Project đã chạy 8 migration trước đó** (bản đang chạy trên Netlify): chỉ cần chạy thêm file số 9, một lần, **trước khi** merge Pull Request Đợt C. Không chạy lại các file 1–8. File 9 không xóa dữ liệu cũ; các trang thông tin dùng nội dung mặc định cho tới khi Admin sửa ở `/admin/pages`.
 
 **Project đã chạy 9 migration** (sau Đợt C): chạy thêm file số 10, một lần, **trước khi** merge Pull Request Skincare Architect 3D, rồi chạy lại `supabase/seed/demo_catalog.sql` để 18 sản phẩm mẫu có dữ liệu chu trình (không đè dữ liệu người bán đã nhập). File 10 chỉ thêm cột, không xóa dữ liệu.
 
-(Lịch sử: Đợt A thêm file 7, Đợt B thêm file 8, Đợt C thêm file 9, Skincare Architect 3D thêm file 10.)
+**Project đã chạy 10 migration** (sau Skincare Architect 3D): chạy thêm file số 11 trước khi merge Pull Request giao diện mới. File 11 chỉ đổi màu chủ đạo khi vẫn còn màu tím mặc định cũ; Admin đã tự chọn màu thì giữ nguyên. Khôi phục: `/admin/brand` → Lịch sử.
+
+(Lịch sử: Đợt A thêm file 7, Đợt B thêm file 8, Đợt C thêm file 9, Skincare Architect 3D thêm file 10, giao diện theo logo thêm file 11.)
 
 Kiểm tra nhanh trong SQL Editor:
 

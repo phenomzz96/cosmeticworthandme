@@ -39,7 +39,7 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <AuthCard title="Quên mật khẩu" subtitle="Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu." logo={<Logo height={36} asLink={false} />}>
+    <AuthCard title="Quên mật khẩu" subtitle="Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu." logo={<Logo variant="mark" height={48} asLink={false} />}>
       <div className="space-y-4">
         {sent ? (
           // Cùng một thông báo dù email có tồn tại hay không, để không lộ ai đã đăng ký
@@ -88,7 +88,7 @@ export function ResetPasswordPage() {
   }
   if (status === 'signed-out') {
     return (
-      <AuthCard title="Liên kết không còn hiệu lực" logo={<Logo height={36} asLink={false} />}>
+      <AuthCard title="Liên kết không còn hiệu lực" logo={<Logo variant="mark" height={48} asLink={false} />}>
         <div className="space-y-4">
           <Alert kind="error">Liên kết đặt lại mật khẩu đã hết hạn hoặc đã được dùng. Hãy yêu cầu liên kết mới.</Alert>
           <Link to="/forgot-password" className={`${button('primary', 'lg')} w-full`}>
@@ -119,7 +119,7 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <AuthCard title="Đặt mật khẩu mới" logo={<Logo height={36} asLink={false} />}>
+    <AuthCard title="Đặt mật khẩu mới" logo={<Logo variant="mark" height={48} asLink={false} />}>
       <div className="space-y-4">
         {formError && <Alert kind="error">{formError}</Alert>}
         <form className="space-y-4" onSubmit={submit} noValidate>

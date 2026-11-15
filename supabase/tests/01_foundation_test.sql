@@ -107,7 +107,8 @@ commit;
 
 select tests.check(primary_color = '#aa3366' and shipping_fee = 25000 and logo_light_path = 'logo-light/logo-1.png',
   'Cài đặt được lưu trong database (mọi thiết bị đọc cùng một nơi)') from public.site_settings;
-select tests.check(count(*) = 1, 'Mỗi lần lưu tạo một bản lịch sử để khôi phục') from public.site_settings_history;
+-- (đếm bản do Admin lưu: migration 011 có thể đã thêm 1 bản lịch sử khi đổi màu mặc định)
+select tests.check(count(*) = 1, 'Mỗi lần lưu tạo một bản lịch sử để khôi phục') from public.site_settings_history where changed_by = '00000000-0000-0000-0000-0000000000ad';
 select tests.check(count(*) = 1, 'Lưu cài đặt được ghi audit log kèm người thực hiện')
   from public.audit_logs where action = 'site_settings.update' and actor_id = '00000000-0000-0000-0000-0000000000ad';
 
@@ -122,9 +123,9 @@ begin;
 set local role authenticated;
 set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000ad';
 select tests.check(
-  (public.restore_site_settings((select min(id) from public.site_settings_history))).primary_color = '#79628e',
+  (public.restore_site_settings((select min(id) from public.site_settings_history where changed_by = '00000000-0000-0000-0000-0000000000ad'))).primary_color = (select snapshot ->> 'primary_color' from public.site_settings_history where changed_by = '00000000-0000-0000-0000-0000000000ad' order by id limit 1),
   'Khôi phục về phiên bản trước thành công');
-select tests.check(count(*) = 2, 'Khôi phục cũng lưu bản hiện tại vào lịch sử') from public.site_settings_history;
+select tests.check(count(*) = 2, 'Khôi phục cũng lưu bản hiện tại vào lịch sử') from public.site_settings_history where changed_by = '00000000-0000-0000-0000-0000000000ad';
 select tests.throws($q$select public.restore_site_settings(99999)$q$, 'P0002', 'Khôi phục phiên bản không tồn tại bị từ chối');
 commit;
 

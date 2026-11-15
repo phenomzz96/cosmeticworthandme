@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { button, ErrorState } from '@/components/ui/primitives'
+import { brand } from '@/config/brand'
 import { useBrand } from '@/features/brand/BrandProvider'
 import { categories } from '@/data/taxonomy'
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductCard'
@@ -18,7 +19,7 @@ import { useAsync } from '@/lib/useAsync'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
 import { catalogService } from '@/services/catalog'
 import { reviewService } from '@/services/reviews'
-import type { CategoryId, Product, ProductVisual } from '@/types/catalog'
+import type { CategoryId, ProductVisual } from '@/types/catalog'
 
 /** Hình minh họa đại diện cho từng danh mục (vẽ bằng SVG, không dùng ảnh của bên khác). Mã màu là màu bao bì minh họa, cùng loại với dữ liệu mẫu, không phải màu giao diện. */
 const categoryVisual: Record<CategoryId, ProductVisual> = {
@@ -118,8 +119,18 @@ export function HomePage() {
 
       {/* VỀ SÀN — số liệu thật */}
       <section className="defer-render container-page mt-20" aria-labelledby="story-heading">
-        <div className="grid overflow-hidden rounded-[28px] bg-primary-soft lg:grid-cols-2">
-          <StoryCollage products={featured.status === 'success' ? featured.data : []} />
+        <div className="grid overflow-hidden rounded-[32px] bg-blush text-on-blush lg:grid-cols-2">
+          <img
+            src="/images/home/story-hoa-820.webp"
+            srcSet="/images/home/story-hoa-520.webp 520w, /images/home/story-hoa-820.webp 820w"
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            width={820}
+            height={743}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-72 w-full object-cover sm:h-96 lg:h-full lg:min-h-[460px] dark:brightness-[.8]"
+          />
           <div className="p-7 sm:p-12">
             <p className="eyebrow">Về {settings.name}</p>
             <h2 id="story-heading" className="section-title mt-3 max-w-md">
@@ -129,7 +140,7 @@ export function HomePage() {
               Mỗi cửa hàng được quản trị viên duyệt trước khi bán. Giá, tồn kho và phí giao hàng được máy chủ kiểm tra lại khi đặt hàng; đánh giá chỉ
               đến từ khách đã nhận hàng.
             </p>
-            <dl className="mt-8 grid grid-cols-3 gap-4 border-t border-border pt-6">
+            <dl className="mt-8 grid grid-cols-3 gap-4 border-t border-on-blush/15 pt-6">
               {[
                 { label: 'Cửa hàng đang bán', value: stats.status === 'success' ? stats.data.shops : null },
                 { label: 'Sản phẩm', value: stats.status === 'success' ? stats.data.products : null },
@@ -224,16 +235,32 @@ export function HomePage() {
   )
 }
 
-const heroSlides = [
+/** Ảnh trang 1 của banner (từ bản thiết kế "Hoa mộc" của nhóm), 2 cỡ để điện thoại tải ảnh nhỏ */
+const HERO_PHOTO = { src: '/images/home/hero-hoa-1300.webp', srcSet: '/images/home/hero-hoa-760.webp 760w, /images/home/hero-hoa-1300.webp 1300w', width: 1300, height: 943 }
+
+type HeroSlide = {
+  key: string
+  eyebrow: string
+  title: string
+  accent: string
+  text: (name: string) => string
+  primary: { to: string; label: string }
+  secondary: { to: string; label: string }
+  Art: typeof BloomArt
+  photo?: typeof HERO_PHOTO
+}
+
+const heroSlides: HeroSlide[] = [
   {
     key: 'nang',
-    eyebrow: 'Skincare · Makeup · Nước hoa',
+    eyebrow: brand.slogan ?? 'Skincare · Makeup · Nước hoa',
     title: 'Chọn đúng mỹ phẩm,',
     accent: 'đẹp theo cách của bạn.',
     text: (name: string) => `${name} gom skincare, makeup, nước hoa và đồ chăm sóc cho cả nàng lẫn chàng từ nhiều cửa hàng về một nơi.`,
     primary: { to: '/products', label: 'Mua sắm ngay' },
     secondary: { to: '/beauty-finder', label: 'Bắt đầu Beauty Finder' },
     Art: BloomArt,
+    photo: HERO_PHOTO,
   },
   {
     key: 'architect',
@@ -318,8 +345,9 @@ function Hero() {
         className="pointer-events-none absolute -right-32 top-0 h-[38rem] w-[38rem] rounded-full opacity-70"
         style={{ background: 'radial-gradient(circle, var(--primary-soft) 0%, var(--accent-soft) 40%, transparent 68%)' }}
       />
-      <div className="container-page relative grid items-center gap-8 py-10 md:py-14 lg:grid-cols-[1fr_1fr] lg:gap-12 lg:py-16">
-        <div>
+      {/* Không đặt relative ở lưới: ảnh trang 1 (máy tính) định vị theo cả banner, tràn sát mép phải */}
+      <div className="container-page grid items-center gap-8 py-10 md:py-14 lg:grid-cols-[1fr_1fr] lg:gap-12 lg:py-20">
+        <div className="relative z-10">
           {/* Mọi trang chữ xếp chồng trong cùng một ô: chiều cao bằng trang dài nhất, đổi trang không làm phần dưới nhảy */}
           <div className="grid">
             {heroSlides.map((s, i) => (
@@ -369,8 +397,24 @@ function Hero() {
           </div>
         </div>
 
-        <div key={`art-${slide.key}`} className="hero-in relative mx-auto aspect-square w-full max-w-[560px]">
-          <slide.Art className="h-full w-full" />
+        {/* Ô tranh luôn giữ chỗ vuông → đổi trang không đổi chiều cao. Trang có ảnh: điện thoại hiện ảnh vòm trong ô,
+            máy tính hiện ảnh tràn nửa phải banner, mờ dần sang trái (hiệu ứng chỉ đổi độ mờ để ảnh định vị theo cả banner). */}
+        <div key={`art-${slide.key}`} className={`${slide.photo ? 'page-in' : 'hero-in'} mx-auto aspect-square w-full max-w-[560px] max-lg:relative`}>
+          {slide.photo ? (
+            <img
+              src={slide.photo.src}
+              srcSet={slide.photo.srcSet}
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              width={slide.photo.width}
+              height={slide.photo.height}
+              alt=""
+              fetchPriority="high"
+              decoding="async"
+              className="hero-photo h-full w-full rounded-t-[999px] rounded-b-[28px] object-cover lg:absolute lg:inset-y-0 lg:right-0 lg:h-full lg:w-[60%] lg:rounded-none"
+            />
+          ) : (
+            <slide.Art className="h-full w-full" />
+          )}
         </div>
       </div>
     </section>
@@ -473,8 +517,8 @@ function TrustStrip() {
     { icon: 'truck' as const, title: 'Thanh toán khi nhận', text: 'Hỗ trợ COD, theo dõi đơn từng bước' },
   ]
   return (
-    <section className="defer-render border-y border-border bg-surface/70" aria-label="Cam kết của sàn">
-      <ul className="container-page grid grid-cols-2 gap-x-4 gap-y-6 py-7 lg:grid-cols-4">
+    <section className="defer-render container-page mt-6" aria-label="Cam kết của sàn">
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-6 rounded-card border border-border bg-surface px-5 py-6 shadow-card sm:px-7 lg:grid-cols-4">
         {items.map((it) => (
           <li key={it.title} className="flex items-start gap-3">
             <Icon name={it.icon} size={22} className="mt-0.5 shrink-0 text-primary" />
@@ -486,19 +530,6 @@ function TrustStrip() {
         ))}
       </ul>
     </section>
-  )
-}
-
-function StoryCollage({ products }: { products: Product[] }) {
-  const list = [...products.filter((p) => p.images.length), ...products.filter((p) => !p.images.length)].slice(0, 4)
-  return (
-    <div className="grid min-h-72 grid-cols-2 gap-2 p-2 sm:min-h-96" aria-hidden="true">
-      {[0, 1, 2, 3].map((i) => (
-        <div key={i} className={`overflow-hidden bg-surface-2 ${['rounded-tl-[22px]', 'rounded-tr-[22px] lg:rounded-tr-none', 'rounded-bl-[22px]', 'rounded-br-[22px] lg:rounded-br-none'][i]}`}>
-          {list[i] && <ProductImage product={list[i]} />}
-        </div>
-      ))}
-    </div>
   )
 }
 

@@ -94,17 +94,42 @@ function useScrollMemory() {
       return
     }
     const target = readScroll()[key] ?? 0
-    // Nội dung có thể chưa tải xong: thử lại tới khi trang đủ cao (tối đa 2 giây)
+    // Nội dung có thể chưa tải xong và còn cao thêm (ảnh, danh sách): giữ đúng vị trí trong tối đa 2 giây,
+    // dừng ngay khi người dùng tự cuộn / chạm / bấm phím
     const start = performance.now()
     let frame = 0
-    const tryRestore = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight
-      window.scrollTo({ top: Math.min(target, Math.max(0, max)), behavior: 'instant' })
-      lastY.current = window.scrollY
-      if (max < target && performance.now() - start < 2000) frame = requestAnimationFrame(tryRestore)
+    let stopped = false
+    const stop = () => {
+      stopped = true
     }
+    // Tắt "neo cuộn" của trình duyệt trong lúc khôi phục: nội dung phía trên cao thêm sẽ không đẩy trang đi chỗ khác
+    const root = document.documentElement
+    root.style.overflowAnchor = 'none'
+    const tryRestore = () => {
+      if (stopped || performance.now() - start >= 2000) {
+        root.style.overflowAnchor = ''
+        return
+      }
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      const want = Math.min(target, Math.max(0, max))
+      if (Math.abs(window.scrollY - want) > 2) window.scrollTo({ top: want, behavior: 'instant' })
+      lastY.current = window.scrollY
+      frame = requestAnimationFrame(tryRestore)
+    }
+    const opts = { passive: true, once: true } as const
+    window.addEventListener('wheel', stop, opts)
+    window.addEventListener('touchstart', stop, opts)
+    window.addEventListener('keydown', stop, { once: true })
+    window.addEventListener('pointerdown', stop, opts)
     tryRestore()
-    return () => cancelAnimationFrame(frame)
+    return () => {
+      cancelAnimationFrame(frame)
+      root.style.overflowAnchor = ''
+      window.removeEventListener('wheel', stop)
+      window.removeEventListener('touchstart', stop)
+      window.removeEventListener('keydown', stop)
+      window.removeEventListener('pointerdown', stop)
+    }
   }, [key, pathname, hash, type])
 }
 
