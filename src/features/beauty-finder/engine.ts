@@ -22,11 +22,17 @@ import type { Product, ProductType, SkincareFunction, SkinConcern } from '@/type
 import {
   bodyOptions,
   budgetOptions,
+  defaultAnswers,
   focusTypes,
   hairOptions,
   occasionOptions,
   scentOptions,
+  ingredientOptions,
+  lifestyleOptions,
+  setBudgetOptions,
   type BodyNeed,
+  type Ingredient,
+  type Lifestyle,
   type CareNeed,
   type FinderAnswers,
   type HairConcern,
@@ -41,6 +47,8 @@ export interface FinderResult {
   match: number
   reasons: string[]
   cautions: string[]
+  /** Điểm theo từng tiêu chí (để giải thích "vì sao phù hợp") */
+  breakdown: { label: string; got: number; max: number }[]
 }
 
 export const WEIGHTS = {
@@ -70,7 +78,37 @@ export const WEIGHTS = {
   ratingFactor: 8,
   declaredFunction: 14,
   routineReady: 6,
+  ingredientEach: 12,
+  ingredientMax: 30,
+  lifestyle: 10,
+  giftable: 20,
+  giftSkinSpecific: -8,
+  giftStrongActive: -10,
+  giftStyle: 12,
 } as const
+
+/** Thành phần muốn có → từ khóa (đã bỏ dấu) trong tên, mô tả, thành phần chính */
+const ingredientKeywords: Record<Ingredient, RegExp> = {
+  niacinamide: /\bniacinamide\b/,
+  hyaluronic: /\b(hyaluronic|ha|sodium hyaluronate|axit hyaluronic)\b/,
+  ceramide: /\bceramide/,
+  'vitamin-c': /\b(vitamin c|ascorbic|ascorbyl)\b/,
+  bha: /\b(bha|salicylic)\b/,
+  retinol: /\b(retinol|retinal|retinoid|retinyl)\b/,
+  centella: /\b(rau ma|centella|cica|madecassoside)\b/,
+  peptide: /\bpeptide/,
+}
+
+/** Thói quen → loại sản phẩm / từ khóa được ưu tiên */
+const lifestyleRules: Record<Lifestyle, { types: ProductType[]; re: RegExp }> = {
+  outdoor: { types: ['sunscreen'], re: /\b(chong nang|spf|lau troi|chong nuoc|chong mo hoi)\b/ },
+  'makeup-daily': { types: ['cleanser', 'men-cleanser'], re: /\b(tay trang|lam sach sau|cleansing oil|micellar)\b/ },
+  aircon: { types: ['moisturizer', 'men-moisturizer', 'mask'], re: /\b(cap am|duong am|khoa am|hyaluronic|ceramide)\b/ },
+  active: { types: ['sunscreen', 'cleanser'], re: /\b(kiem dau|mong nhe|thoang|gel|chong mo hoi|lau troi)\b/ },
+}
+
+/** Loại sản phẩm dễ làm quà (không phụ thuộc làn da người nhận) */
+const GIFTABLE: ProductType[] = ['perfume-women', 'perfume-men', 'perfume-unisex', 'body-mist', 'lipstick', 'lip-care', 'hand-cream', 'body-lotion', 'body-wash', 'blush', 'eyeshadow', 'hair-oil', 'hair-mask']
 
 /** Vượt ngân sách tối đa bao nhiêu % vẫn được giữ lại (kèm lưu ý) */
 const BUDGET_TOLERANCE = 0.1
@@ -169,10 +207,14 @@ function textOf(p: Product): string {
   return normalizeVi([p.name, p.description, p.texture ?? '', ...p.keyIngredients].join(' ')).replace(/[^a-z0-9%]+/g, ' ')
 }
 
-export function scoreProducts(products: Product[], answers: FinderAnswers): FinderResult[] {
+export function scoreProducts(products: Product[], input: FinderAnswers): FinderResult[] {
+  // Câu trả lời cũ (đã lưu trước khi có chế độ chuyên sâu / mua quà) thiếu trường mới: dùng giá trị mặc định
+  const answers: FinderAnswers = { ...defaultAnswers, ...input }
   const budget = budgetOptions.find((b) => b.value === answers.budget)
   const allowed = focusTypes[answers.focus]
-  const skin = answers.skinType === 'unsure' ? null : answers.skinType
+  const gift = answers.mode === 'gift'
+  // Mua quà: không biết loại da người nhận → không lọc theo loại da
+  const skin = answers.skinType === 'unsure' || gift ? null : answers.skinType
   const results: FinderResult[] = []
 
   for (const p of products) {
@@ -202,8 +244,20 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
     let possible = WEIGHTS.ratingFactor
     const reasons: string[] = []
     const cautions: string[] = []
+    const breakdown: FinderResult['breakdown'] = []
     const text = textOf(p)
+    // Ghi lại điểm đạt / điểm tối đa của từng tiêu chí (chỉ tiêu chí được tính) để giải thích "vì sao phù hợp"
+    let markLabel: string | null = null
+    let ms = 0
+    let mp = 0
+    const mark = (next: string | null) => {
+      if (markLabel && possible > mp) breakdown.push({ label: markLabel, got: Math.max(0, score - ms), max: possible - mp })
+      markLabel = next
+      ms = score
+      mp = possible
+    }
 
+    mark('Dành cho ai')
     // Dành cho ai
     if (answers.audience !== 'any') {
       possible += WEIGHTS.audience
@@ -235,6 +289,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Loại da')
     // Loại da (da mặt, trang điểm, cơ thể)
     if (usesSkin) {
       possible += WEIGHTS.skinType
@@ -251,6 +306,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Mối quan tâm')
     // Mối quan tâm về da
     if (answers.focus === 'skincare' && answers.concerns.length) {
       possible += WEIGHTS.concernMax
@@ -269,8 +325,9 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Xếp được vào chu trình')
     // Đủ thông tin để Skincare Architect 3D xếp vào chu trình
-    if (answers.focus === 'skincare' && MODULE_CATEGORY[p.type]) {
+    if (answers.focus === 'skincare' && MODULE_CATEGORY[p.type] && !gift) {
       possible += WEIGHTS.routineReady
       if (isRoutineReady(p)) {
         score += WEIGHTS.routineReady
@@ -278,8 +335,9 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       } else cautions.push('Cửa hàng chưa khai báo công dụng/thời điểm dùng: chưa xếp được vào chu trình 3D')
     }
 
+    mark('Số bước chăm sóc')
     // Số bước chăm sóc
-    if (answers.focus === 'skincare') {
+    if (answers.focus === 'skincare' && !gift) {
       possible += WEIGHTS.need
       if (needTypes[answers.need].includes(p.type)) {
         score += WEIGHTS.need
@@ -288,6 +346,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Điều cần tránh')
     // Điều cần tránh
     if (answers.avoid.includes('fragrance') || (answers.skinType === 'sensitive' && answers.focus !== 'fragrance')) {
       possible += WEIGHTS.fragranceFree
@@ -310,6 +369,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Kết cấu')
     // Kết cấu
     if (answers.focus === 'skincare' && answers.texture !== 'any' && p.texture) {
       possible += WEIGHTS.texture
@@ -322,6 +382,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Lớp nền')
     // Lớp nền trang điểm
     if (answers.focus === 'makeup' && answers.finish !== 'any') {
       possible += WEIGHTS.finish
@@ -332,6 +393,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Tóc và da đầu')
     // Tóc
     if (answers.focus === 'haircare' && answers.hair.length) {
       possible += WEIGHTS.hairMax
@@ -342,6 +404,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Nhu cầu cơ thể')
     // Cơ thể
     if (answers.focus === 'body' && answers.body.length) {
       possible += WEIGHTS.bodyMax
@@ -352,6 +415,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Mùi hương')
     // Nước hoa
     if (answers.focus === 'fragrance') {
       if (answers.scents.length) {
@@ -381,6 +445,58 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark('Thành phần bạn muốn')
+    // Thành phần muốn có (chế độ chuyên sâu)
+    if (answers.ingredients.length && (answers.focus === 'skincare' || answers.focus === 'body')) {
+      possible += WEIGHTS.ingredientMax
+      const hit = answers.ingredients.filter((i) => ingredientKeywords[i].test(text))
+      if (hit.length) {
+        score += Math.min(WEIGHTS.ingredientMax, hit.length * WEIGHTS.ingredientEach)
+        reasons.push(`Có ${hit.map((i) => label(ingredientOptions, i).replace(/ \(.*\)$/, '')).join(', ')} bạn muốn`)
+      }
+    }
+
+    mark('Thói quen hằng ngày')
+    // Thói quen (chế độ chuyên sâu)
+    if (answers.lifestyle.length && (answers.focus === 'skincare' || answers.focus === 'makeup')) {
+      for (const l of answers.lifestyle) {
+        const rule = lifestyleRules[l]
+        possible += WEIGHTS.lifestyle
+        if (rule.types.includes(p.type) || rule.re.test(text)) {
+          score += WEIGHTS.lifestyle
+          reasons.push(`Hợp với thói quen: ${label(lifestyleOptions, l)}`)
+        }
+      }
+    }
+
+    mark('Phù hợp làm quà')
+    // Mua quà tặng
+    if (gift) {
+      possible += WEIGHTS.giftable
+      if (GIFTABLE.includes(p.type)) {
+        score += WEIGHTS.giftable
+        reasons.push('Dễ làm quà, không phụ thuộc làn da người nhận')
+      } else if (p.skinTypes.length > 0 && p.skinTypes.length <= 2) {
+        score += WEIGHTS.giftSkinSpecific
+        cautions.push('Chỉ hợp một số loại da: nên biết loại da người nhận trước khi tặng')
+      }
+      if (hasStrongActive) {
+        score += WEIGHTS.giftStrongActive
+        cautions.push('Có hoạt chất mạnh, không hợp làm quà nếu chưa biết làn da người nhận')
+      }
+      if (answers.giftStyle !== 'any') {
+        possible += WEIGHTS.giftStyle
+        if (answers.giftStyle === 'premium' && (p.price >= 400_000 || p.rating >= 4.6)) {
+          score += WEIGHTS.giftStyle
+          reasons.push(p.price >= 400_000 ? 'Dòng sản phẩm cao cấp, sang trọng' : 'Được khách đánh giá rất cao')
+        } else if (answers.giftStyle === 'safe' && (p.skinTypes.length === 0 || p.skinTypes.length >= 4) && !hasStrongActive) {
+          score += WEIGHTS.giftStyle
+          reasons.push('Dùng được cho hầu hết mọi người')
+        }
+      }
+    }
+
+    mark('Ngân sách')
     // Ngân sách
     if (budget && budget.value !== 'any') {
       possible += WEIGHTS.budget
@@ -393,12 +509,16 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       }
     }
 
+    mark(null)
     if (hasStrongActive) {
-      if (answers.skinType === 'sensitive') score += WEIGHTS.strongActiveForSensitive
+      if (answers.skinType === 'sensitive' && !gift) score += WEIGHTS.strongActiveForSensitive
       cautions.push('Có hoạt chất mạnh: nên thử trên vùng da nhỏ và tăng tần suất từ từ')
     }
 
-    score += Math.max(0, p.rating - 4) * WEIGHTS.ratingFactor
+    const ratingPts = Math.max(0, p.rating - 4) * WEIGHTS.ratingFactor * (gift ? 2 : 1)
+    if (gift) possible += WEIGHTS.ratingFactor
+    score += ratingPts
+    breakdown.push({ label: 'Đánh giá của khách', got: ratingPts, max: WEIGHTS.ratingFactor * (gift ? 2 : 1) })
 
     if (!reasons.length) reasons.push(p.rating > 0 ? `${productTypeLabels[p.type]} được đánh giá ${p.rating.toFixed(1)}/5` : `Thuộc nhóm ${productTypeLabels[p.type].toLowerCase()}`)
 
@@ -408,6 +528,7 @@ export function scoreProducts(products: Product[], answers: FinderAnswers): Find
       match: Math.max(5, Math.min(100, Math.round((score / possible) * 100))),
       reasons,
       cautions,
+      breakdown,
     })
   }
 
@@ -477,4 +598,54 @@ export function starterSet(results: FinderResult[], answers: FinderAnswers): Fin
       if (extra) picked.push(extra)
     }
   return picked
+}
+
+// ------------------------------------------------------------------ BỘ CHU TRÌNH TRONG NGÂN SÁCH (chế độ chuyên sâu)
+
+export interface RoutineBundle {
+  items: FinderResult[]
+  total: number
+  /** Tổng ngân sách khách chọn (null = không giới hạn) */
+  max: number | null
+  fits: boolean
+}
+
+/**
+ * Lấy bộ đề xuất cho chu trình (starterSet) rồi, nếu tổng tiền vượt ngân sách cả bộ, lần lượt đổi sản phẩm ở bước
+ * tiết kiệm được nhiều tiền nhất mà ít giảm mức phù hợp nhất sang sản phẩm rẻ hơn CÙNG bước (cùng quy tắc chọn).
+ * Không đủ tiền cho mọi bước thì bỏ bớt bước không bắt buộc (toner, serum, đặc trị) trước.
+ */
+export function routineBundle(results: FinderResult[], input: FinderAnswers): RoutineBundle {
+  const answers: FinderAnswers = { ...defaultAnswers, ...input }
+  const max = setBudgetOptions.find((o) => o.value === answers.setBudget)?.max ?? null
+  let items = starterSet(results, answers)
+  const sum = (list: FinderResult[]) => list.reduce((n, r) => n + r.product.price, 0)
+  if (max == null || sum(items) <= max) return { items, total: sum(items), max, fits: true }
+
+  const pool = results
+  const catOf = (r: FinderResult) => MODULE_CATEGORY[r.product.type]
+  for (let guard = 0; guard < 30 && sum(items) > max; guard++) {
+    let best: { i: number; alt: FinderResult; ratio: number } | null = null
+    items.forEach((cur, i) => {
+      for (const alt of pool) {
+        if (alt === cur || catOf(alt) !== catOf(cur) || alt.product.price >= cur.product.price || items.includes(alt) || !isRoutineReady(alt.product)) continue
+        // Giữ đúng quy tắc của bộ đề xuất: thay thế phải dùng được ở bước đó (bước tùy chọn cần công dụng giống)
+        const sameFns = CORE_STEPS.includes(catOf(cur) as never) || (alt.product.skincareFunctions ?? []).some((f) => (cur.product.skincareFunctions ?? []).includes(f))
+        if (!sameFns || (answers.avoid.includes('strong-actives') && activesOf(alt.product.keyIngredients).some((a) => STRONG.includes(a)))) continue
+        const saved = cur.product.price - alt.product.price
+        const lost = Math.max(1, cur.match - alt.match)
+        const ratio = saved / lost
+        if (!best || ratio > best.ratio) best = { i, alt, ratio }
+      }
+    })
+    if (!best) break
+    const b: { i: number; alt: FinderResult } = best
+    items = items.map((r, i) => (i === b.i ? b.alt : r))
+  }
+  // Vẫn vượt: bỏ bước không bắt buộc đắt nhất
+  while (sum(items) > max && items.some((r) => !CORE_STEPS.includes(catOf(r) as never))) {
+    const optional = items.filter((r) => !CORE_STEPS.includes(catOf(r) as never)).sort((a, b) => b.product.price - a.product.price)[0]
+    items = items.filter((r) => r !== optional)
+  }
+  return { items, total: sum(items), max, fits: sum(items) <= max }
 }
