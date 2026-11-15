@@ -20,8 +20,8 @@ const panelVisual: Record<CategoryId, ProductVisual> = {
 }
 
 const itemClass = (active: boolean) =>
-  `relative inline-flex items-center gap-1 whitespace-nowrap py-3 text-sm transition-colors motion-reduce:transition-none xl:text-[15px] ${
-    active ? 'text-primary' : 'text-text/80 hover:text-text'
+  `relative inline-flex items-center gap-1 whitespace-nowrap py-3 text-sm transition-colors motion-reduce:transition-none xl:text-[15px] after:absolute after:inset-x-0 after:bottom-2 after:h-[1.5px] after:origin-left after:bg-primary after:transition-transform after:duration-200 motion-reduce:after:transition-none ${
+    active ? 'text-text after:scale-x-100' : 'text-muted hover:text-text after:scale-x-0 hover:after:scale-x-100'
   }`
 
 /**

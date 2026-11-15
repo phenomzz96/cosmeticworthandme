@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { copyrightYear } from '@/config/brand'
+import { brand, copyrightYear } from '@/config/brand'
 import { categories } from '@/data/taxonomy'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useBrand } from '@/features/brand/BrandProvider'
@@ -16,16 +16,20 @@ export function Footer() {
   const about = useSitePage('footer')
 
   return (
-    <footer className="mt-24 border-t border-border bg-surface-2/60">
-      <div className="container-page grid gap-10 py-14 sm:grid-cols-2 md:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
-        <div className="space-y-4">
-          <Logo height={38} />
-          {about.ready && about.body && <p className="max-w-xs text-sm text-muted">{about.body}</p>}
+    <footer className="mt-24 border-t border-border bg-surface-2">
+      {/* Dải thương hiệu: logo đầy đủ của nhóm (có slogan) + mô tả do Admin soạn */}
+      <div className="container-page flex flex-col gap-6 border-b border-border py-10 md:flex-row md:items-center md:justify-between">
+        <Logo height={104} className="max-w-full [&_img]:max-w-full [&_img]:h-auto" />
+        <div className="max-w-md md:text-right">
+          {brand.slogan && <p className="font-display text-2xl italic leading-snug text-text sm:text-[1.7rem]">{brand.slogan}</p>}
+          {about.ready && about.body && <p className="mt-2 text-sm leading-relaxed text-muted">{about.body}</p>}
         </div>
+      </div>
+      <div className="container-page grid grid-cols-2 gap-10 py-12 md:grid-cols-4">
 
         <div>
-          <h2 className="eyebrow !text-text">Danh mục</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted">
+          <h2 className="eyebrow !text-muted">Danh mục</h2>
+          <ul className="mt-4 space-y-2.5 text-sm text-text/85">
             {categories.map((c) => (
               <li key={c.id}>
                 <Link to={`/products?category=${c.id}`} className={linkClass}>
@@ -37,8 +41,8 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="eyebrow !text-text">Mua sắm</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted">
+          <h2 className="eyebrow !text-muted">Mua sắm</h2>
+          <ul className="mt-4 space-y-2.5 text-sm text-text/85">
             <li><Link to="/products?sort=newest" className={linkClass}>Hàng mới về</Link></li>
             <li><Link to="/products?sort=popular" className={linkClass}>Bán chạy</Link></li>
             <li><Link to="/brands" className={linkClass}>Thương hiệu A–Z</Link></li>
@@ -50,8 +54,8 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="eyebrow !text-text">Hỗ trợ</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted">
+          <h2 className="eyebrow !text-muted">Hỗ trợ</h2>
+          <ul className="mt-4 space-y-2.5 text-sm text-text/85">
             <li><Link to="/faq" className={linkClass}>Câu hỏi thường gặp</Link></li>
             <li><Link to="/contact" className={linkClass}>Liên hệ</Link></li>
             <li><Link to="/policies" className={linkClass}>Chính sách</Link></li>
@@ -61,8 +65,8 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="eyebrow !text-text">Tài khoản</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted">
+          <h2 className="eyebrow !text-muted">Tài khoản</h2>
+          <ul className="mt-4 space-y-2.5 text-sm text-text/85">
             <li><Link to="/orders" className={linkClass}>Đơn hàng của tôi</Link></li>
             <li><Link to="/messages" className={linkClass}>Tin nhắn</Link></li>
             <li><Link to="/favorites" className={linkClass}>Yêu thích</Link></li>

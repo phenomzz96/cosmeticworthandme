@@ -77,7 +77,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthCard title={`Đăng nhập vào ${settings.name}`} logo={<Logo height={36} asLink={false} />}>
+    <AuthCard title={`Đăng nhập vào ${settings.name}`} logo={<Logo variant="mark" height={48} asLink={false} />}>
       <div className="space-y-4">
         {params.get('verified') && <Alert kind="success">Email đã được xác minh. Bạn có thể đăng nhập.</Alert>}
         {params.get('reset') && <Alert kind="success">Đã đổi mật khẩu. Hãy đăng nhập bằng mật khẩu mới.</Alert>}

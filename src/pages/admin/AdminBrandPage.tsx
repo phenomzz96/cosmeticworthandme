@@ -23,7 +23,7 @@ import {
 } from '@/services/siteSettings'
 
 const assetFields: { kind: BrandAssetKind; key: 'logo_light_path' | 'logo_dark_path' | 'favicon_path'; label: string; hint: string }[] = [
-  { kind: 'logo-light', key: 'logo_light_path', label: 'Logo nền sáng', hint: 'PNG/JPG/WebP, tối đa 2 MB. Nên có nền trong suốt, cao ít nhất 96 px.' },
+  { kind: 'logo-light', key: 'logo_light_path', label: 'Logo nền sáng', hint: 'Logo đầy đủ ở chân trang và trang giới thiệu (đầu trang dùng biểu tượng W&M + tên thương hiệu). PNG/JPG/WebP, tối đa 2 MB, nền trong suốt. Bỏ trống: dùng logo nhóm đã cung cấp.' },
   { kind: 'logo-dark', key: 'logo_dark_path', label: 'Logo nền tối', hint: 'Không bắt buộc. Bỏ trống thì dùng logo nền sáng (có nền trắng phía sau ở chế độ tối).' },
   { kind: 'favicon', key: 'favicon_path', label: 'Favicon', hint: 'Ảnh vuông, PNG 64×64 hoặc lớn hơn.' },
 ]

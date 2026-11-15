@@ -60,7 +60,7 @@ export function RegisterPage() {
 
   if (sentTo) {
     return (
-      <AuthCard title="Kiểm tra email của bạn" logo={<Logo height={36} asLink={false} />}>
+      <AuthCard title="Kiểm tra email của bạn" logo={<Logo variant="mark" height={48} asLink={false} />}>
         <div className="space-y-4">
           <Alert kind="success">
             Đã gửi email xác minh tới <strong>{sentTo}</strong>. Mở email và bấm vào liên kết để kích hoạt tài khoản, sau đó đăng nhập.
@@ -75,7 +75,7 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthCard title={`Tạo tài khoản ${settings.name}`} subtitle="Dùng để mua hàng, theo dõi đơn và mở cửa hàng." logo={<Logo height={36} asLink={false} />}>
+    <AuthCard title={`Tạo tài khoản ${settings.name}`} subtitle="Dùng để mua hàng, theo dõi đơn và mở cửa hàng." logo={<Logo variant="mark" height={48} asLink={false} />}>
       <div className="space-y-4">
         {formError && <Alert kind="error">{formError}</Alert>}
         <form className="space-y-4" onSubmit={submit} noValidate>

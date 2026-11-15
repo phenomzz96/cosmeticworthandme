@@ -135,7 +135,7 @@ Database kiểm tra toàn bộ: chỉ chủ shop sửa shop/sản phẩm/ảnh/�
 | Bảng màu nền, font chữ, bo góc (cả sáng và tối) | `src/styles/tokens.css` (đổi font: thêm thẻ link font trong `index.html`) |
 
 Ảnh logo nhận PNG/JPG/WebP tối đa 2 MB (không nhận SVG vì có thể chứa mã script).
-Chưa có logo thì website dùng **logo chữ dự phòng** sinh từ tên thương hiệu.
+Logo, biểu tượng W&M, favicon và slogan chính thức của nhóm nằm trong `public/brand/` (xem README trong thư mục): đầu trang dùng biểu tượng + tên, chân trang dùng logo đầy đủ. Admin tải logo khác ở /admin/brand thì chân trang dùng logo của Admin. Ảnh lỗi thì hiện **logo chữ dự phòng** sinh từ tên thương hiệu.
 
 ## 5. Cấu trúc thư mục
 

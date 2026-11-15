@@ -18,110 +18,121 @@
   /* Font: Be Vietnam Pro được thiết kế cho tiếng Việt, dấu rõ ở mọi cỡ chữ */
   --font-body: 'Be Vietnam Pro', ui-sans-serif, system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
   --font-display: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
-  --card-radius: 20px;
+  --card-radius: 24px;
   --control-radius: 999px;
 
-  --bg: #faf7f3;
-  --surface: #fffdfa;
-  --surface-2: #f2ebe4;
-  --border: #e7ded5;
-  --text: #2b2126;
-  --text-muted: #73646b;
+  /* 2) MÀU — bộ "Haute Care": lấy từ logo của nhóm (đỏ rượu vang #4a0d15, hồng phấn #ffd8d6, ánh vàng hồng của cánh bướm)
+   *    kết hợp nền kem ấm của bản thiết kế "Hoa mộc". */
+  --bg: #fbf6f3;
+  --surface: #fffdfc;
+  --surface-2: #f5ebe8;
+  --border: #ecdcd8;
+  --text: #2a1216;
+  --text-muted: #6f5458;
 
-  --primary: #79628e;
-  --primary-hover: #634d78;
-  --primary-soft: #efe8f4;
+  /* Màu chủ đạo: Admin đổi ở /admin/brand (BrandProvider ghi đè 4 biến này) */
+  --primary: #7d2232;
+  --primary-hover: #651a28;
+  --primary-soft: #f7e4e3;
   --on-primary: #ffffff;
 
-  /* Nút tối (nút chính ở trang chủ, thanh thông báo trên cùng) */
-  --ink: #2b2126;
-  --ink-hover: #45363d;
-  --on-ink: #faf7f3;
+  /* Nút tối, thanh thông báo trên cùng: đỏ rượu vang của logo */
+  --ink: #4a0d15;
+  --ink-hover: #631824;
+  --on-ink: #fbf6f3;
 
-  --accent: #c9a46a;
-  --accent-soft: #f6eedf;
-  --on-accent: #2e2210;
+  /* Ánh vàng hồng (cánh bướm trong logo) */
+  --accent: #b77f70;
+  --accent-soft: #f8ebe6;
+  --on-accent: #2a1216;
 
-  --sale: #a8434f;
+  /* Hồng phấn (nền logo vuông): ô danh mục, khối câu chuyện */
+  --blush: #fbe3e1;
+  --on-blush: #3b0f16;
+
+  --sale: #a2283a;
   --success: #2f7a52;
   --danger: #b3261e;
-  --star: #b98b3e;
+  --star: #b8894b;
 
-  --ring: #79628e;
-  --shadow-color: 20 20% 25%;
+  --ring: #7d2232;
+  --shadow-color: 352 30% 22%;
 
   /* Màu cho tranh minh họa trang chủ (hoa, bướm, chai lọ) — vẽ bằng SVG, đổi màu theo chế độ sáng/tối */
-  --art-sky-1: #f4ecf6;
-  --art-sky-2: #fbf1ea;
-  --art-petal-1: #c9b3dd;
-  --art-petal-2: #eab3c0;
-  --art-petal-3: #f6cfae;
+  --art-sky-1: #f9ebe8;
+  --art-sky-2: #fcf4ef;
+  --art-petal-1: #e8b4b4;
+  --art-petal-2: #f2c3c2;
+  --art-petal-3: #f5d6c3;
   --art-petal-4: #ffffff;
-  --art-heart: #c79a4b;
-  --art-leaf: #9db58e;
-  --art-leaf-2: #6f8f68;
-  --art-wing-1: #8e73b0;
-  --art-wing-2: #e59aa9;
-  --art-wing-line: #4a3654;
-  --art-glass: #fdf9fb;
-  --art-liquid-1: #d7c3ea;
-  --art-liquid-2: #f2c4cf;
-  --art-gold: #c9a14a;
-  --art-night-1: #232a33;
-  --art-night-2: #3a3240;
-  --art-steel: #9fb2c2;
-  --art-moth: #d8c3a0;
-  --art-hair: #4a3654;
+  --art-heart: #c39253;
+  --art-leaf: #a5b592;
+  --art-leaf-2: #75906b;
+  --art-wing-1: #8c2f3d;
+  --art-wing-2: #d99aa1;
+  --art-wing-line: #4a0d15;
+  --art-glass: #fffafa;
+  --art-liquid-1: #efc5c2;
+  --art-liquid-2: #f3d3c6;
+  --art-gold: #c49a5a;
+  --art-night-1: #2a0d13;
+  --art-night-2: #4a0d15;
+  --art-steel: #c9a9a3;
+  --art-moth: #e8c3b6;
+  --art-hair: #4a0d15;
 }
 
 [data-theme='dark'] {
-  --bg: #141012;
-  --surface: #1c171a;
-  --surface-2: #261f23;
-  --border: #372d32;
-  --text: #f3ece7;
-  --text-muted: #b8a9b0;
+  --bg: #160c0e;
+  --surface: #201316;
+  --surface-2: #2b1a1e;
+  --border: #3f2a2f;
+  --text: #f7ece9;
+  --text-muted: #c4abb0;
 
-  --primary: #c3aedb;
-  --primary-hover: #d5c5e7;
-  --primary-soft: #33293c;
-  --on-primary: #1d1424;
+  --primary: #eaa6b0;
+  --primary-hover: #f3c2c9;
+  --primary-soft: #3a1f25;
+  --on-primary: #2a0f14;
 
-  --ink: #f3ece7;
+  --ink: #f7ece9;
   --ink-hover: #ffffff;
-  --on-ink: #141012;
+  --on-ink: #160c0e;
 
-  --accent: #d9b97f;
-  --accent-soft: #3a3022;
-  --on-accent: #241a08;
+  --accent: #dcae9f;
+  --accent-soft: #3a2621;
+  --on-accent: #241009;
 
-  --sale: #f0939c;
+  --blush: #33191f;
+  --on-blush: #f7ece9;
+
+  --sale: #f1919e;
   --success: #6fcf97;
   --danger: #ff8a80;
-  --star: #e2bd73;
+  --star: #e0b56c;
 
-  --ring: #d5c5e7;
-  --shadow-color: 330 30% 2%;
+  --ring: #f3c2c9;
+  --shadow-color: 350 40% 2%;
 
-  --art-sky-1: #241c29;
-  --art-sky-2: #2b2025;
-  --art-petal-1: #8f76aa;
-  --art-petal-2: #b9798a;
-  --art-petal-3: #c79a7b;
-  --art-petal-4: #e9dfe8;
-  --art-heart: #d9b97f;
+  --art-sky-1: #2a161b;
+  --art-sky-2: #24151a;
+  --art-petal-1: #a86a72;
+  --art-petal-2: #c07f88;
+  --art-petal-3: #c99b84;
+  --art-petal-4: #f3e3e1;
+  --art-heart: #dcae6f;
   --art-leaf: #6d8466;
   --art-leaf-2: #50654c;
-  --art-wing-1: #b39ad6;
-  --art-wing-2: #e3a1b1;
-  --art-wing-line: #f3ece7;
-  --art-glass: #3a2f39;
-  --art-liquid-1: #7f6a9a;
-  --art-liquid-2: #a56a7c;
-  --art-gold: #d9b97f;
-  --art-night-1: #0e1216;
-  --art-night-2: #241c2a;
-  --art-steel: #a9bccb;
-  --art-moth: #e2cfac;
-  --art-hair: #5b4568;
+  --art-wing-1: #d47f8c;
+  --art-wing-2: #eab0b7;
+  --art-wing-line: #f7ece9;
+  --art-glass: #3a242a;
+  --art-liquid-1: #8e4f59;
+  --art-liquid-2: #a7716b;
+  --art-gold: #dcae6f;
+  --art-night-1: #12070a;
+  --art-night-2: #3a0f17;
+  --art-steel: #c9a9a3;
+  --art-moth: #ecc9bc;
+  --art-hair: #6b2531;
 }

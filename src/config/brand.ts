@@ -9,9 +9,9 @@
  *  nên MỌI thiết bị thấy giống nhau. Các giá trị trong file này chỉ là MẶC ĐỊNH,
  *  dùng khi chưa kết nối Supabase hoặc chưa tải xong cài đặt.
  *
+ *  Logo, biểu tượng, favicon, slogan: nhóm đã cung cấp (11/2026), file trong public/brand/.
  *  Giá trị `null` = nhóm CHƯA cung cấp. Website sẽ tự dùng bản dự phòng:
  *   - logo null    -> logo chữ tự sinh từ `brand.name`, tự đổi màu theo theme
- *   - slogan null  -> không hiển thị slogan
  *   - team.name null -> chưa có tên nhóm (chân trang không còn hiện thông tin nhóm; nội dung trang Giới thiệu do Admin sửa ở /admin/pages)
  *
  *  ĐỔI LOGO (không cần sửa file code nào khác):
@@ -32,26 +32,35 @@ export const brand = {
   shortName: 'W&M',
   /** Mô tả ngắn, dùng cho thẻ meta và chân trang. Đây là mô tả, không phải slogan. */
   description: 'Sàn mỹ phẩm và chăm sóc sắc đẹp nhiều cửa hàng.',
-  /** Slogan chính thức — CHƯA CÓ, chờ nhóm cung cấp */
-  slogan: null as string | null,
+  /** Slogan chính thức do nhóm cung cấp (in sẵn trong logo đầy đủ) */
+  slogan: 'Haute Care, Tailored for The One.' as string | null,
 
   logo: {
-    /** Logo dùng trên nền sáng (đường dẫn trong public/), null = dùng logo dự phòng */
-    light: null as string | null,
-    /** Logo dùng trên nền tối, null = dùng lại bản light */
-    dark: null as string | null,
-    /** Tỷ lệ rộng/cao của file logo thật */
-    aspectRatio: 4,
+    /**
+     * Logo đầy đủ (chữ WORTH + slogan) — chân trang, trang giới thiệu. Admin tải logo khác ở /admin/brand thì dùng bản của Admin.
+     * light: trên nền sáng; dark: bản trắng cho nền tối.
+     */
+    light: '/brand/logo-full.webp' as string | null,
+    dark: '/brand/logo-full-white.webp' as string | null,
+    /** Tỷ lệ rộng/cao của logo đầy đủ (720 x 269) */
+    aspectRatio: 2.68,
+    /** Biểu tượng W&M + cánh bướm — đầu trang, trang đăng nhập, chỗ hẹp. Đổi: thay file trong public/brand/ */
+    mark: {
+      light: '/brand/logo-mark.webp',
+      dark: '/brand/logo-mark-white.webp',
+      /** 169 x 144 */
+      aspectRatio: 1.172,
+    },
     /** Khi chỉ có 1 bản logo màu tối: thêm nền sáng phía sau ở dark mode để không bị chìm */
     darkBackdrop: true,
     alt: 'Worth & Me',
   },
 
-  /** Favicon trong public/. Bản hiện tại là chữ cái dự phòng. */
-  favicon: '/brand/favicon.svg',
+  /** Favicon (biểu tượng W&M trên nền hồng của nhóm) trong public/brand/ */
+  favicon: '/brand/favicon-48.png',
 
-  /** Màu chủ đạo mặc định (khớp giá trị mặc định trong database) */
-  primaryColor: '#79628e',
+  /** Màu chủ đạo mặc định: đỏ rượu vang lấy từ logo (Admin đổi được ở /admin/brand) */
+  primaryColor: '#7d2232',
 
   contact: {
     email: null as string | null,

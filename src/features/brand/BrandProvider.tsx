@@ -58,10 +58,12 @@ function writeCache(row: SiteSettingsRow) {
 }
 
 export function toBrandSettings(row: SiteSettingsRow): BrandSettings {
+  // Admin đã tải logo: dùng bản của Admin (bỏ trống bản tối thì dùng bản sáng). Chưa tải: logo nhóm cung cấp trong public/brand/
+  const uploaded = brandAssetUrl(row.logo_light_path)
   return {
     name: row.brand_name || brand.name,
-    logoLight: brandAssetUrl(row.logo_light_path) ?? '',
-    logoDark: brandAssetUrl(row.logo_dark_path) ?? '',
+    logoLight: uploaded ?? brand.logo.light ?? '',
+    logoDark: uploaded ? (brandAssetUrl(row.logo_dark_path) ?? '') : (brand.logo.dark ?? ''),
     favicon: brandAssetUrl(row.favicon_path) ?? brand.favicon,
     primaryColor: isValidHexColor(row.primary_color) ? row.primary_color : brand.primaryColor,
     shippingFee: row.shipping_fee,
@@ -77,8 +79,8 @@ function luminance(hex: string) {
 /** Ghi đè token màu chủ đạo cho cả 2 theme. Dark mode dùng bản sáng hơn để đọc rõ trên nền tối. */
 export function primaryColorCss(color: string) {
   const onLight = luminance(color) > 0.4 ? '#1d1420' : '#ffffff'
-  return `html[data-theme='light'],html:not([data-theme]){--primary:${color};--primary-hover:color-mix(in oklab,${color} 82%,black);--primary-soft:color-mix(in oklab,${color} 13%,#fffdfa);--on-primary:${onLight};--ring:${color};}
-html[data-theme='dark']{--primary:color-mix(in oklab,${color} 55%,white);--primary-hover:color-mix(in oklab,${color} 40%,white);--primary-soft:color-mix(in oklab,${color} 30%,#1c171a);--on-primary:#1d1420;--ring:color-mix(in oklab,${color} 45%,white);}`
+  return `html[data-theme='light'],html:not([data-theme]){--primary:${color};--primary-hover:color-mix(in oklab,${color} 82%,black);--primary-soft:color-mix(in oklab,${color} 12%,#fffdfc);--on-primary:${onLight};--ring:${color};}
+html[data-theme='dark']{--primary:color-mix(in oklab,${color} 55%,white);--primary-hover:color-mix(in oklab,${color} 40%,white);--primary-soft:color-mix(in oklab,${color} 30%,#201316);--on-primary:#1d1420;--ring:color-mix(in oklab,${color} 45%,white);}`
 }
 
 export function BrandProvider({ children }: { children: ReactNode }) {
@@ -118,7 +120,7 @@ export function BrandProvider({ children }: { children: ReactNode }) {
     const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
     if (icon) {
       icon.href = settings.favicon
-      icon.type = settings.favicon.endsWith('.svg') ? 'image/svg+xml' : ''
+      icon.type = settings.favicon.endsWith('.svg') ? 'image/svg+xml' : settings.favicon.endsWith('.png') ? 'image/png' : ''
     }
   }, [settings.primaryColor, settings.favicon])
 
