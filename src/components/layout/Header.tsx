@@ -3,7 +3,9 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { categories } from '@/data/taxonomy'
+import { specialFeatures } from '@/config/features'
 import { useAuth } from '@/features/auth/AuthProvider'
+import { useBrand } from '@/features/brand/BrandProvider'
 import { useCart } from '@/features/cart/CartProvider'
 import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
 import { ThemeToggle } from '@/features/theme/ThemeToggle'
@@ -235,6 +237,7 @@ function NotificationBell() {
 export function Header() {
   const { count } = useCart()
   const { status, profile, user, isAdmin } = useAuth()
+  const { settings } = useBrand()
   const signedIn = status === 'signed-in'
   const accountLabel = signedIn ? profile?.full_name?.trim() || user?.email?.split('@')[0] || 'Tài khoản' : 'Đăng nhập'
   const accountTo = signedIn ? '/account' : '/login'
@@ -311,28 +314,38 @@ export function Header() {
       {menuOpen && (
         <div id="mobile-menu" className="max-h-[calc(100dvh-140px)] overflow-y-auto border-t border-border bg-bg lg:hidden">
           <nav className="container-page flex flex-col gap-1 py-3" aria-label="Menu">
-            <Link to="/beauty-finder" className="flex items-center gap-2 rounded-xl px-3 py-3 font-semibold text-primary hover:bg-surface-2">
-              <Icon name="sparkle" size={18} /> Beauty Finder
-            </Link>
-            <Link to="/skincare-architect" className="flex items-center gap-2 rounded-xl px-3 py-3 font-semibold text-primary hover:bg-surface-2">
-              <Icon name="sparkle" size={18} /> Skincare Architect 3D
-            </Link>
-            <Link to="/products" className="rounded-xl px-3 py-3 hover:bg-surface-2">
-              Tất cả sản phẩm
-            </Link>
-            {categories.map((c) => (
-              <Link key={c.id} to={`/products?category=${c.id}`} className="flex items-center justify-between rounded-xl px-3 py-3 hover:bg-surface-2">
-                <span>
-                  {c.name} {c.name !== c.label && <span className="text-sm text-muted">· {c.label}</span>}
-                </span>
-                <Icon name="chevronRight" size={16} className="text-muted" />
-              </Link>
-            ))}
+            <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted">Chỉ có ở {settings.name}</p>
+            <div className="grid grid-cols-2 gap-2 px-1 pb-2">
+              {specialFeatures.map((f) => (
+                <Link key={f.to} to={f.to} className="flex items-center gap-2 rounded-xl bg-primary-soft px-3 py-3 text-sm font-semibold text-primary hover:opacity-90">
+                  <Icon name={f.icon} size={18} className="shrink-0" /> <span className="min-w-0">{f.name}</span>
+                </Link>
+              ))}
+            </div>
+            <details className="group rounded-xl">
+              <summary className="flex cursor-pointer list-none items-center justify-between rounded-xl px-3 py-3 font-medium hover:bg-surface-2 [&::-webkit-details-marker]:hidden">
+                <span className="flex items-center gap-2"><Icon name="menu" size={18} /> Danh mục sản phẩm</span>
+                <Icon name="chevronDown" size={16} className="text-muted transition-transform group-open:rotate-180 motion-reduce:transition-none" />
+              </summary>
+              <div className="ml-3 flex flex-col border-l border-border pl-2">
+                <Link to="/products" className="rounded-xl px-3 py-2.5 hover:bg-surface-2">
+                  Tất cả sản phẩm
+                </Link>
+                {categories.map((c) => (
+                  <Link key={c.id} to={`/products?category=${c.id}`} className="rounded-xl px-3 py-2.5 hover:bg-surface-2">
+                    {c.name} {c.name !== c.label && <span className="text-sm text-muted">· {c.label}</span>}
+                  </Link>
+                ))}
+              </div>
+            </details>
             <Link to="/brands" className="rounded-xl px-3 py-3 hover:bg-surface-2">
               Thương hiệu A–Z
             </Link>
             <Link to="/shops" className="rounded-xl px-3 py-3 hover:bg-surface-2">
               Tất cả cửa hàng
+            </Link>
+            <Link to="/vouchers" className="rounded-xl px-3 py-3 hover:bg-surface-2">
+              Ưu đãi và ví voucher
             </Link>
             <div className="my-2 border-t border-border" />
             <Link to={accountTo} className="rounded-xl px-3 py-3 hover:bg-surface-2">
@@ -348,9 +361,6 @@ export function Header() {
                 </Link>
                 <Link to="/messages" className="rounded-xl px-3 py-3 hover:bg-surface-2">
                   Tin nhắn
-                </Link>
-                <Link to="/vouchers" className="rounded-xl px-3 py-3 hover:bg-surface-2">
-                  Ví voucher
                 </Link>
                 <Link to="/favorites" className="rounded-xl px-3 py-3 hover:bg-surface-2">
                   Yêu thích và theo dõi
