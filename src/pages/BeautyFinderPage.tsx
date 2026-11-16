@@ -4,7 +4,7 @@ import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { button, EmptyState, ErrorState, Price, Skeleton } from '@/components/ui/primitives'
 import { concernLabels, productTypeLabels, skinTypeLabels } from '@/data/taxonomy'
-import { ingredientHints, relaxSuggestions, scoreProducts, starterSet, type FinderResult } from '@/features/beauty-finder/engine'
+import { ingredientHints, relaxSuggestions, routineBundle, scoreProducts, starterSet, type FinderResult } from '@/features/beauty-finder/engine'
 import { saveFinderSkin } from '@/features/skincare-3d/finderBridge'
 import {
   answersFromParams,
@@ -16,6 +16,12 @@ import {
   concernOptions,
   finishOptions,
   focusOptions,
+  giftStyleOptions,
+  ingredientOptions,
+  lifestyleOptions,
+  MAX_INGREDIENTS,
+  modeOptions,
+  setBudgetOptions,
   hairOptions,
   intensityOptions,
   makeupTypeOptions,
@@ -33,10 +39,15 @@ import {
   type FinderAnswers,
   type StepKey,
 } from '@/features/beauty-finder/questions'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { useCart } from '@/features/cart/CartProvider'
 import { routineStepOf } from '@/features/routine/routine'
+import { friendlyError } from '@/lib/errors'
+import { formatDate, formatPrice } from '@/lib/format'
+import { isSupabaseConfigured } from '@/lib/supabase'
 import { useAsync } from '@/lib/useAsync'
 import { useDocumentTitle } from '@/lib/useDocumentTitle'
+import { beautyProfileService, type SavedBeautyProfile } from '@/services/beautyProfile'
 import { catalogService } from '@/services/catalog'
 
 export function BeautyFinderPage() {
@@ -64,7 +75,9 @@ export function BeautyFinderPage() {
         <p className="eyebrow inline-flex items-center gap-1.5">
           <Icon name="sparkle" size={14} /> Beauty Finder
         </p>
-        <h1 className="mt-3 text-4xl md:text-5xl">{submitted ? 'Sản phẩm gợi ý cho bạn' : 'Tìm sản phẩm hợp với bạn'}</h1>
+        <h1 className="mt-3 text-4xl md:text-5xl">
+          {submitted ? (submitted.mode === 'gift' ? 'Gợi ý quà tặng' : 'Sản phẩm gợi ý cho bạn') : answers.mode === 'gift' ? 'Tìm quà làm đẹp' : 'Tìm sản phẩm hợp với bạn'}
+        </h1>
         {!submitted && (
           <p className="mt-3 text-muted">
             Vài câu hỏi ngắn cho cả nam và nữ: da mặt, trang điểm, tóc, cơ thể hoặc nước hoa. Câu hỏi đổi theo lựa chọn của bạn; kết quả lấy từ sản phẩm đang bán, kèm lý do gợi ý.
@@ -75,7 +88,17 @@ export function BeautyFinderPage() {
       {submitted ? (
         <Results answers={submitted} onEdit={editAnswers} onApply={submit} />
       ) : (
-        <Wizard answers={answers} setAnswers={setAnswers} step={step} setStep={setStep} onFinish={() => submit(answers)} />
+        <>
+          <SavedProfileBanner onUse={submit} />
+          <ModePicker
+            mode={answers.mode}
+            onChange={(mode) => {
+              setAnswers({ ...answers, mode })
+              setStep(0)
+            }}
+          />
+          <Wizard answers={answers} setAnswers={setAnswers} step={step} setStep={setStep} onFinish={() => submit(answers)} />
+        </>
       )}
 
       <p className="mt-10 max-w-3xl rounded-2xl border border-border bg-surface p-4 text-xs leading-relaxed text-muted">
@@ -84,6 +107,126 @@ export function BeautyFinderPage() {
         hoặc tổn thương da kéo dài, hãy đi khám chuyên khoa.
       </p>
     </div>
+  )
+}
+
+// ------------------------------------------------------------------ CHẾ ĐỘ TÌM + HỒ SƠ ĐÃ LƯU
+
+/** Chọn cách tìm: mỗi kiểu khách một hành trình (nhanh, tiêu chuẩn, chuyên sâu, mua quà) */
+function ModePicker({ mode, onChange }: { mode: FinderAnswers['mode']; onChange: (m: FinderAnswers['mode']) => void }) {
+  return (
+    <div className="mt-6 max-w-3xl" role="radiogroup" aria-label="Cách tìm">
+      <p className="text-sm font-semibold">Cách tìm</p>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {modeOptions.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={mode === o.value}
+            onClick={() => mode !== o.value && onChange(o.value)}
+            className={`rounded-2xl border px-3 py-2.5 text-left transition-colors motion-reduce:transition-none ${
+              mode === o.value ? 'border-ink bg-ink text-on-ink' : 'border-border bg-surface hover:border-primary'
+            }`}
+          >
+            <span className="flex items-center gap-1.5 text-sm font-semibold">
+              {o.value === 'gift' && <Icon name="gift" size={15} />}
+              {o.label}
+            </span>
+            <span className={`mt-0.5 block text-xs leading-snug ${mode === o.value ? 'opacity-80' : 'text-muted'}`}>{o.hint}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** Hồ sơ làm đẹp đã lưu trong tài khoản: dùng lại ngay, không phải trả lời lại */
+function SavedProfileBanner({ onUse }: { onUse: (a: FinderAnswers) => void }) {
+  const { status, user } = useAuth()
+  const [saved, setSaved] = useState<SavedBeautyProfile | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    if (status !== 'signed-in' || !isSupabaseConfigured) return
+    beautyProfileService
+      .get()
+      .then(setSaved)
+      .catch(() => undefined)
+  }, [status])
+  if (!saved) return null
+  const remove = async () => {
+    if (!user) return
+    try {
+      await beautyProfileService.remove(user.id)
+      setSaved(null)
+    } catch (err) {
+      setError(friendlyError(err))
+    }
+  }
+  return (
+    <section className="mt-6 max-w-3xl rounded-card border border-primary/30 bg-primary-soft p-4" aria-labelledby="saved-profile-heading">
+      <h2 id="saved-profile-heading" className="font-semibold">
+        Hồ sơ làm đẹp của bạn
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">Lưu ngày {formatDate(saved.updatedAt)} · dùng được trên mọi thiết bị khi đăng nhập</p>
+      <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Câu trả lời đã lưu">
+        {summaryOf(saved.answers).map((x) => (
+          <li key={x} className="rounded-full bg-surface px-2.5 py-1 text-xs">
+            {x}
+          </li>
+        ))}
+      </ul>
+      {error && <p className="mt-2 text-sm text-danger">{error}</p>}
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button type="button" className={button('dark', 'sm')} onClick={() => onUse(saved.answers)}>
+          <Icon name="sparkle" size={15} /> Xem gợi ý theo hồ sơ
+        </button>
+        <button type="button" className={button('ghost', 'sm')} onClick={() => void remove()}>
+          Xóa hồ sơ
+        </button>
+      </div>
+    </section>
+  )
+}
+
+/** Lưu câu trả lời hiện tại vào hồ sơ làm đẹp của tài khoản */
+function SaveProfileButton({ answers }: { answers: FinderAnswers }) {
+  const { status } = useAuth()
+  const [state, setState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [error, setError] = useState<string | null>(null)
+  if (!isSupabaseConfigured || answers.mode === 'gift') return null
+  if (status !== 'signed-in')
+    return (
+      <Link to="/login?next=%2Fbeauty-finder" className={button('ghost', 'sm')}>
+        Đăng nhập để lưu hồ sơ
+      </Link>
+    )
+  const save = async () => {
+    setState('saving')
+    setError(null)
+    try {
+      await beautyProfileService.save(answers)
+      setState('saved')
+    } catch (err) {
+      setError(friendlyError(err))
+      setState('error')
+    }
+  }
+  return (
+    <span className="inline-flex flex-wrap items-center gap-2">
+      <button type="button" className={button('secondary', 'sm')} onClick={() => void save()} disabled={state === 'saving' || state === 'saved'}>
+        {state === 'saved' ? (
+          <>
+            <Icon name="check" size={15} /> Đã lưu vào hồ sơ
+          </>
+        ) : state === 'saving' ? (
+          'Đang lưu...'
+        ) : (
+          'Lưu vào hồ sơ làm đẹp'
+        )}
+      </button>
+      {error && <span className="text-xs text-danger">{error}</span>}
+    </span>
   )
 }
 
@@ -100,7 +243,7 @@ interface WizardProps {
 const toggle = <T,>(list: T[], v: T, max = Infinity) => (list.includes(v) ? list.filter((x) => x !== v) : list.length >= max ? list : [...list, v])
 
 function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
-  const steps = stepsFor(answers.focus)
+  const steps = stepsFor(answers.focus, answers.mode)
   const current: StepKey = steps[Math.min(step, steps.length - 1)]
   const isLast = step >= steps.length - 1
   const set = (patch: Partial<FinderAnswers>) => setAnswers({ ...answers, ...patch })
@@ -122,7 +265,7 @@ function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
     setAnswers(nextAnswers)
     window.clearTimeout(advance.current)
     advance.current = window.setTimeout(() => {
-      const last = step >= stepsFor(nextAnswers.focus).length - 1
+      const last = step >= stepsFor(nextAnswers.focus, nextAnswers.mode).length - 1
       if (last) return
       setStep(step + 1)
     }, 260)
@@ -162,11 +305,16 @@ function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
   let selectedCount = 0
   switch (current) {
     case 'audience':
-      body = <Question title="Bạn đang tìm sản phẩm cho ai?">{single(audienceOptions, answers.audience, 'audience')}</Question>
+      body = (
+        <Question title={answers.mode === 'gift' ? 'Bạn tặng quà cho ai?' : 'Bạn đang tìm sản phẩm cho ai?'}>{single(audienceOptions, answers.audience, 'audience')}</Question>
+      )
       break
     case 'focus':
       body = (
-        <Question title="Bạn muốn tìm nhóm sản phẩm nào?" subtitle="Câu hỏi tiếp theo sẽ đổi theo nhóm bạn chọn.">
+        <Question
+          title={answers.mode === 'gift' ? 'Người nhận thích nhóm nào?' : 'Bạn muốn tìm nhóm sản phẩm nào?'}
+          subtitle={answers.mode === 'gift' ? 'Chưa chắc thì chọn Nước hoa hoặc Chăm sóc cơ thể: dễ tặng, ít phụ thuộc làn da.' : 'Câu hỏi tiếp theo sẽ đổi theo nhóm bạn chọn.'}
+        >
           <OptionGrid>
             {focusOptions.map((o) => (
               <Option
@@ -274,9 +422,43 @@ function Wizard({ answers, setAnswers, step, setStep, onFinish }: WizardProps) {
     case 'intensity':
       body = <Question title="Bạn thích mùi đậm hay nhẹ?">{single(intensityOptions, answers.intensity, 'intensity')}</Question>
       break
+    case 'ingredients':
+      optional = true
+      selectedCount = answers.ingredients.length
+      body = (
+        <Question title="Bạn muốn sản phẩm có thành phần nào?" subtitle={`Chọn tối đa ${MAX_INGREDIENTS}. Sản phẩm có thành phần bạn chọn được cộng điểm. Có thể bỏ qua.`}>
+          {multi(ingredientOptions, answers.ingredients, 'ingredients', MAX_INGREDIENTS)}
+        </Question>
+      )
+      break
+    case 'lifestyle':
+      optional = true
+      selectedCount = answers.lifestyle.length
+      body = (
+        <Question title="Thói quen hằng ngày của bạn?" subtitle="Chọn những ý đúng với bạn để gợi ý sát hơn. Có thể bỏ qua.">
+          {multi(lifestyleOptions, answers.lifestyle, 'lifestyle')}
+        </Question>
+      )
+      break
+    case 'setBudget':
+      body = (
+        <Question title="Tổng ngân sách cho cả bộ chu trình?" subtitle="Hệ thống chọn mỗi bước một sản phẩm sao cho tổng tiền nằm trong ngân sách.">
+          <OptionGrid>
+            {setBudgetOptions.map((o) => (
+              <Option key={o.value} selected={answers.setBudget === o.value} onSelect={() => set({ setBudget: o.value })} type="radio">
+                {o.label}
+              </Option>
+            ))}
+          </OptionGrid>
+        </Question>
+      )
+      break
+    case 'giftStyle':
+      body = <Question title="Bạn muốn món quà thế nào?">{single(giftStyleOptions, answers.giftStyle, 'giftStyle')}</Question>
+      break
     case 'budget':
       body = (
-        <Question title="Ngân sách cho mỗi sản phẩm?">
+        <Question title={answers.mode === 'gift' ? 'Ngân sách cho món quà?' : 'Ngân sách cho mỗi sản phẩm?'}>
           <OptionGrid>
             {budgetOptions.map((o) => (
               <Option key={o.value} selected={answers.budget === o.value} onSelect={() => set({ budget: o.value })} type="radio">
@@ -390,9 +572,10 @@ const RESULT_LIMIT = 12
 function summaryOf(a: FinderAnswers): string[] {
   const lab = <T extends string>(opts: Choice<T>[], v: T) => opts.find((o) => o.value === v)?.label
   return [
+    a.mode !== 'standard' ? `Cách tìm: ${lab(modeOptions, a.mode)?.toLowerCase()}` : null,
     lab(audienceOptions, a.audience),
     lab(focusOptions, a.focus),
-    a.focus === 'fragrance' || a.focus === 'haircare' ? null : a.skinType === 'unsure' ? 'Chưa rõ loại da' : skinTypeLabels[a.skinType],
+    a.focus === 'fragrance' || a.focus === 'haircare' || a.mode === 'gift' ? null : a.skinType === 'unsure' ? 'Chưa rõ loại da' : skinTypeLabels[a.skinType],
     ...a.concerns.map((c) => concernLabels[c]),
     a.focus === 'skincare' ? lab(needOptions, a.need) : null,
     ...a.avoid.map((x) => `Tránh ${lab(avoidOptions, x)?.toLowerCase()}`),
@@ -405,6 +588,10 @@ function summaryOf(a: FinderAnswers): string[] {
     a.intensity !== 'any' ? `Mùi ${lab(intensityOptions, a.intensity)?.toLowerCase()}` : null,
     lab(budgetOptions, a.budget),
     ...a.types.map((t) => productTypeLabels[t]),
+    ...a.ingredients.map((i) => `Có ${lab(ingredientOptions, i)}`),
+    ...a.lifestyle.map((l) => lab(lifestyleOptions, l)),
+    a.setBudget !== 'any' ? `Cả bộ ${lab(setBudgetOptions, a.setBudget)?.toLowerCase()}` : null,
+    a.giftStyle !== 'any' ? `Quà ${lab(giftStyleOptions, a.giftStyle)?.toLowerCase()}` : null,
   ].filter(Boolean) as string[]
 }
 
@@ -463,14 +650,19 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
             </li>
           ))}
         </ul>
-        <button type="button" className={button('secondary', 'sm')} onClick={onEdit}>
-          Làm lại từ đầu
-        </button>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <SaveProfileButton answers={answers} />
+          <button type="button" className={button('secondary', 'sm')} onClick={onEdit}>
+            Làm lại từ đầu
+          </button>
+        </div>
       </div>
 
       <Insights answers={answers} />
 
-      {answers.focus === 'skincare' && products.status === 'success' && <ArchitectHandoff answers={answers} starter={starter} />}
+      {answers.mode === 'expert' && answers.focus === 'skincare' && products.status === 'success' && <BundleSection results={all} answers={answers} />}
+
+      {answers.focus === 'skincare' && answers.mode !== 'gift' && products.status === 'success' && <ArchitectHandoff answers={answers} starter={starter} />}
 
       {products.status === 'loading' && (
         <div className="mt-6 space-y-4">
@@ -527,6 +719,64 @@ function Results({ answers, onEdit, onApply }: { answers: FinderAnswers; onEdit:
   )
 }
 
+/** Chế độ chuyên sâu: mỗi bước một sản phẩm, tổng tiền trong ngân sách cả bộ */
+function BundleSection({ results, answers }: { results: FinderResult[]; answers: FinderAnswers }) {
+  const bundle = useMemo(() => routineBundle(results, answers), [results, answers])
+  const { add, quantityOf } = useCart()
+  const [added, setAdded] = useState(false)
+  if (!bundle.items.length) return null
+  const addAll = () => {
+    for (const r of bundle.items) if (quantityOf(r.product.id) < r.product.stock) add(r.product.id)
+    setAdded(true)
+  }
+  return (
+    <section className="mt-6 rounded-card border border-border bg-surface p-5 sm:p-6" aria-labelledby="bundle-heading">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="eyebrow">Chuyên sâu</p>
+          <h2 id="bundle-heading" className="mt-1 font-display text-3xl font-semibold leading-tight">
+            Bộ chu trình {bundle.max != null ? 'trong ngân sách' : 'đề xuất'}
+          </h2>
+          <p className="mt-1 text-sm text-muted">Mỗi bước một sản phẩm phù hợp nhất; vượt ngân sách thì đổi sang lựa chọn rẻ hơn cùng bước, ít giảm mức phù hợp nhất.</p>
+        </div>
+        <p className="text-right">
+          <span className="block text-xs text-muted">Tổng cộng</span>
+          <span className={`font-display text-2xl font-semibold ${bundle.fits ? '' : 'text-sale'}`}>{formatPrice(bundle.total)}</span>
+          {bundle.max != null && <span className="block text-xs text-muted">Ngân sách {formatPrice(bundle.max)}</span>}
+        </p>
+      </div>
+      <ol className="mt-4 divide-y divide-border" aria-label="Sản phẩm trong bộ">
+        {bundle.items.map((r) => {
+          const st = routineStepOf(r.product.type)
+          return (
+            <li key={r.product.id} className="flex items-center gap-3 py-3">
+              <span className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-surface-2">
+                <ProductImage product={r.product} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs text-muted">{st ? `Bước ${st.order}: ${st.label}` : productTypeLabels[r.product.type]}</span>
+                <Link to={`/products/${r.product.slug}`} className="block truncate text-sm font-medium hover:text-primary">
+                  {r.product.name}
+                </Link>
+              </span>
+              <span className="shrink-0 text-right text-sm">
+                <span className="block font-semibold">{formatPrice(r.product.price)}</span>
+                <span className="block text-xs text-primary">{r.match}% phù hợp</span>
+              </span>
+            </li>
+          )
+        })}
+      </ol>
+      {!bundle.fits && <p className="mt-2 text-sm text-sale">Chưa tìm được bộ đủ bước trong ngân sách này; bạn có thể chọn ngân sách cao hơn hoặc ít bước hơn.</p>}
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button type="button" className={button('dark', 'sm')} onClick={addAll} disabled={added}>
+          <Icon name="cart" size={16} /> {added ? 'Đã thêm cả bộ vào giỏ' : 'Thêm cả bộ vào giỏ'}
+        </button>
+      </div>
+    </section>
+  )
+}
+
 /** Chuyển sang Skincare Architect 3D: module dùng lại câu trả lời + bộ sản phẩm đề xuất, tự sắp sáng/tối và minh họa 3D */
 function ArchitectHandoff({ answers, starter }: { answers: FinderAnswers; starter: FinderResult[] }) {
   const params = answersToParams(answers)
@@ -565,7 +815,7 @@ function ArchitectHandoff({ answers, starter }: { answers: FinderAnswers; starte
 }
 
 function ResultCard({ result }: { result: FinderResult }) {
-  const { product, match, reasons, cautions } = result
+  const { product, match, reasons, cautions, breakdown } = result
   const { add, quantityOf } = useCart()
   const [added, setAdded] = useState(false)
   const step = routineStepOf(product.type)
@@ -612,6 +862,29 @@ function ResultCard({ result }: { result: FinderResult }) {
               </li>
             ))}
           </ul>
+        )}
+
+        {breakdown.length > 1 && (
+          <details className="group mt-3 text-sm">
+            <summary className="inline-flex cursor-pointer list-none items-center gap-1 font-medium text-primary hover:underline [&::-webkit-details-marker]:hidden">
+              Vì sao {match}% phù hợp?
+              <Icon name="chevronDown" size={14} className="transition-transform group-open:rotate-180 motion-reduce:transition-none" />
+            </summary>
+            <ul className="mt-2 space-y-1.5" aria-label="Điểm theo từng tiêu chí">
+              {breakdown.map((b) => {
+                const pct = b.max ? Math.round((b.got / b.max) * 100) : 0
+                return (
+                  <li key={b.label} className="grid grid-cols-[minmax(0,8.5rem)_1fr_2.5rem] items-center gap-2 text-xs">
+                    <span className="truncate text-muted">{b.label}</span>
+                    <span className="h-1.5 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+                      <span className="block h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                    </span>
+                    <span className="text-right tabular-nums">{pct}%</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </details>
         )}
 
         <div className="mt-auto flex flex-wrap gap-2 pt-4">

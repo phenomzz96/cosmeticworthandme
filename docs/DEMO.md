@@ -1,4 +1,4 @@
-# Kịch bản trình diễn (khoảng 12–15 phút)
+# Kịch bản trình diễn (khoảng 15–18 phút)
 
 Chuẩn bị trước buổi demo (sau khi làm xong [DEPLOY.md](DEPLOY.md)):
 
@@ -23,6 +23,10 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 8. Rê chuột menu **Nước hoa** → chọn "Nước hoa nam"; kéo **thanh trượt giá**. Mở **Beauty Finder** → Cho nam → Nước hoa → Gỗ ấm → xem % phù hợp và lý do.
 9. **Beauty Finder** → Da mặt → da dầu, mụn + thiếu nước, 4–5 bước → kết quả có "Công dụng khai báo" và khối **Xếp thành chu trình sáng – tối** → **Mở Skincare Architect 3D**: không phải trả lời lại, bộ đề xuất đã nằm trong chu trình sáng/tối; bấm bước **Mô hình 3D** xem vị trí thoa (mạng chặn thì tự chuyển 2D). Dưới khung: "Trong chu trình, bạn chưa mua" → thêm vào giỏ. Đổi sáng/tối trên website → module đổi theo. Nhấn mạnh: chỉ minh họa vị trí thoa, không chẩn đoán; dữ liệu công dụng do cửa hàng khai báo.
 10. Trang sản phẩm → **Nhắn tin cho shop** → hỏi một câu. Trang **Liên hệ** → gửi câu hỏi cho bộ phận hỗ trợ.
+11. Thanh menu gọn: rê chuột **Danh mục** → bảng 7 danh mục, loại sản phẩm, thương hiệu. Các tính năng riêng nằm giữa thanh menu (Mega Sale, Beauty Finder, Skincare 3D, Beauty Quest).
+12. **Beauty Finder** → chọn cách tìm **Chuyên sâu** → da mặt, thêm thành phần (Niacinamide…), thói quen "hay ở ngoài trời", ngân sách cả bộ 500.000–1.000.000đ → khối **Bộ chu trình trong ngân sách** (tổng tiền ≤ ngân sách) → **Thêm cả bộ vào giỏ**; mở "Vì sao …% phù hợp?" xem điểm từng tiêu chí; **Lưu vào hồ sơ làm đẹp** → mở lại Beauty Finder thấy hồ sơ. Thử cách **Mua quà tặng** → Nước hoa cho nữ → kết quả có "Dễ làm quà".
+13. **Mega Sale** (sau khi Admin tạo đợt ở mục 4): trang chủ có dải Mega Sale + đếm ngược → trang `/mega-sale` → thêm deal vào giỏ, đặt hàng: tổng tiền theo giá sale do database tính.
+14. **Beauty Quest** → **Mở hộp quà** → trúng voucher riêng → mã nằm trong **Ví voucher**, dùng được khi đặt hàng; nhấn mạnh: máy chủ chọn quà theo tỷ lệ công bố, người khác không dùng được mã này. Nút **Chơi Beauty Quest** mở trò chơi của nhóm ở tab mới.
 
 ## 2. Người bán (4 phút)
 
@@ -32,6 +36,7 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 3. **Sản phẩm** → thêm sản phẩm mới: lưu nháp, tải ảnh, đăng bán.
 4. Quay lại cửa sổ khách: đơn COD đã "Đã thanh toán", tồn kho và lượt bán cập nhật.
 5. Khách mở đơn đã giao → **Đánh giá sản phẩm** → chấm sao, viết nhận xét. Người bán vào **Đánh giá** trả lời. Nhấn mạnh: chỉ người đã nhận hàng mới đánh giá được, điểm do database tính.
+6. **Mega Sale** (`/seller/mega-sale`): đăng ký 1 sản phẩm với giá sale (thử giá giảm chưa đủ → bị chặn).
 
 ## 3. Thanh toán QR mô phỏng (2 phút)
 
@@ -49,12 +54,14 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 6. `/admin/vouchers`: tạo mã toàn sàn (giảm %, có mức tối đa và đơn tối thiểu); người bán tạo mã của shop ở `/seller/vouchers`.
 7. `/admin/messages`: trả lời câu hỏi khách gửi bộ phận hỗ trợ. Nhấn mạnh: Admin không đọc tin riêng giữa khách và cửa hàng.
 8. `/admin/pages`: sửa thanh thông báo hoặc thêm 1 câu hỏi thường gặp → Lưu → mở trang chủ / `/faq` thấy ngay.
-9. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
+9. `/admin/mega-sale`: tạo đợt "Mega Sale 11.11" (giảm tối thiểu 20%), bật → duyệt sản phẩm người bán đăng ký (từ chối 1 sản phẩm kèm lý do) → giá sale tự áp dụng; tắt đợt → giá tự trả về.
+10. `/admin/rewards`: tạo đợt quà "Black Friday" → **Thêm bộ giải mẫu** → sửa tỷ lệ / số lượng → bật. Khi có khách trúng quà tặng: mục **Người trúng** → ghi chú → **Đã gửi**.
+11. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
 
 ## 5. Bảo mật (1 phút, nếu được hỏi)
 
 - Quyền được kiểm tra trong database (Row Level Security), không chỉ ẩn nút ở giao diện.
-- Giá, phí ship, tổng tiền, tồn kho do database tính khi đặt hàng; sửa giá trên trình duyệt không có tác dụng.
+- Giá, phí ship, tổng tiền, tồn kho do database tính khi đặt hàng; sửa giá trên trình duyệt không có tác dụng. Giá Mega Sale và quà trong hộp quà cũng do database quyết định.
 - Người bán chỉ thấy thông tin giao hàng của đơn thuộc shop mình; không ai đọc được sổ địa chỉ của người khác.
 - Có thể minh họa bằng lệnh trong DevTools ở mục 7 của [DEPLOY.md](DEPLOY.md).
 

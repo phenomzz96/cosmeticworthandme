@@ -19,6 +19,13 @@ export type BodyNeed = 'hydrate' | 'smooth' | 'scent' | 'deodorant'
 export type ScentFamily = 'floral' | 'woody' | 'fresh' | 'sweet' | 'musky'
 export type Occasion = 'daily' | 'work' | 'date' | 'party' | 'any'
 export type Intensity = 'light' | 'medium' | 'strong' | 'any'
+/** Cách tìm: tiêu chuẩn, nhanh (3 câu), chuyên sâu (thêm thành phần, thói quen, ngân sách cả bộ), mua quà tặng */
+export type FinderMode = 'standard' | 'quick' | 'expert' | 'gift'
+export type Ingredient = 'niacinamide' | 'hyaluronic' | 'ceramide' | 'vitamin-c' | 'bha' | 'retinol' | 'centella' | 'peptide'
+export type Lifestyle = 'outdoor' | 'makeup-daily' | 'aircon' | 'active'
+/** Tổng ngân sách cho cả bộ chu trình (chế độ chuyên sâu) */
+export type SetBudgetKey = 'under-500' | '500-1000' | '1000-2000' | 'any'
+export type GiftStyle = 'safe' | 'premium' | 'any'
 
 /** Câu trả lời của người dùng cho Beauty Finder */
 export interface FinderAnswers {
@@ -38,6 +45,14 @@ export interface FinderAnswers {
   budget: BudgetKey
   /** Rỗng = để hệ thống gợi ý mọi loại trong nhóm */
   types: ProductType[]
+  mode: FinderMode
+  /** Thành phần muốn có (chuyên sâu) */
+  ingredients: Ingredient[]
+  /** Thói quen hằng ngày (chuyên sâu) */
+  lifestyle: Lifestyle[]
+  setBudget: SetBudgetKey
+  /** Kiểu quà (mua quà tặng) */
+  giftStyle: GiftStyle
 }
 
 export const defaultAnswers: FinderAnswers = {
@@ -56,9 +71,15 @@ export const defaultAnswers: FinderAnswers = {
   intensity: 'any',
   budget: 'any',
   types: [],
+  mode: 'standard',
+  ingredients: [],
+  lifestyle: [],
+  setBudget: 'any',
+  giftStyle: 'any',
 }
 
 export const MAX_CONCERNS = 3
+export const MAX_INGREDIENTS = 3
 export const MAX_SCENTS = 2
 
 export interface Choice<T extends string> {
@@ -154,6 +175,45 @@ export const intensityOptions: Choice<Intensity>[] = [
   { value: 'any', label: 'Sao cũng được' },
 ]
 
+export const modeOptions: Choice<FinderMode>[] = [
+  { value: 'standard', label: 'Tiêu chuẩn', hint: '4–7 câu, phù hợp đa số' },
+  { value: 'quick', label: 'Nhanh', hint: '3 câu, xem gợi ý ngay' },
+  { value: 'expert', label: 'Chuyên sâu', hint: 'Thêm thành phần, thói quen, ngân sách cả bộ' },
+  { value: 'gift', label: 'Mua quà tặng', hint: 'Không cần biết loại da người nhận' },
+]
+
+export const ingredientOptions: Choice<Ingredient>[] = [
+  { value: 'niacinamide', label: 'Niacinamide', hint: 'Thường thấy trong sản phẩm cho lỗ chân lông, thâm' },
+  { value: 'hyaluronic', label: 'Hyaluronic Acid', hint: 'Cấp ẩm' },
+  { value: 'ceramide', label: 'Ceramide', hint: 'Hàng rào ẩm' },
+  { value: 'vitamin-c', label: 'Vitamin C', hint: 'Làm sáng, chống oxy hóa' },
+  { value: 'bha', label: 'BHA (Salicylic Acid)', hint: 'Làm sạch lỗ chân lông' },
+  { value: 'retinol', label: 'Retinol', hint: 'Dùng buổi tối, tăng dần tần suất' },
+  { value: 'centella', label: 'Rau má (Centella)', hint: 'Làm dịu' },
+  { value: 'peptide', label: 'Peptide', hint: 'Săn chắc' },
+]
+
+export const lifestyleOptions: Choice<Lifestyle>[] = [
+  { value: 'outdoor', label: 'Hay ở ngoài trời, đi nắng', hint: 'Ưu tiên chống nắng, lâu trôi' },
+  { value: 'makeup-daily', label: 'Trang điểm hằng ngày', hint: 'Ưu tiên tẩy trang, làm sạch kỹ' },
+  { value: 'aircon', label: 'Ngồi phòng máy lạnh nhiều', hint: 'Ưu tiên cấp ẩm' },
+  { value: 'active', label: 'Vận động, ra nhiều mồ hôi', hint: 'Ưu tiên kết cấu mỏng nhẹ, kiềm dầu' },
+]
+
+/** Tổng ngân sách cho cả bộ chu trình (VND) */
+export const setBudgetOptions: (Choice<SetBudgetKey> & { max?: number })[] = [
+  { value: 'under-500', label: 'Dưới 500.000đ', max: 500_000 },
+  { value: '500-1000', label: '500.000đ – 1.000.000đ', max: 1_000_000 },
+  { value: '1000-2000', label: '1.000.000đ – 2.000.000đ', max: 2_000_000 },
+  { value: 'any', label: 'Không giới hạn' },
+]
+
+export const giftStyleOptions: Choice<GiftStyle>[] = [
+  { value: 'safe', label: 'An toàn, ai cũng dùng được', hint: 'Không phụ thuộc loại da, mùi nhẹ' },
+  { value: 'premium', label: 'Sang trọng, nổi bật', hint: 'Sản phẩm cao cấp, được đánh giá cao' },
+  { value: 'any', label: 'Sao cũng được' },
+]
+
 /** Ngân sách cho MỖI sản phẩm (VND) */
 export const budgetOptions: (Choice<BudgetKey> & { min?: number; max?: number })[] = [
   { value: 'under-200', label: 'Dưới 200.000đ', max: 200_000 },
@@ -193,8 +253,36 @@ export type StepKey =
   | 'occasion'
   | 'intensity'
   | 'budget'
+  | 'ingredients'
+  | 'lifestyle'
+  | 'setBudget'
+  | 'giftStyle'
 
-export function stepsFor(focus: Focus): StepKey[] {
+/** Câu chính của mỗi nhóm (chế độ nhanh chỉ hỏi câu này + ngân sách) */
+const quickKey: Record<Focus, StepKey> = { skincare: 'skin', makeup: 'skin', haircare: 'hair', body: 'body', fragrance: 'scents' }
+
+export function stepsFor(focus: Focus, mode: FinderMode = 'standard'): StepKey[] {
+  if (mode === 'quick') return ['focus', quickKey[focus], 'budget']
+  if (mode === 'gift') return ['audience', 'focus', 'giftStyle', 'budget']
+  const base = standardSteps(focus)
+  if (mode !== 'expert') return base
+  const insertAfter = (list: StepKey[], after: StepKey, key: StepKey) => {
+    const i = list.indexOf(after)
+    return i < 0 ? list : [...list.slice(0, i + 1), key, ...list.slice(i + 1)]
+  }
+  switch (focus) {
+    case 'skincare':
+      return [...insertAfter(insertAfter(base, 'concerns', 'ingredients'), 'need', 'lifestyle'), 'setBudget']
+    case 'makeup':
+      return insertAfter(base, 'makeupTypes', 'lifestyle')
+    case 'body':
+      return insertAfter(base, 'body', 'ingredients')
+    default:
+      return base
+  }
+}
+
+function standardSteps(focus: Focus): StepKey[] {
   switch (focus) {
     case 'skincare':
       return ['audience', 'focus', 'skin', 'concerns', 'prefs', 'need', 'budget']
@@ -225,6 +313,10 @@ export const stepLabels: Record<StepKey, string> = {
   occasion: 'Dịp dùng',
   intensity: 'Độ đậm',
   budget: 'Ngân sách',
+  ingredients: 'Thành phần',
+  lifestyle: 'Thói quen',
+  setBudget: 'Ngân sách cả bộ',
+  giftStyle: 'Kiểu quà',
 }
 
 // -------- Lưu câu trả lời trên URL để quay lại, chia sẻ, tải lại trang --------
@@ -256,6 +348,11 @@ export function answersToParams(a: FinderAnswers): URLSearchParams {
   put('int', a.intensity, 'any')
   put('budget', a.budget, 'any')
   put('types', a.types, '')
+  put('mode', a.mode, 'standard')
+  put('ing', a.ingredients, '')
+  put('life', a.lifestyle, '')
+  put('set', a.setBudget, 'any')
+  put('gs', a.giftStyle, 'any')
   p.set('done', '1')
   return p
 }
@@ -283,6 +380,11 @@ export function answersFromParams(p: URLSearchParams): FinderAnswers | null {
     intensity: one(p.get('int'), values(intensityOptions), 'any'),
     budget: one(p.get('budget'), values(budgetOptions), 'any'),
     types: list(p.get('types'), focusTypes[focus]),
+    mode: one(p.get('mode'), values(modeOptions), 'standard'),
+    ingredients: list(p.get('ing'), values(ingredientOptions)).slice(0, MAX_INGREDIENTS),
+    lifestyle: list(p.get('life'), values(lifestyleOptions)),
+    setBudget: one(p.get('set'), values(setBudgetOptions), 'any'),
+    giftStyle: one(p.get('gs'), values(giftStyleOptions), 'any'),
   }
 }
 
@@ -292,7 +394,9 @@ export function presetFromParams(p: URLSearchParams): { answers: FinderAnswers; 
   const audience = p.get('for')
   const focus = p.get('focus')
   const start = p.get('start')
+  const mode = p.get('mode')
   let step = 0
+  if (mode && values(modeOptions).includes(mode as FinderMode)) a.mode = mode as FinderMode
   if (audience && values(audienceOptions).includes(audience as Audience)) {
     a.audience = audience as Audience
     step = 1
