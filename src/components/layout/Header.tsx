@@ -6,6 +6,7 @@ import { categories } from '@/data/taxonomy'
 import { specialFeatures } from '@/config/features'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useBrand } from '@/features/brand/BrandProvider'
+import { useOpenMegaSale } from '@/features/mega-sale/useOpenMegaSale'
 import { useCart } from '@/features/cart/CartProvider'
 import { useCatalogVersion } from '@/features/catalog/useCatalogVersion'
 import { ThemeToggle } from '@/features/theme/ThemeToggle'
@@ -238,6 +239,7 @@ export function Header() {
   const { count } = useCart()
   const { status, profile, user, isAdmin } = useAuth()
   const { settings } = useBrand()
+  const megaSale = useOpenMegaSale()
   const signedIn = status === 'signed-in'
   const accountLabel = signedIn ? profile?.full_name?.trim() || user?.email?.split('@')[0] || 'Tài khoản' : 'Đăng nhập'
   const accountTo = signedIn ? '/account' : '/login'
@@ -314,6 +316,12 @@ export function Header() {
       {menuOpen && (
         <div id="mobile-menu" className="max-h-[calc(100dvh-140px)] overflow-y-auto border-t border-border bg-bg lg:hidden">
           <nav className="container-page flex flex-col gap-1 py-3" aria-label="Menu">
+            {megaSale && (
+              <Link to="/mega-sale" className="mx-1 mb-1 flex items-center gap-2 rounded-xl bg-ink px-3 py-3 font-semibold text-on-ink">
+                <Icon name="bolt" size={18} className="text-sale" /> <span className="min-w-0 flex-1 truncate">{megaSale.title}</span>
+                <Icon name="chevronRight" size={16} className="shrink-0 opacity-70" />
+              </Link>
+            )}
             <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted">Chỉ có ở {settings.name}</p>
             <div className="grid grid-cols-2 gap-2 px-1 pb-2">
               {specialFeatures.map((f) => (
