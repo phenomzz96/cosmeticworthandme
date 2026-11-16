@@ -41,12 +41,14 @@ const VouchersPage = lazyNamed(() => import('@/pages/VouchersPage'), 'VouchersPa
 const NotificationsPage = lazyNamed(() => import('@/pages/NotificationsPage'), 'NotificationsPage')
 const SellerVouchersPage = lazyNamed(() => import('@/pages/seller/SellerVouchersPage'), 'SellerVouchersPage')
 const AdminVouchersPage = lazyNamed(() => import('@/pages/admin/AdminVouchersPage'), 'AdminVouchersPage')
+const AdminRewardsPage = lazyNamed(() => import('@/pages/admin/AdminRewardsPage'), 'AdminRewardsPage')
 const AdminPagesPage = lazyNamed(() => import('@/pages/admin/AdminPagesPage'), 'AdminPagesPage')
 const MessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'MessagesPage')
 const SellerMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'SellerMessagesPage')
 const AdminMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'AdminMessagesPage')
 const BrandsPage = lazyNamed(loaders.brands, 'BrandsPage')
 const SkincareArchitectPage = lazyNamed(loaders.architect, 'SkincareArchitectPage')
+const BeautyQuestPage = lazyNamed(loaders.beautyQuest, 'BeautyQuestPage')
 const AboutPage = lazyNamed(() => import('@/pages/InfoPages'), 'AboutPage')
 const ContactPage = lazyNamed(() => import('@/pages/InfoPages'), 'ContactPage')
 const FaqPage = lazyNamed(() => import('@/pages/InfoPages'), 'FaqPage')
@@ -87,6 +89,7 @@ export function App() {
                   <Route path="compare" element={<ComparePage />} />
                   <Route path="brands" element={<BrandsPage />} />
                   <Route path="skincare-architect" element={<SkincareArchitectPage />} />
+                  <Route path="beauty-quest" element={<BeautyQuestPage />} />
 
                   {/* Trang thông tin */}
                   <Route path="about" element={<AboutPage />} />
@@ -156,6 +159,7 @@ export function App() {
                     <Route path="products" element={<AdminProductsPage />} />
                     <Route path="reviews" element={<AdminReviewsPage />} />
                     <Route path="vouchers" element={<AdminVouchersPage />} />
+                    <Route path="rewards" element={<AdminRewardsPage />} />
                     <Route path="messages" element={<AdminMessagesPage />} />
                     <Route path="pages" element={<AdminPagesPage />} />
                     <Route path="orders" element={<AdminOrdersPage />} />

@@ -89,7 +89,8 @@ export const voucherService = {
   async listAvailable(shopIds: string[] = []): Promise<Voucher[]> {
     if (!isSupabaseConfigured || !supabase) return []
     const now = new Date().toISOString()
-    let q = supabase.from('vouchers').select(COLUMNS).eq('is_active', true).lte('starts_at', now).gt('ends_at', now)
+    // Voucher riêng (quà Beauty Quest) chỉ nằm trong ví của chủ tài khoản, không hiện ở danh sách chung
+    let q = supabase.from('vouchers').select(COLUMNS).eq('is_active', true).is('owner_id', null).lte('starts_at', now).gt('ends_at', now)
     q = shopIds.length ? q.or(`shop_id.is.null,shop_id.in.(${shopIds.join(',')})`) : q.is('shop_id', null)
     const { data, error } = await q.order('ends_at', { ascending: true }).limit(50)
     if (error) throw error
@@ -103,7 +104,7 @@ export const voucherService = {
   },
 
   async listPlatform(): Promise<Voucher[]> {
-    const { data, error } = await requireSupabase().from('vouchers').select(COLUMNS).is('shop_id', null).order('created_at', { ascending: false })
+    const { data, error } = await requireSupabase().from('vouchers').select(COLUMNS).is('shop_id', null).is('owner_id', null).order('created_at', { ascending: false })
     if (error) throw error
     return (data ?? []) as Voucher[]
   },
