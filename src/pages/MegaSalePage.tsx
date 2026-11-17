@@ -271,7 +271,7 @@ function MoreDeals() {
           </Link>
         </li>
         <li>
-          <Link to="/beauty-quest#hop-qua" className="group flex h-full items-center gap-4 rounded-card border border-border bg-surface p-4 hover:border-primary">
+          <Link to="/beauty-quest/hop-qua" className="group flex h-full items-center gap-4 rounded-card border border-border bg-surface p-4 hover:border-primary">
             <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary-soft text-primary">
               <Icon name="gift" size={22} />
             </span>

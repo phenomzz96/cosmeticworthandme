@@ -15,6 +15,7 @@ const tabs = [
   { to: '/admin/vouchers', label: 'Mã giảm giá' },
   { to: '/admin/mega-sale', label: 'Mega Sale' },
   { to: '/admin/rewards', label: 'Hộp quà' },
+  { to: '/admin/beauty-quest', label: 'Beauty Quest' },
   { to: '/admin/messages', label: 'Hỗ trợ' },
   { to: '/admin/pages', label: 'Nội dung trang' },
   { to: '/admin/audit', label: 'Nhật ký' },

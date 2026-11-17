@@ -1,15 +1,14 @@
 /**
- * BEAUTY QUEST — /beauty-quest
- * - Giới thiệu trò chơi Beauty Quest của nhóm phụ trách (website riêng, mở ở tab mới).
- * - Hộp quà may mắn: Admin tạo đợt quà theo dịp lễ / đợt sale ở /admin/rewards.
- *   Máy chủ kiểm tra lượt, chọn giải theo tỷ lệ công bố và tạo voucher riêng cho tài khoản.
+ * BEAUTY QUEST — Hộp quà (/beauty-quest/hop-qua)
+ * Admin tạo đợt quà theo dịp lễ / đợt sale ở /admin/rewards (giải thưởng, tỷ lệ, số lượng).
+ * Máy chủ kiểm tra lượt (mỗi ngày + đơn đã giao + Beauty Points kiếm được), chọn giải theo tỷ lệ công bố,
+ * tạo voucher riêng cho tài khoản.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Alert } from '@/components/ui/Form'
 import { Icon } from '@/components/ui/Icon'
-import { button, EmptyState, Skeleton } from '@/components/ui/primitives'
-import { BEAUTY_QUEST_URL } from '@/config/features'
+import { EmptyState, Skeleton } from '@/components/ui/primitives'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useBrand } from '@/features/brand/BrandProvider'
 import { friendlyError } from '@/lib/errors'
@@ -33,57 +32,9 @@ import {
 
 const BOXES = 6
 
-export function BeautyQuestPage() {
-  useDocumentTitle('Beauty Quest – Hộp quà')
-  return (
-    <div className="container-page py-8 md:py-12">
-      <QuestIntro />
-      <GiftSection />
-    </div>
-  )
-}
-
-/** Giới thiệu trò chơi Beauty Quest (website riêng của nhóm phụ trách) */
-function QuestIntro() {
-  const items = [
-    { icon: 'sparkle' as const, text: 'Skin Quiz 6 câu, gợi ý routine khởi đầu' },
-    { icon: 'check' as const, text: 'Nhiệm vụ chăm da mỗi ngày, tích Beauty Points' },
-    { icon: 'leaf' as const, text: 'Skin Roadmap và nhật ký da' },
-    { icon: 'star' as const, text: 'Mini game Glow Match' },
-  ]
-  return (
-    <section aria-labelledby="bq-heading" className="grid items-center gap-8 lg:grid-cols-[1.1fr_1fr]">
-      <div>
-        <p className="eyebrow">Tính năng chuyên biệt</p>
-        <h1 id="bq-heading" className="mt-2 text-4xl md:text-5xl">
-          Beauty Quest
-        </h1>
-        <p className="mt-3 max-w-xl text-muted">
-          Biến việc chăm da thành hành trình nhẹ nhàng: làm nhiệm vụ mỗi ngày, theo dõi tiến bộ, và mở hộp quà để nhận voucher hoặc quà tặng trong các dịp lễ, đợt sale.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <a href="#hop-qua" className={button('dark', 'lg')}>
-            <Icon name="gift" size={18} /> Mở hộp quà
-          </a>
-          <a href={BEAUTY_QUEST_URL} target="_blank" rel="noopener noreferrer" className={button('secondary', 'lg')}>
-            Chơi Beauty Quest <Icon name="arrowRight" size={16} />
-            <span className="sr-only">(mở ở tab mới)</span>
-          </a>
-        </div>
-        <p className="mt-3 text-xs text-muted">Trò chơi Beauty Quest mở ở tab mới và dùng tài khoản riêng của trò chơi. Hộp quà bên dưới dùng tài khoản của bạn trên sàn.</p>
-      </div>
-      <ul className="grid gap-3 sm:grid-cols-2">
-        {items.map((it) => (
-          <li key={it.text} className="flex items-start gap-3 rounded-card border border-border bg-surface p-4">
-            <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-primary-soft text-primary">
-              <Icon name={it.icon} size={18} />
-            </span>
-            <span className="text-sm leading-snug">{it.text}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )
+export function BqGiftsPage() {
+  useDocumentTitle('Hộp quà – Beauty Quest')
+  return <GiftSection />
 }
 
 function GiftSection() {
@@ -106,7 +57,7 @@ function GiftSection() {
   const campaign = campaigns.list.find((c) => c.id === activeId)
 
   return (
-    <section id="hop-qua" aria-labelledby="gift-heading" className="mt-16 scroll-mt-40">
+    <section id="hop-qua" aria-labelledby="gift-heading">
       <p className="eyebrow">Hộp quà may mắn</p>
       <h2 id="gift-heading" className="section-title mt-2">
         Mở hộp, nhận quà
@@ -221,7 +172,7 @@ function CampaignBoard({ campaign }: { campaign: RewardCampaign }) {
         <div className="mt-5 rounded-2xl bg-surface-2 px-4 py-3 text-sm" aria-live="polite">
           {!signedIn ? (
             <p>
-              <Link to={`/login?next=${encodeURIComponent(location.pathname + '#hop-qua')}`} className="font-semibold text-primary hover:underline">
+              <Link to={`/login?next=${encodeURIComponent(location.pathname)}`} className="font-semibold text-primary hover:underline">
                 Đăng nhập
               </Link>{' '}
               để mở hộp quà ({campaign.plays_per_day} lượt mỗi ngày).
@@ -233,7 +184,15 @@ function CampaignBoard({ campaign }: { campaign: RewardCampaign }) {
           ) : turns ? (
             <p>
               Bạn còn <strong className="text-primary">{turns.remaining}</strong> lượt mở hộp
-              {turns.bonus_total > 0 && <span className="text-muted"> (gồm lượt thưởng từ đơn hàng)</span>}.
+              {turns.bonus_total > 0 && <span className="text-muted"> (gồm lượt thưởng từ đơn hàng và Beauty Points)</span>}.
+              {turns.points_per_turn > 0 && (
+                <span className="mt-1 block text-muted">
+                  Beauty Points kiếm được trong đợt quà: <strong className="text-text">{turns.quest_points}</strong> · mỗi {turns.points_per_turn} điểm = 1 lượt mở hộp (tối đa 10).{' '}
+                  <Link to="/beauty-quest" className="font-medium text-primary hover:underline">
+                    Làm nhiệm vụ
+                  </Link>
+                </span>
+              )}
             </p>
           ) : (
             <p className="text-muted">Đang tải lượt chơi...</p>
@@ -273,7 +232,8 @@ function CampaignBoard({ campaign }: { campaign: RewardCampaign }) {
 
         <p className="mt-5 text-xs leading-relaxed text-muted">
           Mỗi ngày {campaign.plays_per_day} lượt (tính lại lúc 0 giờ).
-          {campaign.bonus_per_order > 0 && ` Mỗi đơn đặt trong thời gian chương trình và đã giao: thêm ${campaign.bonus_per_order} lượt.`} Quà do máy chủ của {settings.name} chọn ngẫu nhiên theo
+          {campaign.bonus_per_order > 0 && ` Mỗi đơn đặt trong thời gian chương trình và đã giao: thêm ${campaign.bonus_per_order} lượt.`}
+          {campaign.points_per_turn > 0 && ` Mỗi ${campaign.points_per_turn} Beauty Points kiếm được trong thời gian chương trình: thêm 1 lượt (tối đa 10).`} Quà do máy chủ của {settings.name} chọn ngẫu nhiên theo
           tỷ lệ công bố bên cạnh. Voucher chỉ dùng được cho tài khoản của bạn, mỗi mã dùng 1 lần.
         </p>
       </div>

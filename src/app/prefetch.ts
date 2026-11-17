@@ -18,7 +18,7 @@ export const loaders = {
   beautyFinder: () => import('@/pages/BeautyFinderPage'),
   checkout: () => import('@/pages/CheckoutPage'),
   architect: () => import('@/pages/SkincareArchitectPage'),
-  beautyQuest: () => import('@/pages/BeautyQuestPage'),
+  beautyQuest: () => import('@/pages/beauty-quest'),
   megaSale: () => import('@/pages/MegaSalePage'),
   brands: () => import('@/pages/BrandsPage'),
 }
