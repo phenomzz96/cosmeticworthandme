@@ -109,7 +109,7 @@ export function AdminBeautyQuestPage() {
         {quests == null ? (
           <Skeleton className="mt-4 h-40 w-full" />
         ) : (
-          <div className="mt-4 overflow-x-auto">
+          <div className="relative mt-4 overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="text-xs uppercase tracking-wide text-muted">
                 <tr>
