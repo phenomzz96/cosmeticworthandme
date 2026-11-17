@@ -60,7 +60,7 @@ với một **client Supabase giả lập** mô phỏng các luật quyền chí
 | Đợt J: Beauty Finder 4 cách tìm, giải thích điểm, chuyên sâu (thành phần tối đa 3, thói quen, bộ trong ngân sách ≤ 1.000.000đ, thêm cả bộ vào giỏ, đường dẫn chia sẻ được), mua quà, hồ sơ làm đẹp (lưu, dùng lại, người khác không thấy, xóa), điện thoại + tối | 34/34 |
 | **Tổng** | **931/931** (gồm thuật toán Beauty Finder 70), không có lỗi JavaScript |
 
-Kiểm tra che chữ tự động (Đợt D, chạy lại sau Đợt K với 61 trang, gồm 7 tab Beauty Quest khi chưa / đã đăng nhập, trang quản trị Beauty Quest, Mega Sale, Beauty Finder chuyên sâu): 42 trang (khách, Admin, người bán) × 5 độ rộng (390, 768, 1024, 1280, 1440px) × sáng/tối: không có trang kéo ngang, không có hàng cuộn ngang thiếu mũi tên, không có chữ bị cắt mà không có dấu "…".
+Kiểm tra che chữ tự động (Đợt D, chạy lại sau Đợt K với 61 trang, gồm 7 tab Beauty Quest khi chưa / đã đăng nhập, trang quản trị Beauty Quest, Mega Sale, Beauty Finder chuyên sâu): 61 trang (khách 26, Admin 26, người bán 9) × 5 độ rộng (390, 768, 1024, 1280, 1440px) × sáng/tối: không có trang kéo ngang, không có hàng cuộn ngang thiếu mũi tên, không có chữ bị cắt mà không có dấu "…".
 
 Kiểm tra TypeScript bằng trình biên dịch thật với kiểu thư viện rút gọn: không lỗi. **Nhóm vẫn cần chạy `npm.cmd run build`** để kiểm tra với thư viện thật.
 
