@@ -26,7 +26,8 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 11. Thanh menu gọn: rê chuột **Danh mục** → bảng 7 danh mục, loại sản phẩm, thương hiệu. Các tính năng riêng nằm giữa thanh menu (Mega Sale, Beauty Finder, Skincare 3D, Beauty Quest).
 12. **Beauty Finder** → chọn cách tìm **Chuyên sâu** → da mặt, thêm thành phần (Niacinamide…), thói quen "hay ở ngoài trời", ngân sách cả bộ 500.000–1.000.000đ → khối **Bộ chu trình trong ngân sách** (tổng tiền ≤ ngân sách) → **Thêm cả bộ vào giỏ**; mở "Vì sao …% phù hợp?" xem điểm từng tiêu chí; **Lưu vào hồ sơ làm đẹp** → mở lại Beauty Finder thấy hồ sơ. Thử cách **Mua quà tặng** → Nước hoa cho nữ → kết quả có "Dễ làm quà".
 13. **Mega Sale** (sau khi Admin tạo đợt ở mục 4): trang chủ có dải Mega Sale + đếm ngược → trang `/mega-sale` → thêm deal vào giỏ, đặt hàng: tổng tiền theo giá sale do database tính.
-14. **Beauty Quest** → **Mở hộp quà** → trúng voucher riêng → mã nằm trong **Ví voucher**, dùng được khi đặt hàng; nhấn mạnh: máy chủ chọn quà theo tỷ lệ công bố, người khác không dùng được mã này. Nút **Chơi Beauty Quest** mở trò chơi của nhóm ở tab mới.
+14. **Beauty Quest** (ngay trong website) → **Bắt đầu với Skin Quiz** → 6 câu → kết quả có lời nhắc "không phải chẩn đoán", +20 điểm → **Dùng làm routine của mình** → **Lưu routine** (+30) → tích 1 bước, **Hoàn thành routine sáng** (+5) → tab **Học hỏi** mở 1 bài, kéo tới cuối, **Đánh dấu đã đọc** → về **Tổng quan**: đủ 50 điểm lên Cấp 2, mở khóa thành tích; ghi **Nhật ký da** kèm ảnh. Nhấn mạnh: điểm chỉ do database cộng khi làm đúng việc, ảnh nhật ký chỉ chủ tài khoản xem được, Admin cũng không xem.
+15. Tab **Hộp quà** → số lượt có thêm phần đổi từ Beauty Points → **Mở hộp quà** → trúng voucher riêng → mã nằm trong **Ví voucher**, dùng được khi đặt hàng; nhấn mạnh: máy chủ chọn quà theo tỷ lệ công bố, người khác không dùng được mã này.
 
 ## 2. Người bán (4 phút)
 
@@ -55,8 +56,9 @@ Mở dashboard Supabase vài giờ trước để project không bị tạm dừ
 7. `/admin/messages`: trả lời câu hỏi khách gửi bộ phận hỗ trợ. Nhấn mạnh: Admin không đọc tin riêng giữa khách và cửa hàng.
 8. `/admin/pages`: sửa thanh thông báo hoặc thêm 1 câu hỏi thường gặp → Lưu → mở trang chủ / `/faq` thấy ngay.
 9. `/admin/mega-sale`: tạo đợt "Mega Sale 11.11" (giảm tối thiểu 20%), bật → duyệt sản phẩm người bán đăng ký (từ chối 1 sản phẩm kèm lý do) → giá sale tự áp dụng; tắt đợt → giá tự trả về.
-10. `/admin/rewards`: tạo đợt quà "Black Friday" → **Thêm bộ giải mẫu** → sửa tỷ lệ / số lượng → bật. Khi có khách trúng quà tặng: mục **Người trúng** → ghi chú → **Đã gửi**.
-11. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
+10. `/admin/rewards`: tạo đợt quà "Black Friday" (ô "Beauty Points đổi 1 lượt mở hộp" để 50) → **Thêm bộ giải mẫu** → sửa tỷ lệ / số lượng → bật. Khi có khách trúng quà tặng: mục **Người trúng** → ghi chú → **Đã gửi**.
+11. `/admin/beauty-quest`: số liệu tổng hợp (người chơi, nhiệm vụ đã nhận, tổng điểm), thống kê Glow Match ẩn danh; sửa điểm 1 nhiệm vụ, thêm nhiệm vụ mới, tắt nhiệm vụ. Nhấn mạnh: trang quản trị không xem được nhật ký da, kết quả quiz của khách.
+12. `/admin/audit`: nhật ký ghi lại mọi thao tác trên.
 
 ## 5. Bảo mật (1 phút, nếu được hỏi)
 

@@ -44,13 +44,21 @@ const SellerMegaSalePage = lazyNamed(() => import('@/pages/seller/SellerMegaSale
 const AdminMegaSalePage = lazyNamed(() => import('@/pages/admin/AdminMegaSalePage'), 'AdminMegaSalePage')
 const AdminVouchersPage = lazyNamed(() => import('@/pages/admin/AdminVouchersPage'), 'AdminVouchersPage')
 const AdminRewardsPage = lazyNamed(() => import('@/pages/admin/AdminRewardsPage'), 'AdminRewardsPage')
+const AdminBeautyQuestPage = lazyNamed(() => import('@/pages/admin/AdminBeautyQuestPage'), 'AdminBeautyQuestPage')
 const AdminPagesPage = lazyNamed(() => import('@/pages/admin/AdminPagesPage'), 'AdminPagesPage')
 const MessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'MessagesPage')
 const SellerMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'SellerMessagesPage')
 const AdminMessagesPage = lazyNamed(() => import('@/pages/MessagesPage'), 'AdminMessagesPage')
 const BrandsPage = lazyNamed(loaders.brands, 'BrandsPage')
 const SkincareArchitectPage = lazyNamed(loaders.architect, 'SkincareArchitectPage')
-const BeautyQuestPage = lazyNamed(loaders.beautyQuest, 'BeautyQuestPage')
+const BeautyQuestLayout = lazyNamed(loaders.beautyQuest, 'BeautyQuestLayout')
+const BqHomePage = lazyNamed(loaders.beautyQuest, 'BqHomePage')
+const BqQuizPage = lazyNamed(loaders.beautyQuest, 'BqQuizPage')
+const BqRoutinePage = lazyNamed(loaders.beautyQuest, 'BqRoutinePage')
+const BqLearnPage = lazyNamed(loaders.beautyQuest, 'BqLearnPage')
+const BqReflectPage = lazyNamed(loaders.beautyQuest, 'BqReflectPage')
+const BqRoadmapPage = lazyNamed(loaders.beautyQuest, 'BqRoadmapPage')
+const BqGiftsPage = lazyNamed(loaders.beautyQuest, 'BqGiftsPage')
 const MegaSalePage = lazyNamed(loaders.megaSale, 'MegaSalePage')
 const AboutPage = lazyNamed(() => import('@/pages/InfoPages'), 'AboutPage')
 const ContactPage = lazyNamed(() => import('@/pages/InfoPages'), 'ContactPage')
@@ -92,7 +100,16 @@ export function App() {
                   <Route path="compare" element={<ComparePage />} />
                   <Route path="brands" element={<BrandsPage />} />
                   <Route path="skincare-architect" element={<SkincareArchitectPage />} />
-                  <Route path="beauty-quest" element={<BeautyQuestPage />} />
+                  <Route path="beauty-quest" element={<BeautyQuestLayout />}>
+                    <Route index element={<BqHomePage />} />
+                    <Route path="quiz" element={<BqQuizPage />} />
+                    <Route path="routine" element={<BqRoutinePage />} />
+                    <Route path="learn" element={<BqLearnPage />} />
+                    <Route path="learn/:slug" element={<BqLearnPage />} />
+                    <Route path="reflect" element={<BqReflectPage />} />
+                    <Route path="roadmap" element={<BqRoadmapPage />} />
+                    <Route path="hop-qua" element={<BqGiftsPage />} />
+                  </Route>
                   <Route path="mega-sale" element={<MegaSalePage />} />
 
                   {/* Trang thông tin */}
@@ -164,6 +181,7 @@ export function App() {
                     <Route path="reviews" element={<AdminReviewsPage />} />
                     <Route path="vouchers" element={<AdminVouchersPage />} />
                     <Route path="rewards" element={<AdminRewardsPage />} />
+                    <Route path="beauty-quest" element={<AdminBeautyQuestPage />} />
                     <Route path="mega-sale" element={<AdminMegaSalePage />} />
                     <Route path="messages" element={<AdminMessagesPage />} />
                     <Route path="pages" element={<AdminPagesPage />} />

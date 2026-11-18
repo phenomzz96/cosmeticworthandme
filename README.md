@@ -33,7 +33,7 @@ Extension VS Code nên cài: ESLint, Prettier, Tailwind CSS IntelliSense.
 
 1. Tạo project tại [supabase.com](https://supabase.com) (gói Free). Chọn region gần Việt Nam (Singapore).
 2. **Organization → Team**: mời đủ 5 thành viên. Bộ gửi email mặc định của Supabase **chỉ gửi tới thành viên team**, tối đa 2 email/giờ.
-3. **SQL Editor**: lần lượt dán và **Run** 14 file trong [`supabase/migrations/`](supabase/migrations/) theo thứ tự tên file (bảng thứ tự ở [docs/DEPLOY.md](docs/DEPLOY.md#2-chạy-migration-tạo-bảng-quyền-hàm)). Mỗi file chỉ chạy một lần.
+3. **SQL Editor**: lần lượt dán và **Run** 15 file trong [`supabase/migrations/`](supabase/migrations/) theo thứ tự tên file (bảng thứ tự ở [docs/DEPLOY.md](docs/DEPLOY.md#2-chạy-migration-tạo-bảng-quyền-hàm)). Mỗi file chỉ chạy một lần.
    Tùy chọn: chạy thêm [`supabase/seed/demo_catalog.sql`](supabase/seed/demo_catalog.sql) để có sẵn 7 cửa hàng mẫu và 49 sản phẩm mẫu khi trình diễn (chạy lại nhiều lần không bị trùng).
 4. **Authentication → URL Configuration**:
    - Site URL: `https://worthandme.netlify.app`

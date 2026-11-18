@@ -19,6 +19,8 @@ export interface RewardCampaign {
   plays_per_day: number
   bonus_per_order: number
   is_active: boolean
+  /** Beauty Points kiếm được trong đợt quà để đổi 1 lượt (0 = không đổi) */
+  points_per_turn: number
 }
 
 export interface RewardPrize {
@@ -44,6 +46,10 @@ export interface RewardTurns {
   bonus_total: number
   bonus_used: number
   remaining: number
+  /** Lượt thưởng từ Beauty Points (đã tính trong bonus_total) */
+  quest_bonus: number
+  quest_points: number
+  points_per_turn: number
 }
 
 export interface PlayResult {
@@ -88,7 +94,7 @@ export interface AdminPlay {
 export type CampaignInput = Omit<RewardCampaign, 'id'> & { id: string | null }
 export type PrizeInput = Omit<RewardPrize, 'id' | 'awarded_count'> & { id: string | null }
 
-const CAMPAIGN_COLS = 'id, title, occasion, description, starts_at, ends_at, plays_per_day, bonus_per_order, is_active'
+const CAMPAIGN_COLS = 'id, title, occasion, description, starts_at, ends_at, plays_per_day, bonus_per_order, is_active, points_per_turn'
 const PRIZE_COLS = 'id, campaign_id, kind, label, description, weight, stock, awarded_count, discount_type, discount_value, max_discount, min_spend, valid_days, sort_order'
 
 export const giftStatusLabels: Record<GiftStatus, string> = { pending: 'Chờ gửi quà', fulfilled: 'Đã gửi quà', cancelled: 'Đã hủy' }
@@ -168,6 +174,7 @@ export const rewardService = {
       p_plays_per_day: c.plays_per_day,
       p_bonus_per_order: c.bonus_per_order,
       p_is_active: c.is_active,
+      p_points_per_turn: c.points_per_turn,
     })
     if (error) throw error
     return data as string

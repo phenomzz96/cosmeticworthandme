@@ -39,11 +39,12 @@ Nếu `npm run build` báo lỗi TypeScript, gửi nguyên văn lỗi cho ngư�
 | 12 | `supabase/migrations/20261117000001_beauty_quest_rewards.sql` | Hộp quà Beauty Quest: đợt quà, giải thưởng, lượt chơi; voucher riêng cho từng tài khoản (`vouchers.owner_id`) |
 | 13 | `supabase/migrations/20261118000001_mega_sale.sql` | Mega Sale: đợt sale, đăng ký của người bán, tự áp / trả giá sale, khóa đổi giá khi đang sale |
 | 14 | `supabase/migrations/20261119000001_beauty_profiles.sql` | Hồ sơ làm đẹp (câu trả lời Beauty Finder lưu vào tài khoản) |
+| 15 | `supabase/migrations/20261120000001_beauty_quest_core.sql` | Beauty Quest trong website: nhiệm vụ, điểm, cấp, thành tích, Skin Quiz, routine, bài học, tự đánh giá, Glow Match, nhật ký da (bucket ảnh riêng tư `bq-diary`); Beauty Points đổi lượt mở hộp quà (`reward_campaigns.points_per_turn`) |
 
 Mỗi file chạy **một lần**. Báo "Success. No rows returned" là đúng.
 Nếu một file báo lỗi giữa chừng: chụp màn hình lỗi, **không** chạy tiếp file sau, không sửa file migration; báo người phụ trách database.
 
-Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 14 migration) để có 7 cửa hàng mẫu và 49 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng: project đã chạy bản cũ thì chạy lại file này để thêm 2 cửa hàng và 20 sản phẩm mới (nước hoa, đồ nam...).
+Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 15 migration) để có 7 cửa hàng mẫu và 49 sản phẩm mẫu (dùng hình minh họa). Chạy lại không bị trùng: project đã chạy bản cũ thì chạy lại file này để thêm 2 cửa hàng và 20 sản phẩm mới (nước hoa, đồ nam...).
 
 **Project đã chạy 8 migration trước đó** (bản đang chạy trên Netlify): chỉ cần chạy thêm file số 9, một lần, **trước khi** merge Pull Request Đợt C. Không chạy lại các file 1–8. File 9 không xóa dữ liệu cũ; các trang thông tin dùng nội dung mặc định cho tới khi Admin sửa ở `/admin/pages`.
 
@@ -53,7 +54,9 @@ Tùy chọn cho buổi demo: chạy `supabase/seed/demo_catalog.sql` (sau cả 1
 
 **Project đã chạy 11 migration** (sau giao diện theo logo): chạy thêm lần lượt file 12, 13, 14, mỗi file một lần, **trước khi** merge Pull Request tương ứng (Beauty Quest → 12, Mega Sale → 13, Beauty Finder nâng cao → 14). Các file chỉ thêm bảng / cột mới; file 12 thay chính sách đọc bảng voucher để voucher riêng chỉ chủ tài khoản thấy (voucher chung không đổi). Sau khi chạy: Admin vào `/admin/rewards` tạo đợt quà, `/admin/mega-sale` tạo đợt sale.
 
-(Lịch sử: Đợt A thêm file 7, Đợt B thêm file 8, Đợt C thêm file 9, Skincare Architect 3D thêm file 10, giao diện theo logo thêm file 11, Beauty Quest thêm file 12, Mega Sale thêm file 13, Beauty Finder nâng cao thêm file 14.)
+**Project đã chạy 14 migration** (sau Đợt G–J): chạy thêm file số 15, một lần, **trước khi** merge Pull Request Đợt K (Beauty Quest trong website). File 15 chỉ thêm bảng mới, bucket ảnh riêng tư `bq-diary`, cột `points_per_turn` (mặc định 50) cho đợt quà, và thay hàm tính lượt hộp quà (thêm lượt từ Beauty Points; lượt theo ngày + đơn đã giao giữ nguyên). Không xóa dữ liệu cũ. Sau khi chạy: Admin xem `/admin/beauty-quest`; muốn đổi số điểm cho 1 lượt thì sửa đợt quà ở `/admin/rewards`.
+
+(Lịch sử: Đợt A thêm file 7, Đợt B thêm file 8, Đợt C thêm file 9, Skincare Architect 3D thêm file 10, giao diện theo logo thêm file 11, Beauty Quest thêm file 12, Mega Sale thêm file 13, Beauty Finder nâng cao thêm file 14, Beauty Quest trong website thêm file 15.)
 
 Kiểm tra nhanh trong SQL Editor:
 
@@ -66,6 +69,8 @@ select public.expire_overdue_orders();                   -- trả về số đơ
 select count(*) from public.reward_campaigns;            -- 0 ngay sau migration 12 (Admin tự tạo đợt quà)
 select public.sync_mega_sales();                         -- 0 ngay sau migration 13 (chưa có đợt sale)
 select count(*) from public.beauty_profiles;             -- 0 ngay sau migration 14
+select count(*) from public.bq_quests;                   -- 9 ngay sau migration 15 (9 nhiệm vụ của bản gốc)
+select public, file_size_limit from storage.buckets where id = 'bq-diary';  -- false | 409600 (ảnh nhật ký riêng tư)
 select count(*) from public.site_pages;                  -- 0 ngay sau migration 9 (website dùng nội dung mặc định)
 select count(*) from public.conversations;               -- 0 ngay sau migration 9
 select count(*) from public.products where use_period is not null;  -- 18 sau khi chạy lại dữ liệu mẫu (migration 10)

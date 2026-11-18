@@ -51,6 +51,7 @@ function emptyCampaign(): CampaignInput {
     plays_per_day: 1,
     bonus_per_order: 1,
     is_active: false,
+    points_per_turn: 50,
   }
 }
 
@@ -199,6 +200,15 @@ export function AdminRewardsPage() {
               hint="Tính cho đơn đặt trong thời gian chương trình"
             />
           </div>
+          <TextField
+            label="Beauty Points đổi 1 lượt mở hộp (0 = không đổi)"
+            type="number"
+            min={0}
+            max={1000}
+            value={String(form.points_per_turn)}
+            onChange={(e) => setForm({ ...form, points_per_turn: Math.min(1000, num(e.target.value)) })}
+            hint="Tính điểm khách kiếm được từ nhiệm vụ Beauty Quest trong thời gian đợt quà, tối đa 10 lượt"
+          />
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="accent-[var(--primary)]" />
             Bật đợt quà (khách thấy và chơi được trong thời gian hiệu lực)
@@ -234,6 +244,7 @@ export function AdminRewardsPage() {
                     <p className="mt-1 text-sm text-muted">
                       {formatDateTime(c.starts_at)} – {formatDateTime(c.ends_at)} · {c.plays_per_day} lượt/ngày
                       {c.bonus_per_order > 0 && ` · +${c.bonus_per_order} lượt mỗi đơn đã giao`}
+                      {c.points_per_turn > 0 && ` · ${c.points_per_turn} Beauty Points = 1 lượt`}
                     </p>
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-2">

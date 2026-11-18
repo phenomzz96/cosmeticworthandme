@@ -5,7 +5,7 @@
 Bộ kiểm thử trong `supabase/tests/` chạy migration thật trên PostgreSQL 15+ với một file giả lập phần có sẵn của Supabase
 (`00_local_supabase_stub.sql`: role `anon`/`authenticated`, `auth.users`, `auth.uid()`, `storage`). Cách chạy: [supabase/README.md](../supabase/README.md).
 
-Kết quả lần chạy gần nhất (16/11/2026, PostgreSQL 16, mỗi file một database mới, đủ 14 migration):
+Kết quả lần chạy gần nhất (17/11/2026, PostgreSQL 16, mỗi file một database mới, đủ 15 migration):
 
 | File | Nội dung chính | Đạt |
 |---|---|---|
@@ -23,7 +23,8 @@ Kết quả lần chạy gần nhất (16/11/2026, PostgreSQL 16, mỗi file m�
 | `12_beauty_quest_rewards_test.sql` | Hộp quà: quyền Admin, lượt mỗi ngày + lượt thưởng từ đơn đã giao, chọn giải, số lượng, voucher riêng (người khác không thấy / lưu / dùng được), quà tặng, nhật ký | 48/48 |
 | `13_mega_sale_test.sql` | Mega Sale: quyền, mức giảm tối thiểu, duyệt / từ chối, tự áp giá và trả giá cũ, đặt hàng đúng giá sale, khóa đổi giá khi đang sale, trùng thời gian, xóa đợt | 37/37 |
 | `14_beauty_profiles_test.sql` | Hồ sơ làm đẹp: chỉ chủ tài khoản đọc / lưu / xóa, Admin không đọc, dữ liệu sai / quá lớn, tài khoản bị khóa | 14/14 |
-| **Tổng** | | **635/635** |
+| `15_beauty_quest_core_test.sql` | Beauty Quest: khách vãng lai / tài khoản bị khóa bị chặn, trình duyệt không ghi thẳng bảng, chỉ nhận điểm khi đã làm đúng việc (không nhận 2 lần), quiz kiểm tra câu trả lời + tính kết quả, routine / check-in, bài học, tự đánh giá, Glow Match, ảnh nhật ký chỉ trong thư mục của mình, điểm / cấp / chuỗi ngày, người khác và Admin không đọc được dữ liệu riêng, Admin sửa nhiệm vụ + nhật ký, Beauty Points đổi lượt hộp quà, xóa dữ liệu của tôi | 70/70 |
+| **Tổng** | | **705/705** |
 
 Kiểm thử thêm (chạy tay):
 - Dữ liệu mẫu `supabase/seed/demo_catalog.sql` chạy được sau cả 10 migration và chạy lại lần 2 không trùng: 7 cửa hàng, 49 sản phẩm (18 có dữ liệu chu trình); số liệu mẫu được đưa về 0.
@@ -53,12 +54,13 @@ với một **client Supabase giả lập** mô phỏng các luật quyền chí
 | Đợt E: tải sẵn trang khi rảnh / khi rê chuột liên kết, banner không đổi chiều cao và dừng khi khuất màn hình, Quay lại về đúng chỗ đang xem, Tiến tới / mở trang mới về đầu trang, đổi sắp xếp giữ chỗ đang xem, mở thẳng 4 trang không nhảy bố cục (CLS < 0.1), nút có hiệu ứng nhấn, trang hiện dần, giỏ báo sản phẩm ngừng bán / hết hàng / giảm số lượng (điện thoại + máy tính, sáng/tối) | 33/33 |
 | Đợt F: logo của nhóm (biểu tượng ở đầu trang / đăng nhập, logo đầy đủ ở chân trang, đúng bản sáng/tối, ảnh tải được, có sẵn kích thước), logo Admin tải lên thay ở chân trang, favicon + biểu tượng điện thoại, font có dấu tiếng Việt, màu theo logo, tương phản 10 cặp màu ≥ 4.5, ảnh banner tràn mép phải / gọn trên điện thoại, ảnh câu chuyện, nút "Thêm vào giỏ" trên thẻ, không kéo ngang, CLS < 0.1 (máy tính + điện thoại, sáng + tối) | 58/58 |
 | Đợt G: thanh menu gọn (nút Danh mục, bảng thả xuống, rê / bấm / Esc / bấm ra ngoài / bàn phím), không mục nào bị cắt ở 1024–1536px, trang sản phẩm bỏ hàng nút lặp, chân trang 4 cột, dải "Chỉ có ở Worth & Me", menu điện thoại (sáng/tối) | 75/75 |
-| Đợt H: Beauty Quest (mở tab mới an toàn), Admin tạo đợt quà / bộ giải mẫu / sửa giải / bật, khách vãng lai thấy tỷ lệ, khách mở hộp → voucher riêng vào ví + thông báo, hết lượt, người khác không thấy voucher, quà tặng hết số lượng, Admin đánh dấu đã gửi, không xóa đợt đã có người chơi, điện thoại + tối | 43/43 |
+| Đợt H: Hộp quà nằm trong tab Beauty Quest (không còn liên kết ra ngoài), Admin tạo đợt quà / bộ giải mẫu / sửa giải / bật, khách vãng lai thấy tỷ lệ, khách mở hộp → voucher riêng vào ví + thông báo, hết lượt, người khác không thấy voucher, quà tặng hết số lượng, Admin đánh dấu đã gửi, không xóa đợt đã có người chơi, điện thoại + tối | 43/43 |
 | Đợt I: Mega Sale (Admin tạo đợt, giới hạn 31 ngày, người bán đăng ký sai / đúng mức giảm, Admin từ chối có lý do / duyệt, giá tự áp dụng, trang Mega Sale + đếm ngược, menu + trang chủ tự hiện, khóa giá phía người bán, thông báo, tắt đợt → trả giá, đợt sắp mở hiện giá dự kiến), điện thoại + tối | 33/33 |
+| Đợt K: Beauty Quest ngay trong website (không iframe, không liên kết ra ngoài), khách vãng lai xem nhiệm vụ / bài học, Skin Quiz (khóa nút khi chưa chọn, tối đa 3 mối quan tâm, kết quả + lời nhắc không chẩn đoán, nối sang Beauty Finder), routine từ gợi ý + check-in, bài học phải kéo tới cuối, tự đánh giá, Glow Match, nhật ký da kèm ảnh riêng tư (thư mục riêng, đường dẫn tạm), đủ 110 điểm / lên cấp / thành tích / chuỗi ngày, lịch sử + lọc, "Để sau", Skin Roadmap, Beauty Points → lượt mở hộp, người khác không thấy dữ liệu / không được cộng lượt, Admin xem số liệu, sửa / thêm / tắt nhiệm vụ + nhật ký, tải / xóa dữ liệu, điện thoại + tối | 71/71 |
 | Đợt J: Beauty Finder 4 cách tìm, giải thích điểm, chuyên sâu (thành phần tối đa 3, thói quen, bộ trong ngân sách ≤ 1.000.000đ, thêm cả bộ vào giỏ, đường dẫn chia sẻ được), mua quà, hồ sơ làm đẹp (lưu, dùng lại, người khác không thấy, xóa), điện thoại + tối | 34/34 |
-| **Tổng** | **860/860** (gồm thuật toán Beauty Finder 70), không có lỗi JavaScript |
+| **Tổng** | **931/931** (gồm thuật toán Beauty Finder 70), không có lỗi JavaScript |
 
-Kiểm tra che chữ tự động (Đợt D, chạy lại sau Đợt J với 48 trang, gồm Beauty Quest, Mega Sale, Beauty Finder chuyên sâu, trang quản trị hộp quà / Mega Sale): 42 trang (khách, Admin, người bán) × 5 độ rộng (390, 768, 1024, 1280, 1440px) × sáng/tối: không có trang kéo ngang, không có hàng cuộn ngang thiếu mũi tên, không có chữ bị cắt mà không có dấu "…".
+Kiểm tra che chữ tự động (Đợt D, chạy lại sau Đợt K với 61 trang, gồm 7 tab Beauty Quest khi chưa / đã đăng nhập, trang quản trị Beauty Quest, Mega Sale, Beauty Finder chuyên sâu): 61 trang (khách 26, Admin 26, người bán 9) × 5 độ rộng (390, 768, 1024, 1280, 1440px) × sáng/tối: không có trang kéo ngang, không có hàng cuộn ngang thiếu mũi tên, không có chữ bị cắt mà không có dấu "…".
 
 Kiểm tra TypeScript bằng trình biên dịch thật với kiểu thư viện rút gọn: không lỗi. **Nhóm vẫn cần chạy `npm.cmd run build`** để kiểm tra với thư viện thật.
 
