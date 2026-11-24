@@ -62,7 +62,12 @@ export function ProductsPage() {
   const query = useMemo(() => parseQuery(params), [params])
   const [filtersOpen, setFiltersOpen] = useState(false)
   const page = Math.max(1, Number(params.get('page')) || 1)
-  const result = useAsync(() => catalogService.searchProducts(query, page), [params.toString()])
+  // Bấm danh mục / bộ lọc: hiện ngay kết quả lọc từ danh mục đã tải; lần đổi chậm hơn thì giữ kết quả cũ (mờ nhẹ) tới khi có kết quả mới
+  const result = useAsync(() => catalogService.searchProducts(query, page), [params.toString()], {
+    cacheKey: 'search:' + params.toString(),
+    keepPrevious: true,
+    peek: () => catalogService.searchLocalSync(query, page) ?? undefined,
+  })
   const pages = result.status === 'success' ? Math.max(1, Math.ceil(result.data.total / SEARCH_PAGE_SIZE)) : 1
 
   const category = query.category ? categoryById[query.category] : undefined
@@ -346,7 +351,7 @@ export function ProductsPage() {
         <aside className="hidden lg:block" aria-label="Bộ lọc">
           <div className="sticky top-40 max-h-[calc(100dvh-11rem)] overflow-y-auto pr-2">{renderFilters('d')}</div>
         </aside>
-        <div>
+        <div aria-busy={result.refreshing || undefined} className={`transition-opacity duration-150 motion-reduce:transition-none ${result.refreshing ? 'opacity-60' : ''}`}>
           {result.status === 'loading' && <ProductGridSkeleton count={8} />}
           {result.status === 'error' && <ErrorState />}
           {result.status === 'success' &&

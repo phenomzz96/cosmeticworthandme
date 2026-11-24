@@ -58,12 +58,12 @@ export function HomePage() {
   const { settings } = useBrand()
   useDocumentTitle()
   useCatalogVersion()
-  const best = useAsync(() => catalogService.getBestSellers(4), [])
-  const featured = useAsync(() => catalogService.getFeaturedProducts(8), [])
-  const fresh = useAsync(() => catalogService.getNewArrivals(4), [])
-  const shops = useAsync(() => catalogService.getShops(), [])
-  const stats = useAsync(() => catalogService.getStats(), [])
-  const reviews = useAsync(() => reviewService.latest(3).catch(() => []), [])
+  const best = useAsync(() => catalogService.getBestSellers(4), [], { cacheKey: 'home:best' })
+  const featured = useAsync(() => catalogService.getFeaturedProducts(8), [], { cacheKey: 'home:featured' })
+  const fresh = useAsync(() => catalogService.getNewArrivals(4), [], { cacheKey: 'home:fresh' })
+  const shops = useAsync(() => catalogService.getShops(), [], { cacheKey: 'home:shops' })
+  const stats = useAsync(() => catalogService.getStats(), [], { cacheKey: 'home:stats' })
+  const reviews = useAsync(() => reviewService.latest(3).catch(() => []), [], { cacheKey: 'home:reviews' })
 
   // "Bán chạy" chỉ hiện khi đã có lượt bán thật; chưa có thì hiện sản phẩm nổi bật
   const hasBest = best.status === 'success' && best.data.length >= 2

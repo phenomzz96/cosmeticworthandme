@@ -1,5 +1,5 @@
 import { ScrollRow } from '@/components/ui/ScrollRow'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type MouseEvent as ReactMouseEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '@/components/ui/Icon'
 import { ProductImage } from '@/components/ui/ProductImage'
@@ -26,7 +26,7 @@ import type { Product } from '@/types/catalog'
 
 export function ProductDetailPage() {
   const { slug = '' } = useParams()
-  const state = useAsync(() => catalogService.getProductBySlug(slug), [slug])
+  const state = useAsync(() => catalogService.getProductBySlug(slug), [slug], { peek: () => catalogService.peekProductBySlug(slug) })
   useDocumentTitle(state.status === 'success' ? (state.data?.name ?? 'Không tìm thấy sản phẩm') : undefined)
 
   if (state.status === 'loading') {
@@ -99,6 +99,13 @@ function ProductDetail({ product: initial }: { product: Product }) {
     navigate('/checkout')
   }
 
+  const summary = shortDescription(product.description)
+  const showDescription = (e: ReactMouseEvent) => {
+    e.preventDefault()
+    setTab('desc')
+    document.getElementById('chi-tiet')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   const tabs = [
     { id: 'desc' as const, label: 'Mô tả' },
     ...(product.keyIngredients.length ? [{ id: 'ingredients' as const, label: 'Thành phần chính' }] : []),
@@ -166,7 +173,20 @@ function ProductDetail({ product: initial }: { product: Product }) {
             {product.size && <span className="text-xs text-muted">Dung tích: {product.size}</span>}
           </div>
 
-          <p className="mt-5 text-lg leading-relaxed text-muted">{product.description}</p>
+          {/* Chỉ tóm tắt vài câu đầu; mô tả đầy đủ nằm ở tab "Mô tả" bên dưới */}
+          {summary.text && (
+            <p className="mt-5 leading-relaxed text-muted">
+              {summary.text}
+              {summary.cut && (
+                <>
+                  {' '}
+                  <a href="#chi-tiet" onClick={showDescription} className="whitespace-nowrap font-medium text-text underline underline-offset-2 hover:text-primary">
+                    Xem mô tả đầy đủ
+                  </a>
+                </>
+              )}
+            </p>
+          )}
 
           <div className="mt-6">
             <Price price={product.price} originalPrice={product.originalPrice} size="lg" />
@@ -269,7 +289,7 @@ function ProductDetail({ product: initial }: { product: Product }) {
       </div>
 
       {/* Mô tả / Thành phần / Cách dùng / Thông tin */}
-      <section className="mt-16" aria-label="Chi tiết sản phẩm">
+      <section id="chi-tiet" className="mt-16 scroll-mt-40" aria-label="Chi tiết sản phẩm">
         <ScrollRow role="tablist" aria-label="Chi tiết sản phẩm" className="flex gap-7 border-b border-border">
           {tabs.map((t) => (
             <button
@@ -416,4 +436,27 @@ export function RecentlyViewed({ excludeId }: { excludeId?: string }) {
       </div>
     </section>
   )
+}
+
+/**
+ * Tóm tắt mô tả cho cột bên phải: lấy các câu đầu, tối đa khoảng 200 ký tự (không cắt giữa từ).
+ * cut = true khi mô tả còn dài hơn phần tóm tắt.
+ */
+export function shortDescription(text: string, max = 200): { text: string; cut: boolean } {
+  const clean = text.replace(/\s+/g, ' ').trim()
+  if (clean.length <= max) return { text: clean, cut: false }
+  // Ưu tiên dừng ở cuối câu (. ! ? …) trong giới hạn
+  const sentences = clean.match(/[^.!?…]+[.!?…]+(\s|$)/g) ?? []
+  let out = ''
+  for (const sentence of sentences) {
+    if ((out + sentence).trim().length > max) break
+    out += sentence
+  }
+  out = out.trim()
+  // Câu đầu đã quá dài: cắt ở khoảng trắng gần nhất
+  if (out.length < 60) {
+    const cutAt = clean.lastIndexOf(' ', max)
+    out = clean.slice(0, cutAt > 60 ? cutAt : max).replace(/[,;:\s–-]+$/, '') + '…'
+  }
+  return { text: out, cut: true }
 }

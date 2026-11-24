@@ -19,7 +19,7 @@ interface BrandInfo {
 export function BrandsPage() {
   useDocumentTitle('Thương hiệu')
   useCatalogVersion()
-  const products = useAsync(() => catalogService.getAllActiveProducts(), [])
+  const products = useAsync(() => catalogService.getAllActiveProducts(), [], { cacheKey: 'brands:products' })
   const [q, setQ] = useState('')
 
   const groups = useMemo(() => {

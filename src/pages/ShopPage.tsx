@@ -17,7 +17,7 @@ import type { CategoryId, Shop } from '@/types/catalog'
 
 export function ShopPage() {
   const { slug = '' } = useParams()
-  const state = useAsync(() => catalogService.getShopBySlug(slug), [slug])
+  const state = useAsync(() => catalogService.getShopBySlug(slug), [slug], { peek: () => catalogService.peekShopBySlug(slug) })
   useDocumentTitle(state.status === 'success' ? (state.data?.name ?? 'Không tìm thấy cửa hàng') : undefined)
 
   if (state.status === 'loading') {
@@ -42,8 +42,13 @@ function ShopView({ shop }: { shop: Shop }) {
   const [category, setCategory] = useState<CategoryId | undefined>()
   // Số người theo dõi: lấy từ database, cộng/trừ ngay khi người xem bấm Theo dõi
   const [followDelta, setFollowDelta] = useState(0)
-  const products = useAsync(() => catalogService.getProducts({ shopId: shop.id, category }), [shop.id, category])
-  const allShopProducts = useAsync(() => catalogService.getProducts({ shopId: shop.id }), [shop.id])
+  const products = useAsync(() => catalogService.getProducts({ shopId: shop.id, category }), [shop.id, category], {
+    keepPrevious: true,
+    peek: () => catalogService.peekProducts({ shopId: shop.id, category }),
+  })
+  const allShopProducts = useAsync(() => catalogService.getProducts({ shopId: shop.id }), [shop.id], {
+    peek: () => catalogService.peekProducts({ shopId: shop.id }),
+  })
   const shopCategories =
     allShopProducts.status === 'success' ? categories.filter((c) => allShopProducts.data.some((p) => p.categoryId === c.id)) : []
 
@@ -164,13 +169,19 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
 
 export function ShopsPage() {
   useDocumentTitle('Cửa hàng')
-  const shops = useAsync(() => catalogService.getShops(), [])
+  const shops = useAsync(() => catalogService.getShops(), [], { peek: () => catalogService.peekShops() })
   return (
     <div className="container-page py-8">
       <Breadcrumbs items={[{ label: 'Trang chủ', to: '/' }, { label: 'Cửa hàng' }]} />
       <h1 className="mt-4 text-3xl font-bold tracking-tight">Cửa hàng</h1>
       <p className="mt-1 text-muted">Các cửa hàng đã được duyệt và đang bán trên sàn.{isSupabaseConfigured ? '' : ' Đang hiển thị dữ liệu mẫu (chưa kết nối Supabase).'}</p>
-      <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy={shops.status === 'loading' || undefined}>
+        {shops.status === 'loading' &&
+          Array.from({ length: 6 }, (_, i) => (
+            <li key={i}>
+              <Skeleton className="h-44 w-full" />
+            </li>
+          ))}
         {shops.status === 'success' &&
           shops.data.map((s) => (
             <li key={s.id}>

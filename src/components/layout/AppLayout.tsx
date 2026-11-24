@@ -6,6 +6,7 @@ import { ChatWidget } from '@/features/messages/ChatWidget'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import { Footer } from './Footer'
 import { Header } from './Header'
+import { NavProgress } from './NavProgress'
 import { RouteErrorBoundary } from './RouteErrorBoundary'
 
 const ANNOUNCE_KEY = 'wm-announcement'
@@ -157,6 +158,7 @@ export function AppLayout() {
       >
         Bỏ qua, đến nội dung chính
       </a>
+      <NavProgress />
       <AnnouncementBar />
       <Header />
       {/* Cao ít nhất bằng màn hình: trong lúc trang đang tải, chân trang nằm dưới màn hình nên không bị nhảy lên xuống */}
