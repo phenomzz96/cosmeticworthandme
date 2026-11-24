@@ -28,6 +28,8 @@ let loadedAt = 0
 let version = 0
 let inflight: Promise<void> | null = null
 let searchIndex = new Map<string, string>()
+/** Dấu vân tay của lần tải trước: tải lại ngầm mà dữ liệu không đổi thì không báo các trang vẽ lại */
+let lastSignature = ''
 const listeners = new Set<() => void>()
 
 function buildIndex() {
@@ -163,6 +165,12 @@ async function loadFromDatabase() {
   ])
   if (shopRes.error) throw shopRes.error
   if (productRes.error) throw productRes.error
+  const signature = JSON.stringify([shopRes.data, productRes.data])
+  if (loaded && signature === lastSignature) {
+    loadedAt = Date.now()
+    return
+  }
+  lastSignature = signature
   shops = (shopRes.data as ShopRow[]).map(shopFromRow)
   const shopIds = new Set(shops.map((s) => s.id))
   // Chủ shop đang đăng nhập cũng đọc được sản phẩm của shop mình chưa duyệt: không đưa vào danh mục công khai
@@ -249,6 +257,14 @@ export function filterProducts(list: Product[], query: ProductQuery): Product[] 
   return out
 }
 
+/** Lọc + phân trang ngay trong bộ nhớ khi danh mục đã tải đủ và không có từ khóa (xem searchLocalSync) */
+function searchLocal(query: ProductQuery, page: number, pageSize: number): { products: Product[]; total: number } | null {
+  if (!loaded || query.q?.trim() || products.length >= CATALOG_LIMIT) return null
+  const from = (Math.max(1, page) - 1) * pageSize
+  const all = filterProducts(products, query)
+  return { products: all.slice(from, from + pageSize), total: all.length }
+}
+
 /** Chế độ dữ liệu mẫu: đợi dữ liệu mẫu nạp xong + giả lập độ trễ mạng */
 const delay = async (ms = 120) => {
   await ensureLoaded()
@@ -293,6 +309,10 @@ export const catalogService = {
       const all = filterProducts(products, query)
       return { products: all.slice(from, from + pageSize), total: all.length }
     }
+    // Bấm danh mục / bộ lọc / sắp xếp: danh mục đang bán đã nằm trọn trong bộ nhớ (dưới giới hạn tải) thì lọc ngay,
+    // không phải chờ máy chủ. Tìm theo từ khóa vẫn chạy trong database (tìm không dấu đầy đủ hơn).
+    const local = searchLocal(query, page, pageSize)
+    if (local) return local
     // Tải song song danh mục cửa hàng (tên shop trên thẻ sản phẩm, giỏ hàng)
     const [res] = await Promise.all([
       supabase.rpc('search_products', {
@@ -315,6 +335,28 @@ export const catalogService = {
     if (res.error) throw res.error
     const rows = (res.data ?? []) as (ProductRow & { total_count: number })[]
     return { products: rows.map(productFromRow), total: rows[0] ? Number(rows[0].total_count) : 0 }
+  },
+
+  /**
+   * Kết quả lọc ngay từ danh mục trong bộ nhớ (không chờ mạng). Trả null nếu chưa tải xong danh mục,
+   * danh mục có thể bị cắt ở giới hạn tải, hoặc có từ khóa tìm kiếm (để database xử lý).
+   */
+  searchLocalSync(query: ProductQuery, page = 1, pageSize = SEARCH_PAGE_SIZE): { products: Product[]; total: number } | null {
+    return searchLocal(query, page, pageSize)
+  },
+
+  /** Dữ liệu có sẵn trong bộ nhớ, để trang hiện ngay khi mở (không nháy khung chờ) */
+  peekProductBySlug(slug: string): Product | undefined {
+    return loaded ? products.find((p) => p.slug === slug) : undefined
+  },
+  peekShopBySlug(slug: string): Shop | undefined {
+    return loaded ? shops.find((s) => s.slug === slug) : undefined
+  },
+  peekShops(): Shop[] | undefined {
+    return loaded ? shops : undefined
+  },
+  peekProducts(query: ProductQuery): Product[] | undefined {
+    return loaded ? filterProducts(products, query) : undefined
   },
 
   async getFeaturedProducts(limit = 8): Promise<Product[]> {

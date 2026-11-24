@@ -81,15 +81,18 @@ export function usePrefetchRoutes() {
       if (key) prefetch(key)
     }
     document.addEventListener('pointerover', onIntent, { passive: true })
+    document.addEventListener('pointerdown', onIntent, { passive: true })
     document.addEventListener('touchstart', onIntent, { passive: true })
     document.addEventListener('focusin', onIntent)
 
     const hasIdle = typeof window.requestIdleCallback === 'function'
-    const common: Key[] = ['products', 'productDetail', 'cart', 'beautyFinder', 'login']
+    // Trang hay mở: tải sẵn mã khi trình duyệt rảnh (mỗi trang chỉ vài KB) để bấm là mở ngay
+    const common: Key[] = ['products', 'productDetail', 'shops', 'cart', 'brands', 'beautyFinder', 'megaSale', 'beautyQuest', 'login']
     const run = () => common.forEach((k, i) => setTimeout(() => prefetch(k), i * 150))
     const id = hasIdle ? window.requestIdleCallback(run, { timeout: 4000 }) : setTimeout(run, 2500)
     return () => {
       document.removeEventListener('pointerover', onIntent)
+      document.removeEventListener('pointerdown', onIntent)
       document.removeEventListener('touchstart', onIntent)
       document.removeEventListener('focusin', onIntent)
       if (hasIdle) window.cancelIdleCallback(id as number)
